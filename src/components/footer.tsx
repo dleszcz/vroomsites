@@ -159,12 +159,7 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
             <a href={getUrl("/polityka-prywatnosci")} style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", fontSize: "13px" }}>Polityka prywatności</a>
             <a href={getUrl("/regulamin")} style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", fontSize: "13px" }}>Regulamin</a>
           </div>
-          <span className="dealer-footer__powered">
-            Powered by <strong>VroomDealer</strong>{" "}
-            <span style={{ opacity: 0.5, fontSize: "11px", fontWeight: 400, marginLeft: "4px" }}>
-              {APP_VERSION}
-            </span>
-          </span>
+
         </div>
       </div>
     </footer>
