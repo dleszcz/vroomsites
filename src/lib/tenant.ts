@@ -128,8 +128,18 @@ export function profileToTenant(profile: Profile): DealerTenant {
     branding,
     services,
     pageConfig,
-    analytics: (profile.analytics as unknown as DealerTenant["analytics"]) || {
-      pixelId: profile.pixel_id || (brandingRaw.pixelId as string) || null,
+    analytics: {
+      pixelId:
+        ((profile.analytics as Record<string, unknown> | null)?.pixelId as string) ||
+        profile.pixel_id ||
+        (brandingRaw.pixelId as string) ||
+        (seedMatch?.pixel_id as string) ||
+        process.env.NEXT_PUBLIC_META_PIXEL_ID ||
+        null,
+      googleAnalyticsId:
+        ((profile.analytics as Record<string, unknown> | null)?.googleAnalyticsId as string) ||
+        process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ||
+        null,
     },
     seo: (profile.seo as unknown as DealerTenant["seo"]) || {
       metaTitle: `${profile.business_name} - Skup aut i sprzedaż samochodów`,

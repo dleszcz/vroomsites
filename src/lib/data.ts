@@ -12,7 +12,7 @@ export const seedProfileDCar: Profile = {
   business_description:
     "Profesjonalny skup aut za gotówkę oraz komis w Topólce i okolicach. Odkupujemy samochody w każdym stanie - całe, uszkodzone i powypadkowe. Bezpłatny dojazd lawetą do 3 godzin, wycena online/tel, umowa na miejscu i natychmiastowa wypłata gotówki.",
   logo_url: "/images/dcar-logo.png",
-  pixel_id: "1636959447346992",
+  pixel_id: "1054598387214426",
   whatsapp_number: "48530826501",
   contact_phone: "+48 530 826 501",
   address: "Paniewo 3A",
