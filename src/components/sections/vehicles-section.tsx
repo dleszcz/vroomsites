@@ -14,6 +14,7 @@ export async function VehiclesSection({ tenant, isCustomDomain }: Props) {
   const displayLimit = 5;
   const carsToDisplay = allCars.slice(0, displayLimit);
   const hasMore = allCars.length > displayLimit;
+  const catalogUrl = getTenantUrl(tenant.slug, "/samochody", tenant.customDomain, isCustomDomain);
 
   return (
     <section id="vehicles" className="vd-section vd-section--bordered">
@@ -24,14 +25,22 @@ export async function VehiclesSection({ tenant, isCustomDomain }: Props) {
             <h2 className="vd-heading">Samochody na sprzedaż</h2>
           </div>
           {hasMore && (
-            <a className="vehicles__all" href={getTenantUrl(tenant.slug, "/samochody", tenant.customDomain, isCustomDomain)}>
+            <a className="vehicles__all" href={catalogUrl}>
               <span>Zobacz wszystkie ({allCars.length})</span>
               <ArrowRight size={14} />
             </a>
           )}
         </div>
         <div className="vehicles__grid">
-          {carsToDisplay.map(car => <CarCard key={car.id} car={car} dealerSlug={tenant.slug} customDomain={tenant.customDomain} isCustomDomain={isCustomDomain} />)}
+          {carsToDisplay.map(car => (
+            <CarCard
+              key={car.id}
+              car={car}
+              dealerSlug={tenant.slug}
+              customDomain={tenant.customDomain}
+              isCustomDomain={isCustomDomain}
+            />
+          ))}
         </div>
       </div>
     </section>

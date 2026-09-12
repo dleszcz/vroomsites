@@ -26,7 +26,7 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
   const links = [
     ["Strona główna", getUrl("/")],
     ["Skup aut", getUrl("/skup-aut")],
-    ["Samochody", getUrl("/#vehicles")],
+    ["Samochody", getUrl("/samochody")],
     ["Usługi", getUrl("/#services")],
     ["O nas", getUrl("/#about")],
     ["Kontakt", getUrl("/#footer")],
