@@ -7,6 +7,7 @@ import { Footer } from "@/components/footer";
 import { MetaPixel } from "@/components/meta-pixel";
 import { AnalyticsScripts } from "@/components/analytics-scripts";
 import { CookieConsent } from "@/components/cookie-consent";
+import { ScrollToTop } from "@/components/scroll-to-top";
 import { getTenantUrl } from "@/lib/urls";
 
 export default async function DealerLayout({
@@ -35,6 +36,7 @@ export default async function DealerLayout({
 
   return (
     <BrandProvider branding={tenant.branding}>
+      <ScrollToTop />
       <AnalyticsScripts tenant={tenant} />
       {tenant.analytics?.pixelId && <MetaPixel pixelId={tenant.analytics.pixelId} />}
       <div className="dealer-layout">

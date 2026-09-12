@@ -144,6 +144,21 @@ export function AdminSidebar({
             <Link
               href={
                 activeTenant
+                  ? `/admin/cars?tenant=${activeTenant.slug}`
+                  : "/admin/cars"
+              }
+              style={{
+                ...styles.navItem,
+                ...(pathname.startsWith("/admin/cars") ? styles.navItemActive : {}),
+              }}
+            >
+              <span style={styles.navIcon}>🚗</span>
+              <span>Oferta Samochodów</span>
+            </Link>
+
+            <Link
+              href={
+                activeTenant
                   ? `/admin/settings?tenant=${activeTenant.slug}`
                   : "/admin/settings"
               }

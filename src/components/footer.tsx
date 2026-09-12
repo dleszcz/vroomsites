@@ -109,7 +109,7 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
             <div className="dealer-footer__links">
               <a href={getUrl("/")}>Strona główna</a>
               <a href={getUrl("/skup-aut")}>Skup aut</a>
-              <a href={getUrl("/#vehicles")}>Samochody</a>
+              <a href={getUrl("/samochody")}>Samochody</a>
               <a href={getUrl("/#services")}>Usługi</a>
               <a href={getUrl("/#about")}>O nas</a>
               <a href={getUrl("/#footer")}>Kontakt</a>
@@ -133,7 +133,7 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
               <h3 className="dealer-footer__heading">Usługi</h3>
               <div className="dealer-footer__links">
                 <a href={getUrl("/#lead-form")}>Skup aut</a>
-                <a href={getUrl("/#vehicles")}>Sprzedaż aut</a>
+                <a href={getUrl("/samochody")}>Sprzedaż aut</a>
                 <a href={getUrl("/#services")}>Pomoc drogowa</a>
                 <a href={getUrl("/#services")}>Transport aut</a>
                 <a href={getUrl("/#services")}>Inne usługi</a>

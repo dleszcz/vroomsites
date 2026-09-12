@@ -18,16 +18,24 @@ export function InventoryPage({ tenant, cars, isCustomDomain }: InventoryPagePro
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFuel, setSelectedFuel] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"newest" | "price_asc" | "price_desc">("newest");
+  const [statusFilter, setStatusFilter] = useState<"available" | "sold" | "all">("available");
 
   const primaryColor = tenant.branding?.colors?.primary || "#1686E0";
 
-  // Filter cars based on search and fuel type
+  const availableCount = cars.filter((c) => !c.is_sold).length;
+  const soldCount = cars.filter((c) => c.is_sold).length;
+
+  // Filter cars based on search, fuel type, and sold status
   const filteredCars = cars.filter((car) => {
     const matchesSearch =
       searchQuery === "" ||
       `${car.make} ${car.model} ${car.year ?? ""}`.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFuel = selectedFuel === "all" || car.fuel_type?.toLowerCase() === selectedFuel.toLowerCase();
-    return matchesSearch && matchesFuel;
+    const matchesStatus =
+      statusFilter === "all" ||
+      (statusFilter === "available" && !car.is_sold) ||
+      (statusFilter === "sold" && car.is_sold);
+    return matchesSearch && matchesFuel && matchesStatus;
   });
 
   // Sort cars
@@ -37,7 +45,6 @@ export function InventoryPage({ tenant, cars, isCustomDomain }: InventoryPagePro
     return new Date(b.created_at || "").getTime() - new Date(a.created_at || "").getTime();
   });
 
-  const availableCount = cars.filter((c) => !c.is_sold).length;
   const tradeInHref = `/${tenant.slug}#lead-form`;
 
   return (
@@ -181,16 +188,36 @@ export function InventoryPage({ tenant, cars, isCustomDomain }: InventoryPagePro
             </div>
           </div>
 
-          {/* Catalog Header Stats */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-            <span style={{ fontSize: "15px", fontWeight: 700, color: "var(--color-foreground)" }}>
-              Dostępne pojazdy ({sortedCars.length})
+          {/* Status Filter Tabs */}
+          <div style={{ display: "flex", gap: "8px", marginBottom: "20px", flexWrap: "wrap", alignItems: "center" }}>
+            {([
+              { key: "available" as const, label: `🟢 Dostępne (${availableCount})` },
+              ...(soldCount > 0 ? [{ key: "sold" as const, label: `🔴 Sprzedane (${soldCount})` }] : []),
+              { key: "all" as const, label: `Wszystkie (${cars.length})` },
+            ]).map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setStatusFilter(tab.key)}
+                style={{
+                  padding: "7px 16px",
+                  borderRadius: "10px",
+                  border: statusFilter === tab.key ? `2px solid ${primaryColor}` : "1.5px solid #cbd5e1",
+                  background: statusFilter === tab.key ? `${primaryColor}10` : "#ffffff",
+                  color: statusFilter === tab.key ? primaryColor : "#64748b",
+                  fontSize: "13px",
+                  fontWeight: statusFilter === tab.key ? 700 : 500,
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+
+            <span style={{ marginLeft: "auto", fontSize: "13px", color: "var(--color-text-soft)" }}>
+              {statusFilter === "available" && availableCount > 0 && "Wszystkie auta sprawdzone technicznie"}
+              {statusFilter === "sold" && soldCount > 0 && "Historia sprzedanych pojazdów"}
             </span>
-            {availableCount > 0 && (
-              <span style={{ fontSize: "13px", color: "var(--color-text-soft)" }}>
-                Wszystkie auta sprawdzone technicznie
-              </span>
-            )}
           </div>
 
           {/* Cars Grid */}

@@ -243,10 +243,16 @@ export async function updateProfile(formData: FormData) {
   const heroTitle = formData.get("branding_hero_title");
   const heroSubtitle = formData.get("branding_hero_subtitle");
 
+  const cleanColor = (val: unknown, fallback: string) => {
+    if (!val || typeof val !== "string") return fallback;
+    const trimmed = val.trim().replace(/^#+/, "#");
+    return trimmed.startsWith("#") ? trimmed : `#${trimmed}`;
+  };
+
   updates.branding = {
     ...currentBranding,
-    primaryColor: primaryColor || currentBranding.primaryColor || "#10b981",
-    accentColor: accentColor || currentBranding.accentColor || "#f59e0b",
+    primaryColor: cleanColor(primaryColor, (currentBranding.primaryColor as string) || "#10b981"),
+    accentColor: cleanColor(accentColor, (currentBranding.accentColor as string) || "#f59e0b"),
     logoUrl: logoUrl || currentBranding.logoUrl || null,
     heroTitle: heroTitle || currentBranding.heroTitle || null,
     heroSubtitle: heroSubtitle || currentBranding.heroSubtitle || null,
@@ -337,3 +343,162 @@ export async function updateLeadStatus(leadId: string, status: string, notes?: s
     throw new Error(`Błąd aktualizacji: ${error.message}`);
   }
 }
+
+// ============================================================
+// Car Management Actions
+// ============================================================
+
+export async function getAdminCars(tenantSlug: string) {
+  const supabase = await createClient();
+
+  // Find the profile by slug
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("slug", tenantSlug)
+    .maybeSingle();
+
+  if (!profile) {
+    const { seedCars } = await import("@/lib/data");
+    return seedCars;
+  }
+
+  const { data: cars, error } = await supabase
+    .from("cars")
+    .select("*")
+    .eq("profile_id", profile.id)
+    .order("is_featured", { ascending: false })
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("[getAdminCars] Error:", error.message);
+    const { seedCars } = await import("@/lib/data");
+    return seedCars;
+  }
+
+  return cars || [];
+}
+
+/**
+ * One-shot sync: removes ALL cars for this tenant, then re-inserts seed data.
+ * Safe to call multiple times — always results in exactly the seed set.
+ */
+export async function syncSeedCarsToDb(tenantSlug: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Nie jesteś zalogowany");
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("slug", tenantSlug)
+    .maybeSingle();
+
+  if (!profile) {
+    throw new Error(`Nie znaleziono profilu: ${tenantSlug}`);
+  }
+
+  // Delete all existing cars for this tenant (clean slate)
+  await supabase.from("cars").delete().eq("profile_id", profile.id);
+
+  // Insert seed cars with the real profile UUID
+  const { seedCars, seedProfileDCar } = await import("@/lib/data");
+  const tenantSeedCars = seedCars.filter((c) => c.profile_id === seedProfileDCar.id);
+
+  if (tenantSeedCars.length === 0) {
+    return [];
+  }
+
+  const carsToInsert = tenantSeedCars.map((car) => ({
+    profile_id: profile.id,
+    slug: car.slug,
+    make: car.make,
+    model: car.model,
+    year: car.year,
+    price: car.price,
+    mileage: car.mileage,
+    fuel_type: car.fuel_type,
+    engine_capacity: car.engine_capacity,
+    transmission: car.transmission,
+    color: car.color,
+    description: car.description,
+    images: car.images,
+    is_sold: car.is_sold,
+    is_featured: car.is_featured,
+  }));
+
+  const { data: inserted, error: insertError } = await supabase
+    .from("cars")
+    .insert(carsToInsert)
+    .select("*");
+
+  if (insertError) {
+    throw new Error(`Błąd synchronizacji: ${insertError.message}`);
+  }
+
+  // Revalidate
+  const { revalidatePath } = await import("next/cache");
+  revalidatePath(`/admin/cars`);
+  revalidatePath(`/${tenantSlug}`);
+  revalidatePath(`/${tenantSlug}/samochody`);
+
+  return inserted || [];
+}
+
+export async function toggleCarSoldStatus(carId: string, isSold: boolean, tenantSlug: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Nie jesteś zalogowany");
+  }
+
+  const { error } = await supabase
+    .from("cars")
+    .update({ is_sold: isSold })
+    .eq("id", carId);
+
+  if (error) {
+    throw new Error(`Błąd aktualizacji statusu auta: ${error.message}`);
+  }
+
+  // Revalidate relevant pages
+  const { revalidatePath } = await import("next/cache");
+  revalidatePath(`/admin/cars`);
+  revalidatePath(`/${tenantSlug}`);
+  revalidatePath(`/${tenantSlug}/samochody`);
+}
+
+export async function toggleCarFeaturedStatus(carId: string, isFeatured: boolean, tenantSlug: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Nie jesteś zalogowany");
+  }
+
+  const { error } = await supabase
+    .from("cars")
+    .update({ is_featured: isFeatured })
+    .eq("id", carId);
+
+  if (error) {
+    throw new Error(`Błąd aktualizacji wyróżnienia auta: ${error.message}`);
+  }
+
+  // Revalidate relevant pages
+  const { revalidatePath } = await import("next/cache");
+  revalidatePath(`/admin/cars`);
+  revalidatePath(`/${tenantSlug}`);
+  revalidatePath(`/${tenantSlug}/samochody`);
+}
+

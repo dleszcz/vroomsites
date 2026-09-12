@@ -21,17 +21,25 @@ export function profileToTenant(profile: Profile): DealerTenant {
   const rawColors = (brandingRaw.colors as Record<string, string>) || {};
   const rawMedia = (brandingRaw.media as Record<string, string>) || {};
 
+  const cleanHex = (val?: string | null, fallback = "#1686E0") => {
+    if (!val) return fallback;
+    const trimmed = val.trim().replace(/^#+/, "#");
+    return trimmed.startsWith("#") ? trimmed : `#${trimmed}`;
+  };
+
   // Build colors: DB flat (primaryColor), DB nested (colors.primary), Seed, or Default
-  const primaryColor =
+  const primaryColor = cleanHex(
     (brandingRaw.primaryColor as string) ||
     rawColors.primary ||
     seedColors.primary ||
-    "#1686E0";
-  const accentColor =
+    "#1686E0"
+  );
+  const accentColor = cleanHex(
     (brandingRaw.accentColor as string) ||
     rawColors.accent ||
     seedColors.accent ||
-    "#1686E0";
+    "#1686E0"
+  );
 
   // Build logo: DB logo_url, DB branding.logoUrl, Seed logo_url, Seed branding.logoUrl
   const logoUrl =
