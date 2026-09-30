@@ -1,0 +1,144 @@
+{
+  "title": "Choose the visual world for VroomDealer",
+  "question": "The roll assigned The Mechanic's Diagnostic Tablet. Keep it, take an alternate, or re-roll.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "The Diagnostic Tablet",
+      "kicker": "THE ROLL",
+      "lineage": "automotive diagnostic tools (OBD2 scanners)",
+      "thesis": "The pragmatic, industrial tool that reads the true value of a car.",
+      "palette": [
+        "#09090b",
+        "#18181b",
+        "#1686E0",
+        "#34d399"
+      ],
+      "materials": [
+        "rugged dark mode",
+        "industrial UI",
+        "high contrast readouts"
+      ],
+      "viewport": "A 'scan' of the entered car model, displaying real-time calculations and local dealer matches as a diagnostic readout.",
+      "risk": "Might feel too technical or 'garage-like' for a casual private seller.",
+      "raised": [
+        {
+          "from": "signals-instruments-seven-segment-alarm-clock",
+          "raise": "The valuation numbers ignite as seven-segment digits rather than standard fonts."
+        }
+      ],
+      "comp": ".impeccable/mocks/decision/assigned.png"
+    },
+    {
+      "id": "model-pick",
+      "label": "The Valuation Certificate",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "official paperwork and vehicle history reports",
+      "thesis": "A document of truth, making the offer feel guaranteed and legally sound.",
+      "palette": [
+        "#f8fafc",
+        "#e2e8f0",
+        "#0f172a",
+        "#1686E0"
+      ],
+      "materials": [
+        "stamped paper",
+        "official seals",
+        "high-density data tables"
+      ],
+      "viewport": "A clean, white 'document' being stamped with the final guaranteed cash offer.",
+      "risk": "Also the direction most runs in this category land on.",
+      "comp": ".impeccable/mocks/decision/model-pick.png"
+    },
+    {
+      "id": "signals-instruments-financial-ticker-tape",
+      "label": "The Live Ticker",
+      "verdict": "competitive",
+      "lineage": "financial ticker tape and trading floors",
+      "thesis": "The marketplace where dealers bid in real-time.",
+      "palette": [
+        "#000000",
+        "#ff3333",
+        "#33ff33",
+        "#ffffff"
+      ],
+      "materials": [
+        "scrolling LED text",
+        "live data streams"
+      ],
+      "viewport": "A dark dashboard with flashing 'recent sales' and live 'bids' for similar cars.",
+      "case": "Fuses well with the idea of 'best price in 24h'; introduces strong urgency.",
+      "risk": "Can feel like a stock trading app rather than a simple car sale.",
+      "comp": ".impeccable/mocks/decision/challenger-ticker.png",
+      "hero": "https://impeccable.style/worlds/cards/signals-instruments-financial-ticker-tape-hero.webp"
+    },
+    {
+      "id": "signals-instruments-seven-segment-alarm-clock",
+      "label": "The Seven-Segment Readout",
+      "verdict": "competitive",
+      "lineage": "gas station price totems and digital clocks",
+      "thesis": "Unapologetic, giant numbers delivering the final price.",
+      "palette": [
+        "#111111",
+        "#ff0000",
+        "#330000"
+      ],
+      "materials": [
+        "LED segments",
+        "ghost cells"
+      ],
+      "viewport": "A towering set of glowing red numbers calculating the offer.",
+      "case": "Fuses perfectly with 'instant cash offer'. Very automotive.",
+      "risk": "Might lack the space for detailed explanations and trust-building copy.",
+      "comp": ".impeccable/mocks/decision/challenger-seven-segment.png",
+      "hero": "https://impeccable.style/worlds/cards/signals-instruments-seven-segment-alarm-clock-hero.webp"
+    },
+    {
+      "id": "vernacular-ephemera-desert-neon-sign-program",
+      "label": "The Strip Sign",
+      "verdict": "declined",
+      "lineage": "desert motel neon signs",
+      "palette": [
+        "#fef3c7",
+        "#2dd4bf",
+        "#e11d48"
+      ],
+      "materials": [
+        "neon gas",
+        "porcelain panels"
+      ],
+      "case": "Too Vegas/flashy. 'Skup aut' has a bad reputation that we want to avoid, not amplify.",
+      "kept": "A focus on hard-edged, bold typography for the primary call to action.",
+      "hero": "https://impeccable.style/worlds/cards/vernacular-ephemera-desert-neon-sign-program-hero.webp"
+    }
+  ],
+  "reroll": {
+    "registers": [
+      "safer",
+      "bolder"
+    ]
+  },
+  "buildPath": {
+    "value": "comp",
+    "toggle": true
+  },
+  "canon": true,
+  "canonCard": {
+    "label": "The Modern SaaS Marketplace",
+    "thesis": "The category standard for modern B2B/B2C tech startups.",
+    "palette": [
+      "#ffffff",
+      "#0f172a",
+      "#10B981"
+    ],
+    "materials": [
+      "glassmorphism",
+      "soft shadows",
+      "floating glowing orbs"
+    ],
+    "viewport": "A clean hero section with a centered lead form over a blurred gradient background.",
+    "risk": "Indistinguishable from other generic 'AI' tools or tech startups (the 'AI slop' the user explicitly rejected).",
+    "comp": ".impeccable/mocks/decision/canon.png"
+  },
+  "steer": true
+}
