@@ -30,6 +30,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { Toaster } from "react-hot-toast";
+
 export default function RootLayout({
   children,
 }: {
@@ -38,6 +40,7 @@ export default function RootLayout({
   return (
     <html lang="pl" className={GeistSans.variable}>
       <body>
+        <Toaster position="bottom-center" />
         {children}
         <Analytics />
         <SpeedInsights />
