@@ -631,13 +631,11 @@ export async function getProfile(slug: string): Promise<Profile | null> {
       .single();
 
     if (error || !data) {
-      const found = allSeedProfiles.find((p) => p.slug === slug);
-      return found || null;
+      return null;
     }
     return data;
   } catch {
-    const found = allSeedProfiles.find((p) => p.slug === slug);
-    return found || null;
+    return null;
   }
 }
 
@@ -657,12 +655,12 @@ export async function getCars(profileId: string): Promise<Car[]> {
       .order("is_featured", { ascending: false })
       .order("created_at", { ascending: false });
 
-    if (!data || data.length === 0) {
-      return seedCars;
+    if (!data) {
+      return [];
     }
     return data;
   } catch {
-    return seedCars;
+    return [];
   }
 }
 
@@ -681,11 +679,11 @@ export async function getCar(carSlug: string): Promise<Car | null> {
       .single();
 
     if (!data) {
-      return seedCars.find((c) => c.slug === carSlug) || seedCars.find((c) => c.id === carSlug) || null;
+      return null;
     }
     return data;
   } catch {
-    return seedCars.find((c) => c.slug === carSlug) || seedCars.find((c) => c.id === carSlug) || null;
+    return null;
   }
 }
 
@@ -699,12 +697,12 @@ export async function getAllProfiles(): Promise<Profile[]> {
     const supabase = await createClient();
     const { data } = await supabase.from("profiles").select("*");
 
-    if (!data || data.length === 0) {
-      return allSeedProfiles;
+    if (!data) {
+      return [];
     }
     return data;
   } catch {
-    return allSeedProfiles;
+    return [];
   }
 }
 
