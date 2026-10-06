@@ -1,4 +1,4 @@
-import { getCurrentProfile, getAdminCars } from "@/app/admin/actions";
+import { getCurrentTenant, getAdminCars } from "@/app/admin/actions";
 import { CarsManager } from "@/components/admin/cars-manager";
 import { redirect } from "next/navigation";
 
@@ -7,15 +7,15 @@ type Props = {
 };
 
 export default async function AdminCarsPage({ searchParams }: Props) {
-  const profile = await getCurrentProfile();
+  const tenant = await getCurrentTenant();
 
-  if (!profile) {
+  if (!tenant) {
     redirect("/admin/login");
   }
 
   const params = await searchParams;
-  const isSuperAdmin = Boolean(profile.is_super_admin);
-  const tenantSlug = isSuperAdmin && params.tenant ? params.tenant : profile.slug;
+  const isSuperAdmin = Boolean(tenant.is_super_admin);
+  const tenantSlug = isSuperAdmin && params.tenant ? params.tenant : tenant.slug;
 
   // Don't render if superadmin and no tenant selected
   if (isSuperAdmin && !params.tenant) {

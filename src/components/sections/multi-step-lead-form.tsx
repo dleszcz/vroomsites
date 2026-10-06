@@ -267,8 +267,8 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
       trackEvent("form_submission", { dealer_id: tenant.id, dealer_slug: tenant.slug });
 
       // Trigger Meta Pixel Lead event ONLY on success
-      if (typeof window !== "undefined" && (window as unknown as { fbq?: Function }).fbq) {
-        (window as unknown as { fbq: Function }).fbq("track", "Lead", {
+      if (typeof window !== "undefined" && (window as unknown as { fbq?: (...args: unknown[]) => void }).fbq) {
+        (window as unknown as { fbq: (...args: unknown[]) => void }).fbq("track", "Lead", {
           content_name: `${data.brand} ${data.model}`,
           city: data.city,
         });

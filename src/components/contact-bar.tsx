@@ -1,19 +1,19 @@
 "use client";
 
-import { Car, Profile } from "@/types/database";
+import { Car, Tenant } from "@/types/database";
 import { formatPrice } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics";
 import { Phone } from "lucide-react";
 
 interface ContactBarProps {
-  profile: Profile;
+  tenant: Tenant;
   car?: Car;
 }
 
-export function ContactBar({ profile, car }: ContactBarProps) {
+export function ContactBar({ tenant, car }: ContactBarProps) {
   const getWhatsAppLink = () => {
-    if (!profile.whatsapp_number) return "#";
-    const cleanPhone = profile.whatsapp_number.replace(/\D/g, "");
+    if (!tenant.whatsapp_number) return "#";
+    const cleanPhone = tenant.whatsapp_number.replace(/\D/g, "");
 
     let msg = "Dzień dobry, piszę z vroomdealer.pl. Czy możemy porozmawiać o ofercie?";
     if (car) {
@@ -26,8 +26,8 @@ export function ContactBar({ profile, car }: ContactBarProps) {
   };
 
   const getPhoneLink = () => {
-    if (!profile.contact_phone) return "#";
-    const cleanPhone = profile.contact_phone.replace(/\s+/g, "");
+    if (!tenant.contact_phone) return "#";
+    const cleanPhone = tenant.contact_phone.replace(/\s+/g, "");
     return `tel:${cleanPhone}`;
   };
 
@@ -49,14 +49,14 @@ export function ContactBar({ profile, car }: ContactBarProps) {
     } : { source: "contact_bar" });
   };
 
-  if (!profile.whatsapp_number && !profile.contact_phone) {
+  if (!tenant.whatsapp_number && !tenant.contact_phone) {
     return null;
   }
 
   return (
     <div className="contact-bar">
       <div className="contact-bar__container">
-        {profile.contact_phone && (
+        {tenant.contact_phone && (
           <a
             href={getPhoneLink()}
             onClick={trackCall}
@@ -68,7 +68,7 @@ export function ContactBar({ profile, car }: ContactBarProps) {
           </a>
         )}
 
-        {profile.whatsapp_number && (
+        {tenant.whatsapp_number && (
           <a
             href={getWhatsAppLink()}
             onClick={trackWhatsApp}

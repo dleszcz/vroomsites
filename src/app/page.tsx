@@ -1,283 +1,126 @@
-import type { Metadata } from "next";
+import { getAllTenants } from "@/lib/data";
+import Link from "next/link";
 import { headers } from "next/headers";
-import { resolveTenant } from "@/lib/tenant";
-import { BrandProvider } from "@/components/brand-provider";
-import { DealerHeader } from "@/components/dealer-header";
-import { SectionRenderer } from "@/components/sections/section-renderer";
-import { ContactBar } from "@/components/contact-bar";
-import { Footer } from "@/components/footer";
-import { MetaPixel } from "@/components/meta-pixel";
-import { AnalyticsScripts } from "@/components/analytics-scripts";
-import { CookieConsent } from "@/components/cookie-consent";
-import { DealerSchema } from "@/components/vehicle-schema";
-import { CsJoinForm } from "@/components/cs-join-form";
+import { Car, MapPin, Phone, ArrowRight } from "lucide-react";
+import type { Metadata } from "next";
 
-export async function generateMetadata(): Promise<Metadata> {
+export const metadata: Metadata = {
+  title: "Katalog Komisów Samochodowych | Vroomdealer",
+  description: "Baza autoryzowanych komisów samochodowych korzystających z platformy Vroomdealer.",
+};
+
+export default async function DirectoryPage() {
+  const tenants = await getAllTenants();
   const reqHeaders = await headers();
-  const host = reqHeaders.get("host") || undefined;
+  const host = reqHeaders.get("host") || "";
+  const isLocal = host.includes("localhost") || host.includes("127.0.0.1");
 
-  // Check if host resolves to a specific tenant custom domain
-  if (host && !host.includes("localhost") && !host.includes("vroomdealer.pl") && !host.includes("vercel.app")) {
-    const tenant = await resolveTenant({ domain: host });
-    if (tenant) {
-      const title = tenant.seo?.metaTitle || `${tenant.businessName} - Skup Aut i Sprzedaż`;
-      const description = tenant.seo?.metaDescription || tenant.businessDescription || "Twój prywatny system sprzedaży i pozyskiwania aut.";
-      return {
-        title: {
-          absolute: title,
-        },
-        description,
-        alternates: { canonical: `https://${tenant.customDomain}` },
-        openGraph: { title, description, url: `https://${tenant.customDomain}`, type: "website" },
-      };
-    }
-  }
-
-  // Default SaaS Landing Page Metadata for VroomDealer.pl (v1.0 Spec)
-  return {
-    title: "VroomDealer.pl - Pozyskuj więcej samochodów od osób prywatnych",
-    description: "VroomDealer buduje dla Twojego komisu lokalny kanał pozyskiwania aut: od strony i SEO po kampanie i obsługę leadów. Dołącz do zamkniętych testów.",
-    openGraph: {
-      title: "VroomDealer.pl - Pozyskuj więcej samochodów od osób prywatnych",
-      description: "VroomDealer buduje dla Twojego komisu lokalny kanał pozyskiwania aut: od strony i SEO po kampanie i obsługę leadów.",
-      url: "https://vroomdealer.pl",
-      type: "website",
-    },
-  };
-}
-
-export default async function HomePage() {
-  const reqHeaders = await headers();
-  const host = reqHeaders.get("host") || undefined;
-
-  // If request comes from a custom domain, render that tenant
-  if (host && !host.includes("localhost") && !host.includes("vroomdealer.pl") && !host.includes("vercel.app")) {
-    const tenant = await resolveTenant({ domain: host });
-    if (tenant) {
-      const profileShim = {
-        id: tenant.id,
-        slug: tenant.slug,
-        business_name: tenant.businessName,
-        business_description: tenant.businessDescription || null,
-        logo_url: tenant.logoUrl || null,
-        pixel_id: tenant.analytics?.pixelId || null,
-        whatsapp_number: tenant.contact.whatsapp || null,
-        contact_phone: tenant.contact.phone || null,
-        address: tenant.location?.address || null,
-        city: tenant.location?.city || null,
-        created_at: new Date().toISOString(),
-      };
-
-      const baseUrl = `https://${tenant.customDomain || host}`;
-
-      return (
-        <BrandProvider branding={tenant.branding}>
-          <AnalyticsScripts tenant={tenant} />
-          {tenant.analytics?.pixelId && <MetaPixel pixelId={tenant.analytics.pixelId} />}
-          <DealerSchema
-            name={tenant.businessName}
-            description={tenant.businessDescription || undefined}
-            address={tenant.location?.address || undefined}
-            city={tenant.location?.city || undefined}
-            phone={tenant.contact.phone || undefined}
-            url={baseUrl}
-          />
-          <div className="dealer-layout">
-            <DealerHeader tenant={tenant} isCustomDomain={true} />
-            <main className="dealer-main">
-              <SectionRenderer tenant={tenant} />
-            </main>
-            <ContactBar profile={profileShim} />
-            <Footer tenant={tenant} isCustomDomain={true} />
-          </div>
-          <CookieConsent
-            primaryColor={tenant.branding.colors.primary}
-            privacyPolicyUrl="/polityka-prywatnosci"
-          />
-        </BrandProvider>
-      );
-    }
-  }
-
-  // ─── VroomDealer.pl — SaaS Coming Soon (Spec v1.0) ───
   return (
-    <main className="cs">
-      {/* Animated background orbs */}
-      <div className="cs__orb cs__orb--1" aria-hidden="true" />
-      <div className="cs__orb cs__orb--2" aria-hidden="true" />
-      <div className="cs__orb cs__orb--3" aria-hidden="true" />
-
-      <div className="cs__content">
-        {/* 1. Header / Logo */}
-        <div className="cs__logo">
-          <span className="cs__logo-vroom">Vroom</span>
-          <span className="cs__logo-dealer">Dealer</span>
-          <span className="cs__logo-pl">.pl</span>
-        </div>
-
-        {/* Badge */}
-        <div className="cs__badge">
-          <span className="cs__badge-dot" />
-          Zamknięte testy w toku
-        </div>
-
-        {/* Hero Heading & Subheadline */}
-        <h1 className="cs__title">
-          Pozyskuj więcej samochodów<br />
-          <span className="cs__title-accent">od osób prywatnych.</span>
-        </h1>
-
-        <p className="cs__subtitle">
-          VroomDealer buduje dla Twojego komisu lokalny kanał pozyskiwania aut: od dedykowanej strony i lokalnego SEO po kampanie i obsługę zgłoszeń.
-        </p>
-
-        {/* Hero Actions */}
-        <div className="cs__actions">
-          <a href="#join-tests" className="cs__btn cs__btn--primary">
-            Dołącz do testów ➔
-          </a>
-          <a
-            href={`https://wa.me/48609525935?text=${encodeURIComponent("Dzień dobry, chciałbym porozmawiać o teście VroomDealer dla mojego komisu.")}`}
-            className="cs__btn cs__btn--outline"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-            </svg>
-            Porozmawiaj o teście
-          </a>
-        </div>
-
-        {/* 2. Problem Section */}
-        <div className="cs__section cs__section--problem">
-          <span className="cs__eyebrow">Problem rynku</span>
-          <h2 className="cs__section-title">Dobrych samochodów nie brakuje. Trudniej je znaleźć.</h2>
-          <p className="cs__section-copy">
-            Najlepsze auta od osób prywatnych szybko znikają z rynku. VroomDealer pomaga niezależnym komisiom docierać do właścicieli, którzy właśnie chcą sprzedać samochód.
+    <div className="min-h-screen bg-neutral-50 text-neutral-900 pb-20">
+      {/* Header */}
+      <header className="bg-neutral-900 text-white py-16 px-6">
+        <div className="max-w-5xl mx-auto text-center">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+            Katalog Komisów Samochodowych
+          </h1>
+          <p className="text-neutral-400 text-lg md:text-xl max-w-2xl mx-auto">
+            Odkryj listę autoryzowanych dealerów i komisów samochodowych, które wybrały platformę Vroomdealer do zarządzania swoją ofertą.
           </p>
         </div>
+      </header>
 
-        {/* 3. How it Works Section */}
-        <div className="cs__section cs__section--process">
-          <span className="cs__eyebrow">Proces pozyskiwania</span>
-          <h2 className="cs__section-title">Jak to działa?</h2>
-
-          <div className="cs__steps">
-            <div className="cs__step">
-              <div className="cs__step-num">01</div>
-              <div className="cs__step-title">Twój komis</div>
-              <div className="cs__step-desc">Analizujemy Twój rynek i ustalamy profil kupowanych aut.</div>
-            </div>
-
-            <div className="cs__step">
-              <div className="cs__step-num">02</div>
-              <div className="cs__step-title">Lokalna strona + SEO + kampanie</div>
-              <div className="cs__step-desc">Uruchamiamy zoptymalizowany kanał pozyskiwania.</div>
-            </div>
-
-            <div className="cs__step">
-              <div className="cs__step-num">03</div>
-              <div className="cs__step-title">Właściciel trafia do Ciebie</div>
-              <div className="cs__step-desc">Sprzedający w okolicy zgłasza auto bez zbędnych pytań.</div>
-            </div>
-
-            <div className="cs__step">
-              <div className="cs__step-num">04</div>
-              <div className="cs__step-title">Kwalifikujesz lead</div>
-              <div className="cs__step-desc">Otrzymujesz komplet informacji i wstępną wycenę.</div>
-            </div>
-
-            <div className="cs__step">
-              <div className="cs__step-num">05</div>
-              <div className="cs__step-title">Kupujesz samochód</div>
-              <div className="cs__step-desc">Finalizujesz transakcję i zyskujesz auto na plac.</div>
-            </div>
-          </div>
-
-          <div className="cs__key-message">
-            💡 <strong>Kluczowa zasada:</strong> Nie sprzedajemy Ci kolejnej strony internetowej. Budujemy kanał, który ma dostarczać Ci samochody do dalszej sprzedaży.
-          </div>
+      {/* Main Content */}
+      <main className="max-w-5xl mx-auto px-6 py-12">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-bold tracking-tight">
+            Znaleziono {tenants.length} {tenants.length === 1 ? 'komis' : tenants.length > 1 && tenants.length < 5 ? 'komisy' : 'komisów'}
+          </h2>
         </div>
 
-        {/* 4. Value-Driven Features */}
-        <div className="cs__section cs__section--features">
-          <span className="cs__eyebrow">Co zapewnia VroomDealer?</span>
-          <h2 className="cs__section-title">System skupiony na wyniku biznesowym</h2>
+        {/* Directory Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {tenants.map((tenant) => {
+            // Prefer custom domain if available AND not running locally, otherwise relative path
+            const tenantUrl = (tenant.custom_domain && !isLocal)
+              ? `https://${tenant.custom_domain}`
+              : `/${tenant.slug}`;
 
-          <div className="cs__grid-features">
-            <div className="cs__grid-card">
-              <div className="cs__grid-icon">🌐</div>
-              <h3>Lokalna strona komisu</h3>
-              <p>Strona zoptymalizowana pod Twój biznes, markę i lokalny rynek operacyjny.</p>
-            </div>
+            return (
+              <Link 
+                key={tenant.id} 
+                href={tenantUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex flex-col bg-white rounded-2xl border border-neutral-200 overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+              >
+                {/* Branding / Cover */}
+                <div 
+                  className="h-32 w-full relative flex items-center justify-center bg-black" 
+                >
+                  {(tenant.branding as any)?.media?.heroImageUrl && (
+                    <img 
+                      src={(tenant.branding as any).media.heroImageUrl} 
+                      alt="" 
+                      className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay"
+                    />
+                  )}
+                  
+                  {/* Logo or Fallback */}
+                  {tenant.logo_url || (tenant.branding as any)?.logoUrl ? (
+                    <img 
+                      src={tenant.logo_url || (tenant.branding as any)?.logoUrl || ''} 
+                      alt={`Logo ${tenant.business_name}`} 
+                      className="relative z-10 max-h-16 max-w-[80%] object-contain"
+                    />
+                  ) : (
+                    <span className="relative z-10 text-white font-bold text-xl px-4 text-center drop-shadow-sm line-clamp-2">
+                      {tenant.business_name}
+                    </span>
+                  )}
+                </div>
 
-            <div className="cs__grid-card">
-              <div className="cs__grid-icon">📋</div>
-              <h3>Pozyskiwanie leadów</h3>
-              <p>Prosty formularz, dzięki któremu właściciel auta może zgłosić samochód bez dzwonienia.</p>
-            </div>
+                <div className="p-6 flex flex-col flex-grow">
+                  <h3 className="text-xl font-bold text-neutral-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">
+                    {tenant.business_name}
+                  </h3>
+                  
+                  <p className="text-sm text-neutral-500 mb-6 line-clamp-3 flex-grow">
+                    {tenant.business_description || "Brak opisu komisu."}
+                  </p>
 
-            <div className="cs__grid-card">
-              <div className="cs__grid-icon">🔍</div>
-              <h3>Lokalne SEO</h3>
-              <p>Docieramy bezpośrednio do osób szukających skupu aut w Twojej okolicy.</p>
-            </div>
+                  <div className="space-y-3 mb-6">
+                    {tenant.city && (
+                      <div className="flex items-center text-sm text-neutral-600">
+                        <MapPin className="w-4 h-4 mr-2 text-neutral-400" />
+                        <span className="truncate">{tenant.city}</span>
+                      </div>
+                    )}
+                    {tenant.contact_phone && (
+                      <div className="flex items-center text-sm text-neutral-600">
+                        <Phone className="w-4 h-4 mr-2 text-neutral-400" />
+                        <span className="truncate">{tenant.contact_phone}</span>
+                      </div>
+                    )}
+                  </div>
 
-            <div className="cs__grid-card">
-              <div className="cs__grid-icon">📢</div>
-              <h3>Kampanie reklamowe</h3>
-              <p>Docieramy do potencjalnych sprzedających w określonym obszarze geograficznym.</p>
-            </div>
-
-            <div className="cs__grid-card">
-              <div className="cs__grid-icon">📊</div>
-              <h3>Analityka & Tracking</h3>
-              <p>Dokładnie wiesz, skąd przychodzą zgłoszenia i które kanały przynoszą kupione auta.</p>
-            </div>
+                  <div className="mt-auto pt-4 border-t border-neutral-100 flex items-center justify-between text-sm font-semibold text-blue-600 group-hover:text-blue-700">
+                    Odwiedź stronę
+                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+        
+        {tenants.length === 0 && (
+          <div className="text-center py-24 bg-white rounded-2xl border border-neutral-200">
+            <Car className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-neutral-900">Brak dodanych komisów</h3>
+            <p className="text-neutral-500 mt-2">Katalog jest obecnie pusty.</p>
           </div>
-        </div>
-
-        {/* 5. Target Audience Section */}
-        <div className="cs__section cs__section--target">
-          <span className="cs__eyebrow">Dla kogo?</span>
-          <h2 className="cs__section-title">Dla niezależnych komisów samochodowych</h2>
-          <p className="cs__section-copy" style={{ marginBottom: "32px" }}>
-            VroomDealer powstaje z myślą o małych i średnich komisach, które chcą zwiększyć liczbę samochodów pozyskiwanych bezpośrednio od właścicieli.
-          </p>
-
-          <div className="cs__audience-grid">
-            <div className="cs__audience-card">
-              <div className="cs__audience-bullet">🚗</div>
-              <p>Masz ograniczony dostęp do dobrych aut od prywatnych osób.</p>
-            </div>
-            <div className="cs__audience-card">
-              <div className="cs__audience-bullet">⏱️</div>
-              <p>Nie masz czasu zajmować się skomplikowanym marketingiem.</p>
-            </div>
-            <div className="cs__audience-card">
-              <div className="cs__audience-bullet">📈</div>
-              <p>Chcesz więcej wartościowych zapytań od osób chcących sprzedać samochód.</p>
-            </div>
-          </div>
-        </div>
-
-        {/* 6. Closed Testing & Lead Form Section */}
-        <div id="join-tests" className="cs__section cs__section--join">
-          <span className="cs__eyebrow">Dołącz do programu</span>
-          <h2 className="cs__section-title">Zamknięte testy z wybranymi komisami</h2>
-          <p className="cs__section-copy" style={{ marginBottom: "36px" }}>
-            VroomDealer jest obecnie w fazie zamkniętych testów z wybranymi komisami samochodowymi. Zgłoś swój komis, aby omówić możliwość dołączenia.
-          </p>
-
-          <CsJoinForm />
-        </div>
-      </div>
-
-      {/* Footer */}
-      <footer className="cs__footer">
-        <p>© {new Date().getFullYear()} VroomDealer.pl - Wszelkie prawa zastrzeżone.</p>
-      </footer>
-    </main>
+        )}
+      </main>
+    </div>
   );
 }

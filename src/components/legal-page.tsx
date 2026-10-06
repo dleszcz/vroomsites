@@ -106,7 +106,7 @@ export function LegalPage({ tenant, type }: LegalPageProps) {
             <ul style={{ paddingLeft: "1.5rem", margin: "0.75rem 0" }}>
               <li>Prawo dostępu do swoich danych</li>
               <li>Prawo do sprostowania danych</li>
-              <li>Prawo do usunięcia danych („prawo do bycia zapomnianym")</li>
+              <li>Prawo do usunięcia danych („prawo do bycia zapomnianym&quot;)</li>
               <li>Prawo do ograniczenia przetwarzania</li>
               <li>Prawo do przenoszenia danych</li>
               <li>Prawo do wniesienia sprzeciwu wobec przetwarzania</li>

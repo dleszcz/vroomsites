@@ -1,15 +1,16 @@
-import { getCurrentProfile } from "@/app/admin/actions";
+import { getCurrentTenant } from "@/app/admin/actions";
 import { redirect } from "next/navigation";
 
+import Link from "next/link";
 export const metadata = {
   title: "Konfiguracja Platformy VroomDealer | Panel Admina",
 };
 
 export default async function AdminPlatformPage() {
-  const currentProfile = await getCurrentProfile();
-  if (!currentProfile) redirect("/admin/login");
+  const currentTenant = await getCurrentTenant();
+  if (!currentTenant) redirect("/admin/login");
 
-  if (!currentProfile.is_super_admin) {
+  if (!currentTenant.is_super_admin) {
     redirect("/admin/leads");
   }
 
@@ -47,12 +48,12 @@ export default async function AdminPlatformPage() {
           >
             🌐 Otwórz stronę główną VroomDealer.pl ↗
           </a>
-          <a
+          <Link
             href="/admin/tenants"
             style={styles.linkButtonAccent}
           >
             🏢 Przejdź do zarządzania komisami ➔
-          </a>
+          </Link>
         </div>
       </div>
     </div>

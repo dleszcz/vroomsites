@@ -11,6 +11,7 @@ export function useHasConsent(): boolean {
 
   useEffect(() => {
     const stored = localStorage.getItem(CONSENT_KEY);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setConsent(stored === "accepted");
   }, []);
 
@@ -41,6 +42,7 @@ export function CookieConsent({ primaryColor = "#1686E0", privacyPolicyUrl = "#"
   useEffect(() => {
     const stored = localStorage.getItem(CONSENT_KEY);
     if (stored === "accepted" || stored === "rejected") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setState(stored);
     }
   }, []);

@@ -36,56 +36,56 @@ export async function loginAction(prevState: { error?: string } | null, formData
   redirect("/admin/leads");
 }
 
-export async function getCurrentProfile() {
+export async function getCurrentTenant() {
   const supabase = await createClient();
   const {
     data: { user },
     error: userError,
   } = await supabase.auth.getUser();
 
-  console.log("[getCurrentProfile] getUser:", user?.email || "NULL", "error:", userError?.message || "none");
+  console.log("[getCurrentTenant] getUser:", user?.email || "NULL", "error:", userError?.message || "none");
 
   if (!user) return null;
 
   // Try matching user_id
-  const { data: profile, error: profileError } = await supabase
+  const { data: tenant, error: tenantError } = await supabase
     .from("profiles")
     .select("*")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  console.log("[getCurrentProfile] profile-by-user_id:", profile?.slug || "NULL", "error:", profileError?.message || "none");
+  console.log("[getCurrentTenant] tenant-by-user_id:", tenant?.slug || "NULL", "error:", tenantError?.message || "none");
 
-  if (profile) return profile;
+  if (tenant) return tenant;
 
-  // Fallback match first non-superadmin profile in database
-  const { data: fallbackProfile, error: fallbackError } = await supabase
+  // Fallback match first non-superadmin tenant in database
+  const { data: fallbackTenant, error: fallbackError } = await supabase
     .from("profiles")
     .select("*")
     .neq("slug", "superadmin")
     .limit(1)
     .maybeSingle();
 
-  console.log("[getCurrentProfile] fallback:", fallbackProfile?.slug || "NULL", "error:", fallbackError?.message || "none");
+  console.log("[getCurrentTenant] fallback:", fallbackTenant?.slug || "NULL", "error:", fallbackError?.message || "none");
 
-  return fallbackProfile || null;
+  return fallbackTenant || null;
 }
 
 export async function getAllTenants() {
   const supabase = await createClient();
-  const { data: profiles } = await supabase
+  const { data: tenants } = await supabase
     .from("profiles")
     .select("id, slug, business_name, custom_domain, contact_phone, notification_email, city, is_published, created_at, is_super_admin")
     .or("is_super_admin.eq.false,is_super_admin.is.null")
     .neq("slug", "superadmin")
     .order("created_at", { ascending: false });
 
-  return profiles || [];
+  return tenants || [];
 }
 
 export async function createTenantAction(formData: FormData) {
-  const currentProfile = await getCurrentProfile();
-  if (!currentProfile?.is_super_admin) {
+  const currentTenant = await getCurrentTenant();
+  if (!currentTenant?.is_super_admin) {
     throw new Error("Tylko Superadmin może dodawać nowe komisy.");
   }
 
@@ -119,7 +119,7 @@ export async function createTenantAction(formData: FormData) {
     throw new Error(`Komis o identyfikatorze "${slug}" już istnieje!`);
   }
 
-  const newProfile = {
+  const newTenant = {
     slug,
     business_name: businessName,
     business_description: `Skup aut i komis samochodowy ${businessName} w miejscowości ${city || "Polska"}. Szybka wycena i płatność gotówką.`,
@@ -145,7 +145,7 @@ export async function createTenantAction(formData: FormData) {
     },
   };
 
-  const { error } = await supabase.from("profiles").insert([newProfile]);
+  const { error } = await supabase.from("profiles").insert([newTenant]);
 
   if (error) {
     throw new Error(`Błąd tworzenia komisu: ${error.message}`);
@@ -154,18 +154,18 @@ export async function createTenantAction(formData: FormData) {
   redirect(`/admin/tenants?created=${slug}`);
 }
 
-export async function getProfileBySlug(slug: string) {
+export async function getTenantBySlug(slug: string) {
   const supabase = await createClient();
-  const { data: profile } = await supabase
+  const { data: tenant } = await supabase
     .from("profiles")
     .select("*")
     .eq("slug", slug)
     .maybeSingle();
 
-  return profile;
+  return tenant;
 }
 
-export async function updateProfile(formData: FormData) {
+export async function updateTenant(formData: FormData) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -175,26 +175,26 @@ export async function updateProfile(formData: FormData) {
     redirect("/admin/login");
   }
 
-  const superAdminProfile = await getCurrentProfile();
-  const isSuperAdmin = Boolean(superAdminProfile?.is_super_admin);
+  const superAdminTenant = await getCurrentTenant();
+  const isSuperAdmin = Boolean(superAdminTenant?.is_super_admin);
 
   const targetSlug = formData.get("target_slug") as string | null;
 
-  let queryProfile = superAdminProfile;
+  let queryTenant = superAdminTenant;
   if (isSuperAdmin && targetSlug) {
-    const found = await getProfileBySlug(targetSlug);
-    if (found) queryProfile = found;
+    const found = await getTenantBySlug(targetSlug);
+    if (found) queryTenant = found;
   }
 
-  if (!queryProfile) {
+  if (!queryTenant) {
     throw new Error("Nie znaleziono profilu do zaktualizowania.");
   }
 
-  const currentBranding = (queryProfile.branding as Record<string, unknown>) || {};
-  const currentAnalytics = (queryProfile.analytics as Record<string, unknown>) || {};
-  const currentSeo = (queryProfile.seo as Record<string, unknown>) || {};
-  const currentBusinessRules = (queryProfile.business_rules as Record<string, unknown>) || {};
-  const currentOpeningHours = (queryProfile.opening_hours as Record<string, unknown>) || {};
+  const currentBranding = (queryTenant.branding as Record<string, unknown>) || {};
+  const currentAnalytics = (queryTenant.analytics as Record<string, unknown>) || {};
+  const currentSeo = (queryTenant.seo as Record<string, unknown>) || {};
+  const currentBusinessRules = (queryTenant.business_rules as Record<string, unknown>) || {};
+  const currentOpeningHours = (queryTenant.opening_hours as Record<string, unknown>) || {};
 
   const updates: Record<string, unknown> = {};
 
@@ -302,7 +302,7 @@ export async function updateProfile(formData: FormData) {
   const { error } = await supabase
     .from("profiles")
     .update(updates)
-    .eq("id", queryProfile.id);
+    .eq("id", queryTenant.id);
 
   if (error) {
     throw new Error(`Błąd zapisu: ${error.message}`);
@@ -351,14 +351,14 @@ export async function updateLeadStatus(leadId: string, status: string, notes?: s
 export async function getAdminCars(tenantSlug: string) {
   const supabase = await createClient();
 
-  // Find the profile by slug
-  const { data: profile } = await supabase
+  // Find the tenant by slug
+  const { data: tenant } = await supabase
     .from("profiles")
     .select("id")
     .eq("slug", tenantSlug)
     .maybeSingle();
 
-  if (!profile) {
+  if (!tenant) {
     const { seedCars } = await import("@/lib/data");
     return seedCars;
   }
@@ -366,7 +366,7 @@ export async function getAdminCars(tenantSlug: string) {
   const { data: cars, error } = await supabase
     .from("cars")
     .select("*")
-    .eq("profile_id", profile.id)
+    .eq("tenant_id", tenant.id)
     .order("is_featured", { ascending: false })
     .order("created_at", { ascending: false });
 
@@ -393,29 +393,29 @@ export async function syncSeedCarsToDb(tenantSlug: string) {
     throw new Error("Nie jesteś zalogowany");
   }
 
-  const { data: profile } = await supabase
+  const { data: tenant } = await supabase
     .from("profiles")
     .select("id")
     .eq("slug", tenantSlug)
     .maybeSingle();
 
-  if (!profile) {
+  if (!tenant) {
     throw new Error(`Nie znaleziono profilu: ${tenantSlug}`);
   }
 
   // Delete all existing cars for this tenant (clean slate)
-  await supabase.from("cars").delete().eq("profile_id", profile.id);
+  await supabase.from("cars").delete().eq("tenant_id", tenant.id);
 
-  // Insert seed cars with the real profile UUID
-  const { seedCars, seedProfileDCar } = await import("@/lib/data");
-  const tenantSeedCars = seedCars.filter((c) => c.profile_id === seedProfileDCar.id);
+  // Insert seed cars with the real tenant UUID
+  const { seedCars, seedTenantDCar } = await import("@/lib/data");
+  const tenantSeedCars = seedCars.filter((c) => c.tenant_id === seedTenantDCar.id);
 
   if (tenantSeedCars.length === 0) {
     return [];
   }
 
   const carsToInsert = tenantSeedCars.map((car) => ({
-    profile_id: profile.id,
+    tenant_id: tenant.id,
     slug: car.slug,
     make: car.make,
     model: car.model,

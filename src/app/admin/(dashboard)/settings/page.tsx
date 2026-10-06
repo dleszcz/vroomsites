@@ -1,4 +1,4 @@
-import { getCurrentProfile, getProfileBySlug } from "@/app/admin/actions";
+import { getCurrentTenant, getTenantBySlug } from "@/app/admin/actions";
 import { redirect } from "next/navigation";
 import { SettingsForm } from "@/components/admin/settings-form";
 
@@ -11,18 +11,18 @@ export default async function AdminSettingsPage({
 }: {
   searchParams: Promise<{ tenant?: string }>;
 }) {
-  const currentProfile = await getCurrentProfile();
-  if (!currentProfile) redirect("/admin/login");
+  const currentTenant = await getCurrentTenant();
+  if (!currentTenant) redirect("/admin/login");
 
   const resolvedParams = await searchParams;
-  const isSuperAdmin = Boolean(currentProfile.is_super_admin);
+  const isSuperAdmin = Boolean(currentTenant.is_super_admin);
 
-  let targetProfile = currentProfile;
+  let targetTenant = currentTenant;
 
   if (isSuperAdmin && resolvedParams.tenant) {
-    const fetched = await getProfileBySlug(resolvedParams.tenant);
+    const fetched = await getTenantBySlug(resolvedParams.tenant);
     if (fetched) {
-      targetProfile = fetched;
+      targetTenant = fetched;
     }
   }
 
@@ -31,37 +31,37 @@ export default async function AdminSettingsPage({
       <div style={headerStyles.wrapper}>
         <h1 style={headerStyles.title}>
           ⚙️ Ustawienia komisu{" "}
-          {isSuperAdmin && targetProfile.slug !== currentProfile.slug && (
-            <span style={headerStyles.tenantTag}>[{targetProfile.slug}]</span>
+          {isSuperAdmin && targetTenant.slug !== currentTenant.slug && (
+            <span style={headerStyles.tenantTag}>[{targetTenant.slug}]</span>
           )}
         </h1>
         <p style={headerStyles.subtitle}>
           Kompleksowa konfiguracja wizytówki, brandingu, kontaktów, integracji i SEO
-          {isSuperAdmin && ` (Zarządzany komis: ${targetProfile.business_name || targetProfile.slug})`}
+          {isSuperAdmin && ` (Zarządzany komis: ${targetTenant.business_name || targetTenant.slug})`}
         </p>
       </div>
 
       <SettingsForm
-        targetSlug={isSuperAdmin && targetProfile.slug !== currentProfile.slug ? targetProfile.slug : undefined}
-        profile={{
-          business_name: targetProfile.business_name ?? null,
-          business_description: targetProfile.business_description ?? null,
-          custom_domain: targetProfile.custom_domain ?? null,
-          notification_email: targetProfile.notification_email ?? null,
-          google_sheets_webhook_url: targetProfile.google_sheets_webhook_url ?? null,
-          contact_phone: targetProfile.contact_phone ?? null,
-          whatsapp_number: targetProfile.whatsapp_number ?? null,
-          address: targetProfile.address ?? null,
-          city: targetProfile.city ?? null,
-          postal_code: targetProfile.postal_code ?? null,
-          county: targetProfile.county ?? null,
-          region: targetProfile.region ?? null,
-          pixel_id: targetProfile.pixel_id ?? null,
-          branding: (targetProfile.branding as Record<string, unknown>) ?? null,
-          analytics: (targetProfile.analytics as Record<string, unknown>) ?? null,
-          opening_hours: (targetProfile.opening_hours as Record<string, unknown>) ?? null,
-          business_rules: (targetProfile.business_rules as Record<string, unknown>) ?? null,
-          seo: (targetProfile.seo as Record<string, unknown>) ?? null,
+        targetSlug={isSuperAdmin && targetTenant.slug !== currentTenant.slug ? targetTenant.slug : undefined}
+        tenant={{
+          business_name: targetTenant.business_name ?? null,
+          business_description: targetTenant.business_description ?? null,
+          custom_domain: targetTenant.custom_domain ?? null,
+          notification_email: targetTenant.notification_email ?? null,
+          google_sheets_webhook_url: targetTenant.google_sheets_webhook_url ?? null,
+          contact_phone: targetTenant.contact_phone ?? null,
+          whatsapp_number: targetTenant.whatsapp_number ?? null,
+          address: targetTenant.address ?? null,
+          city: targetTenant.city ?? null,
+          postal_code: targetTenant.postal_code ?? null,
+          county: targetTenant.county ?? null,
+          region: targetTenant.region ?? null,
+          pixel_id: targetTenant.pixel_id ?? null,
+          branding: (targetTenant.branding as Record<string, unknown>) ?? null,
+          analytics: (targetTenant.analytics as Record<string, unknown>) ?? null,
+          opening_hours: (targetTenant.opening_hours as Record<string, unknown>) ?? null,
+          business_rules: (targetTenant.business_rules as Record<string, unknown>) ?? null,
+          seo: (targetTenant.seo as Record<string, unknown>) ?? null,
         }}
       />
     </div>
