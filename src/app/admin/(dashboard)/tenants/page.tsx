@@ -2,6 +2,7 @@ import { getCurrentTenant, getAllTenants } from "@/app/admin/actions";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { CreateTenantModal } from "@/components/admin/create-tenant-modal";
+import { headers } from "next/headers";
 
 export const metadata = {
   title: "Zarządzanie Komisami (SaaS) | Panel Admina",
@@ -21,6 +22,9 @@ export default async function AdminTenantsPage({
 
   const { created } = await searchParams;
   const tenants = await getAllTenants();
+  
+  const headersList = await headers();
+  const host = headersList.get("host") || "vroomdealer.pl";
 
   return (
     <div>
@@ -35,7 +39,7 @@ export default async function AdminTenantsPage({
           <div style={styles.badge}>
             {tenants.length} aktywne komisy
           </div>
-          <CreateTenantModal />
+          <CreateTenantModal host={host} />
         </div>
       </div>
 
@@ -57,7 +61,7 @@ export default async function AdminTenantsPage({
               <div style={styles.cardHeader}>
                 <div>
                   <div style={styles.cardTitle}>{t.business_name || t.slug}</div>
-                  <div style={styles.slugBadge}>vroomdealer.pl/{t.slug}</div>
+                  <div style={styles.slugBadge}>{host}/{t.slug}</div>
                 </div>
                 <div style={styles.activeDot} title="Aktywny komis" />
               </div>
@@ -77,7 +81,7 @@ export default async function AdminTenantsPage({
                   </p>
                 ) : (
                   <p style={styles.detailRow}>
-                    <strong>🌐 Własna domena:</strong> <span style={{ color: "#64748b" }}>Brak (używa vroomdealer.pl/{t.slug})</span>
+                    <strong>🌐 Własna domena:</strong> <span style={{ color: "#64748b" }}>Brak (używa {host}/{t.slug})</span>
                   </p>
                 )}
                 {t.contact_phone && (

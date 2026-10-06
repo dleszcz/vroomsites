@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { createTenantAction } from "@/app/admin/actions";
 
-export function CreateTenantModal() {
+export function CreateTenantModal({ host }: { host: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -78,7 +78,7 @@ export function CreateTenantModal() {
               <div style={styles.field}>
                 <label style={styles.label}>Identyfikator w adresie URL (Slug) *</label>
                 <div style={styles.inputPrefixGroup}>
-                  <span style={styles.inputPrefix}>vroomdealer.pl/</span>
+                  <span style={styles.inputPrefix}>{host}/</span>
                   <input
                     name="slug"
                     type="text"
