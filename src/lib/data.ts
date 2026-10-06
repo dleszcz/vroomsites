@@ -625,7 +625,7 @@ export async function getTenant(slug: string): Promise<Tenant | null> {
     const { createClient } = await import("@/lib/supabase/server");
     const supabase = await createClient();
     const { data, error } = await supabase
-      .from("profiles")
+      .from("tenants")
       .select("*")
       .eq("slug", slug)
       .single();
@@ -695,7 +695,7 @@ export async function getAllTenants(): Promise<Tenant[]> {
   try {
     const { createClient } = await import("@/lib/supabase/server");
     const supabase = await createClient();
-    const { data } = await supabase.from("profiles").select("*");
+    const { data } = await supabase.from("tenants").select("*");
 
     if (!data) {
       return [];
