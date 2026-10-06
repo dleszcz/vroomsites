@@ -42,7 +42,7 @@ export async function POST(request: Request) {
       try {
         const supabase = createClient(supabaseUrl, supabaseKey);
         const { data: tenantTenant } = await supabase
-          .from("profiles")
+          .from("tenants")
           .select("notification_email, google_sheets_webhook_url")
           .or(`id.eq.${dealerId},slug.eq.${dealerSlug}`)
           .maybeSingle();

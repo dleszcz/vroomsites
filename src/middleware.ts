@@ -23,7 +23,7 @@ async function resolveTenantSlugByHost(host: string): Promise<string | null> {
     try {
       const supabase = createClient(supabaseUrl, supabaseAnonKey);
       const { data } = await supabase
-        .from("profiles")
+        .from("tenants")
         .select("slug")
         .eq("custom_domain", cleanHost)
         .maybeSingle();

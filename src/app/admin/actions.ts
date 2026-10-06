@@ -49,7 +49,7 @@ export async function getCurrentTenant() {
 
   // Try matching user_id
   const { data: tenant, error: tenantError } = await supabase
-    .from("profiles")
+    .from("tenants")
     .select("*")
     .eq("user_id", user.id)
     .maybeSingle();
@@ -60,7 +60,7 @@ export async function getCurrentTenant() {
 
   // Fallback match first non-superadmin tenant in database
   const { data: fallbackTenant, error: fallbackError } = await supabase
-    .from("profiles")
+    .from("tenants")
     .select("*")
     .neq("slug", "superadmin")
     .limit(1)
@@ -74,7 +74,7 @@ export async function getCurrentTenant() {
 export async function getAllTenants() {
   const supabase = await createClient();
   const { data: tenants } = await supabase
-    .from("profiles")
+    .from("tenants")
     .select("id, slug, business_name, custom_domain, contact_phone, notification_email, city, is_published, created_at, is_super_admin")
     .or("is_super_admin.eq.false,is_super_admin.is.null")
     .neq("slug", "superadmin")
@@ -110,7 +110,7 @@ export async function createTenantAction(formData: FormData) {
 
   // Check if slug already exists
   const { data: existing } = await supabase
-    .from("profiles")
+    .from("tenants")
     .select("id")
     .eq("slug", slug)
     .maybeSingle();
@@ -145,7 +145,7 @@ export async function createTenantAction(formData: FormData) {
     },
   };
 
-  const { error } = await supabase.from("profiles").insert([newTenant]);
+  const { error } = await supabase.from("tenants").insert([newTenant]);
 
   if (error) {
     throw new Error(`Błąd tworzenia komisu: ${error.message}`);
@@ -157,7 +157,7 @@ export async function createTenantAction(formData: FormData) {
 export async function getTenantBySlug(slug: string) {
   const supabase = await createClient();
   const { data: tenant } = await supabase
-    .from("profiles")
+    .from("tenants")
     .select("*")
     .eq("slug", slug)
     .maybeSingle();
@@ -300,7 +300,7 @@ export async function updateTenant(formData: FormData) {
   };
 
   const { error } = await supabase
-    .from("profiles")
+    .from("tenants")
     .update(updates)
     .eq("id", queryTenant.id);
 
@@ -353,7 +353,7 @@ export async function getAdminCars(tenantSlug: string) {
 
   // Find the tenant by slug
   const { data: tenant } = await supabase
-    .from("profiles")
+    .from("tenants")
     .select("id")
     .eq("slug", tenantSlug)
     .maybeSingle();
@@ -394,7 +394,7 @@ export async function syncSeedCarsToDb(tenantSlug: string) {
   }
 
   const { data: tenant } = await supabase
-    .from("profiles")
+    .from("tenants")
     .select("id")
     .eq("slug", tenantSlug)
     .maybeSingle();
