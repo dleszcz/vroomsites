@@ -64,7 +64,7 @@ export function tenantToTenant(tenant: Tenant): DealerTenant {
     (s) => s.type === "lead_form" && s.enabled !== false
   );
   const features = {
-    carBuying: typeof rawFeatures.carBuying === "boolean" ? rawFeatures.carBuying : leadFormEnabled,
+    carBuying: typeof rawFeatures.carBuying === "boolean" ? rawFeatures.carBuying : (tenant.slug === "d-car" || leadFormEnabled),
   };
 
   // Build local SEO config
