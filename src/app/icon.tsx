@@ -11,7 +11,7 @@ export default function Icon() {
       <div
         style={{
           fontSize: 22,
-          background: isDev ? 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)' : 'linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%)',
+          background: 'linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%)',
           width: '100%',
           height: '100%',
           display: 'flex',
@@ -21,11 +21,31 @@ export default function Icon() {
           borderRadius: '8px',
           fontWeight: 900,
           fontFamily: "system-ui, sans-serif",
-          boxShadow: isDev ? '0 4px 10px rgba(239, 68, 68, 0.5)' : '0 4px 10px rgba(59, 130, 246, 0.5)',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
+          boxShadow: '0 4px 10px rgba(59, 130, 246, 0.5)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          position: 'relative',
+          overflow: 'hidden'
         }}
       >
-        {isDev ? 'DEV' : 'VS'}
+        VS
+        {isDev && (
+          <div style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: '8px',
+            background: '#ef4444',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '6px',
+            fontWeight: 800,
+            color: 'white',
+          }}>
+            DEV
+          </div>
+        )}
       </div>
     ),
     { ...size }

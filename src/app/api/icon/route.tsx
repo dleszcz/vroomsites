@@ -17,25 +17,45 @@ export async function GET(req: NextRequest) {
           style={{
             width: "100%",
             height: "100%",
-            background: isDev ? '#ef4444' : "linear-gradient(135deg, #059669 0%, #10b981 100%)",
+            background: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             borderRadius: "8px",
-            boxShadow: isDev ? "0 4px 10px rgba(239, 68, 68, 0.4)" : "0 4px 10px rgba(16, 185, 129, 0.4)",
+            boxShadow: "0 4px 10px rgba(16, 185, 129, 0.4)",
+            position: "relative",
+            overflow: "hidden"
           }}
         >
           <span
             style={{
-              fontSize: isDev ? "14px" : "22px",
+              fontSize: "22px",
               fontWeight: "800",
               color: "#ffffff",
               fontFamily: "system-ui, sans-serif",
               lineHeight: 1,
             }}
           >
-            {isDev ? 'DEV' : 'V'}
+            V
           </span>
+          {isDev && (
+            <div style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: '8px',
+              background: '#ef4444',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '6px',
+              fontWeight: 800,
+              color: 'white',
+            }}>
+              DEV
+            </div>
+          )}
         </div>
       ),
       { width: 32, height: 32 }
@@ -58,16 +78,18 @@ export async function GET(req: NextRequest) {
         style={{
           width: "100%",
           height: "100%",
-          background: isDev ? '#f97316' : primaryColor,
+          background: primaryColor,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           borderRadius: "8px",
+          position: "relative",
+          overflow: "hidden"
         }}
       >
         <span
           style={{
-            fontSize: isDev ? "14px" : "22px",
+            fontSize: "22px",
             fontWeight: "900",
             color: "#ffffff",
             fontFamily: "system-ui, sans-serif",
@@ -75,8 +97,26 @@ export async function GET(req: NextRequest) {
             textShadow: "0 2px 5px rgba(0,0,0,0.4)",
           }}
         >
-          {isDev ? 'DEV' : letter}
+          {letter}
         </span>
+        {isDev && (
+          <div style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: '8px',
+            background: '#ef4444',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '6px',
+            fontWeight: 800,
+            color: 'white',
+          }}>
+            DEV
+          </div>
+        )}
       </div>
     ),
     { width: 32, height: 32 }
