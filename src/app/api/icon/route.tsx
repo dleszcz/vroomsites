@@ -7,6 +7,7 @@ export const runtime = "edge";
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const tenantSlug = searchParams.get("tenant") || searchParams.get("slug");
+  const isDev = process.env.NODE_ENV === 'development';
 
   if (!tenantSlug) {
     // Default green VroomDealer platform icon
@@ -16,24 +17,24 @@ export async function GET(req: NextRequest) {
           style={{
             width: "100%",
             height: "100%",
-            background: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
+            background: isDev ? '#ef4444' : "linear-gradient(135deg, #059669 0%, #10b981 100%)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             borderRadius: "8px",
-            boxShadow: "0 4px 10px rgba(16, 185, 129, 0.4)",
+            boxShadow: isDev ? "0 4px 10px rgba(239, 68, 68, 0.4)" : "0 4px 10px rgba(16, 185, 129, 0.4)",
           }}
         >
           <span
             style={{
-              fontSize: "22px",
+              fontSize: isDev ? "14px" : "22px",
               fontWeight: "800",
               color: "#ffffff",
               fontFamily: "system-ui, sans-serif",
               lineHeight: 1,
             }}
           >
-            V
+            {isDev ? 'DEV' : 'V'}
           </span>
         </div>
       ),
@@ -50,13 +51,14 @@ export async function GET(req: NextRequest) {
       : tenantSlug.charAt(0)
   ).toUpperCase();
 
+
   return new ImageResponse(
     (
       <div
         style={{
           width: "100%",
           height: "100%",
-          background: primaryColor,
+          background: isDev ? '#f97316' : primaryColor,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -65,7 +67,7 @@ export async function GET(req: NextRequest) {
       >
         <span
           style={{
-            fontSize: "22px",
+            fontSize: isDev ? "14px" : "22px",
             fontWeight: "900",
             color: "#ffffff",
             fontFamily: "system-ui, sans-serif",
@@ -73,7 +75,7 @@ export async function GET(req: NextRequest) {
             textShadow: "0 2px 5px rgba(0,0,0,0.4)",
           }}
         >
-          {letter}
+          {isDev ? 'DEV' : letter}
         </span>
       </div>
     ),
