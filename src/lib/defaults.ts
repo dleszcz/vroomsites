@@ -45,6 +45,7 @@ export const DEFAULT_SECTIONS: SectionConfig[] = [
   { id: "sec-trust", type: "reviews", enabled: true, title: "Dlaczego warto nam zaufać?" },
   { id: "sec-vehicles", type: "vehicles", enabled: true, title: "Aktualna oferta samochodów" },
   { id: "sec-about", type: "about", enabled: true, title: "O nas" },
+  { id: "sec-lead-form", type: "lead_form", enabled: true, title: "Darmowa Wycena" },
 ];
 
 export const DEFAULT_PAGE_CONFIG: LandingPageConfig = {

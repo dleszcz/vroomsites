@@ -4,9 +4,11 @@ import { headers } from "next/headers";
 import { Car, MapPin, Phone, ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
-  title: "Katalog Komisów Samochodowych | Vroomdealer",
-  description: "Baza autoryzowanych komisów samochodowych korzystających z platformy Vroomdealer.",
+  title: "Katalog Komisów Samochodowych | VroomSites",
+  description: "Baza autoryzowanych komisów samochodowych korzystających z platformy VroomSites.",
 };
 
 export default async function DirectoryPage() {

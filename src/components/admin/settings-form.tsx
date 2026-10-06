@@ -120,7 +120,7 @@ export function SettingsForm({ tenant, targetSlug }: SettingsFormProps) {
                 type="text"
                 required
                 defaultValue={tenant.business_name || ""}
-                placeholder="Np. D-CAR Dawid Woźniak"
+                placeholder="Np. Auto Komis Janusz"
                 style={styles.input}
               />
             </div>
@@ -148,7 +148,7 @@ export function SettingsForm({ tenant, targetSlug }: SettingsFormProps) {
                 name="custom_domain"
                 type="text"
                 defaultValue={tenant.custom_domain || ""}
-                placeholder="d-car.com.pl"
+                placeholder="autokomis-janusz.pl"
                 style={styles.input}
               />
               <p style={styles.hint}>
@@ -329,7 +329,7 @@ export function SettingsForm({ tenant, targetSlug }: SettingsFormProps) {
                 name="notification_email"
                 type="email"
                 defaultValue={tenant.notification_email || ""}
-                placeholder="kontakt@d-car.com.pl"
+                placeholder="kontakt@autokomis-janusz.pl"
                 style={styles.input}
               />
             </div>
@@ -596,7 +596,7 @@ export function SettingsForm({ tenant, targetSlug }: SettingsFormProps) {
                 name="meta_title"
                 type="text"
                 defaultValue={(seo.metaTitle as string) || ""}
-                placeholder="Skup Aut Gotówka Topólka | D-CAR Dawid Woźniak"
+                placeholder="Skup Aut Gotówka | Auto Komis Janusz"
                 style={styles.input}
               />
             </div>

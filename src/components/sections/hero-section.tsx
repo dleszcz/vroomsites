@@ -35,7 +35,7 @@ export function HeroSection({ tenant, config, isCustomDomain }: HeroSectionProps
       {heroImage && <div className="dealer-hero__media" style={{ backgroundImage: `url(${heroImage})` }} aria-hidden="true" />}
       <div className="vd-container dealer-hero__content">
         <div className="dealer-hero__copy">
-          <div className="dealer-hero__eyebrow">{data.eyebrow || `${tenant.businessName.toUpperCase()}`}</div>
+
 
           <h1 className="dealer-hero__title">{data.title || "Sprzedaj nam swoje auto"}</h1>
           <p className="dealer-hero__description">{data.description || "Szybko, bezpiecznie i bez zbędnych formalności."}</p>

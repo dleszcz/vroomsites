@@ -72,13 +72,24 @@ export async function getCurrentTenant() {
 }
 
 export async function getAllTenants() {
-  const supabase = await createClient();
-  const { data: tenants } = await supabase
+  const { createClient: createAnonClient } = await import("@supabase/supabase-js");
+  const supabase = createAnonClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+
+  const { data: tenants, error } = await supabase
     .from("tenants")
     .select("id, slug, business_name, custom_domain, contact_phone, notification_email, city, is_published, created_at, is_super_admin")
     .or("is_super_admin.eq.false,is_super_admin.is.null")
     .neq("slug", "superadmin")
     .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("[getAllTenants in actions.ts] error:", error);
+  }
+
+  console.log("[getAllTenants in actions.ts] tenants found:", tenants?.length);
 
   return tenants || [];
 }
@@ -359,8 +370,7 @@ export async function getAdminCars(tenantSlug: string) {
     .maybeSingle();
 
   if (!tenant) {
-    const { seedCars } = await import("@/lib/data");
-    return seedCars;
+    return [];
   }
 
   const { data: cars, error } = await supabase
@@ -372,83 +382,13 @@ export async function getAdminCars(tenantSlug: string) {
 
   if (error) {
     console.error("[getAdminCars] Error:", error.message);
-    const { seedCars } = await import("@/lib/data");
-    return seedCars;
+    return [];
   }
 
   return cars || [];
 }
 
-/**
- * One-shot sync: removes ALL cars for this tenant, then re-inserts seed data.
- * Safe to call multiple times — always results in exactly the seed set.
- */
-export async function syncSeedCarsToDb(tenantSlug: string) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
-  if (!user) {
-    throw new Error("Nie jesteś zalogowany");
-  }
-
-  const { data: tenant } = await supabase
-    .from("tenants")
-    .select("id")
-    .eq("slug", tenantSlug)
-    .maybeSingle();
-
-  if (!tenant) {
-    throw new Error(`Nie znaleziono profilu: ${tenantSlug}`);
-  }
-
-  // Delete all existing cars for this tenant (clean slate)
-  await supabase.from("cars").delete().eq("tenant_id", tenant.id);
-
-  // Insert seed cars with the real tenant UUID
-  const { seedCars, seedTenantDCar } = await import("@/lib/data");
-  const tenantSeedCars = seedCars.filter((c) => c.tenant_id === seedTenantDCar.id);
-
-  if (tenantSeedCars.length === 0) {
-    return [];
-  }
-
-  const carsToInsert = tenantSeedCars.map((car) => ({
-    tenant_id: tenant.id,
-    slug: car.slug,
-    make: car.make,
-    model: car.model,
-    year: car.year,
-    price: car.price,
-    mileage: car.mileage,
-    fuel_type: car.fuel_type,
-    engine_capacity: car.engine_capacity,
-    transmission: car.transmission,
-    color: car.color,
-    description: car.description,
-    images: car.images,
-    is_sold: car.is_sold,
-    is_featured: car.is_featured,
-  }));
-
-  const { data: inserted, error: insertError } = await supabase
-    .from("cars")
-    .insert(carsToInsert)
-    .select("*");
-
-  if (insertError) {
-    throw new Error(`Błąd synchronizacji: ${insertError.message}`);
-  }
-
-  // Revalidate
-  const { revalidatePath } = await import("next/cache");
-  revalidatePath(`/admin/cars`);
-  revalidatePath(`/${tenantSlug}`);
-  revalidatePath(`/${tenantSlug}/samochody`);
-
-  return inserted || [];
-}
 
 export async function toggleCarSoldStatus(carId: string, isSold: boolean, tenantSlug: string) {
   const supabase = await createClient();

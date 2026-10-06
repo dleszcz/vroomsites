@@ -16,20 +16,20 @@ export async function GET(req: NextRequest) {
           style={{
             width: "100%",
             height: "100%",
-            background: "#060a14",
+            background: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            borderRadius: "7px",
-            border: "2px solid #10b981",
+            borderRadius: "8px",
+            boxShadow: "0 4px 10px rgba(16, 185, 129, 0.4)",
           }}
         >
           <span
             style={{
-              fontSize: "20px",
-              fontWeight: "900",
+              fontSize: "22px",
+              fontWeight: "800",
               color: "#ffffff",
-              fontFamily: "sans-serif",
+              fontFamily: "system-ui, sans-serif",
               lineHeight: 1,
             }}
           >
@@ -42,7 +42,6 @@ export async function GET(req: NextRequest) {
   }
 
   const tenant = await resolveTenant({ slug: tenantSlug });
-
   const primaryColor = tenant?.branding?.colors?.primary || "#1686E0";
   
   const letter = (
@@ -57,21 +56,21 @@ export async function GET(req: NextRequest) {
         style={{
           width: "100%",
           height: "100%",
-          background: "#060a14",
+          background: primaryColor,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          borderRadius: "7px",
-          border: `2px solid ${primaryColor}`,
+          borderRadius: "8px",
         }}
       >
         <span
           style={{
-            fontSize: "20px",
+            fontSize: "22px",
             fontWeight: "900",
             color: "#ffffff",
-            fontFamily: "sans-serif",
+            fontFamily: "system-ui, sans-serif",
             lineHeight: 1,
+            textShadow: "0 2px 5px rgba(0,0,0,0.4)",
           }}
         >
           {letter}

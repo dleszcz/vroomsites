@@ -11,15 +11,15 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_BASE_URL || "https://vroomdealer.pl"
   ),
   title: {
-    default: "VroomDealer - Platforma sprzedażowa dla komisów samochodowych",
+    default: "VroomSites - Platforma SaaS dla komisów",
     template: "%s",
   },
   description:
-    "VroomDealer.pl - ultra-szybkie strony sprzedażowe dla komisów samochodowych. Zwiększ sprzedaż dzięki profesjonalnym ogłoszeniom z retargetingiem i integracją WhatsApp.",
+    "VroomSites - ultra-szybkie strony dla komisów samochodowych.",
   openGraph: {
     type: "website",
     locale: "pl_PL",
-    siteName: "VroomDealer",
+    siteName: "VroomSites",
   },
   robots: {
     index: true,

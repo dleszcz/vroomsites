@@ -69,7 +69,7 @@ export function CreateTenantModal() {
                   type="text"
                   value={businessName}
                   onChange={(e) => handleNameChange(e.target.value)}
-                  placeholder="np. D-CAR / Dawid Woźniak"
+                  placeholder="np. Auto Komis Janusz"
                   required
                   style={styles.input}
                 />
@@ -84,7 +84,7 @@ export function CreateTenantModal() {
                     type="text"
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
-                    placeholder="d-car"
+                    placeholder="auto-komis-janusz"
                     required
                     style={{ ...styles.input, borderRadius: "0 8px 8px 0" }}
                   />
@@ -96,7 +96,7 @@ export function CreateTenantModal() {
                 <input
                   name="custom_domain"
                   type="text"
-                  placeholder="np. d-car.com.pl lub autoskup512.pl"
+                  placeholder="np. autokomis-janusz.pl"
                   style={styles.input}
                 />
               </div>
@@ -116,7 +116,7 @@ export function CreateTenantModal() {
                   <input
                     name="notification_email"
                     type="email"
-                    placeholder="kontakt@d-car.pl"
+                    placeholder="kontakt@autokomis-janusz.pl"
                     style={styles.input}
                   />
                 </div>

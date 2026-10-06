@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { allSeedTenants } from "@/lib/data";
 import { updateSession } from "@/lib/supabase/middleware";
 
 const PUBLIC_FILE = /\.(.*)$/;
@@ -36,15 +35,7 @@ async function resolveTenantSlugByHost(host: string): Promise<string | null> {
     }
   }
 
-  // 3. Generic match against dataset seed tenants
-  const seedMatch = allSeedTenants.find(
-    (p) => p.custom_domain && p.custom_domain.toLowerCase().replace(/^www\./, "") === cleanHost
-  );
-  if (seedMatch) {
-    return seedMatch.slug;
-  }
-
-  // 4. Generic fallback: domain name before TLD extension (e.g. auto-handel.pl -> auto-handel)
+  // 3. Generic fallback: domain name before TLD extension (e.g. auto-handel.pl -> auto-handel)
   const domainParts = cleanHost.split(".");
   if (domainParts.length >= 2) {
     return domainParts[0];

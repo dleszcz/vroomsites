@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AlertCircle, ArrowLeft, Car, Phone } from "lucide-react";
 
 interface CustomNotFoundProps {
@@ -15,17 +16,27 @@ export function CustomNotFound({
   businessName = "naszym serwisie",
   phone,
 }: CustomNotFoundProps) {
-  const isTenant = Boolean(tenantSlug);
-  const homeHref = isTenant ? `/${tenantSlug}` : "/";
-  const valuationHref = isTenant ? `/${tenantSlug}/skup-aut` : "/#lead-form";
+  const pathname = usePathname() || "";
+  const pathParts = pathname.split("/").filter(Boolean);
+  
+  // Try to extract tenantSlug from URL path if not explicitly provided
+  // (ignores reserved system paths)
+  const isPlatformDomainSubpath = pathParts.length > 0 && 
+    !["admin", "api", "_next", "images"].includes(pathParts[0]);
+    
+  const effectiveTenantSlug = tenantSlug || (isPlatformDomainSubpath ? pathParts[0] : null);
+
+  const isTenant = Boolean(effectiveTenantSlug);
+  const homeHref = isTenant ? `/${effectiveTenantSlug}` : "/";
+  const valuationHref = isTenant ? `/${effectiveTenantSlug}/skup-aut` : "/#lead-form";
 
   const primaryBtnLabel = isTenant
     ? "Wróć do strony głównej komisu"
-    : "Wróć na stronę główną VroomDealer";
+    : "Wróć na stronę główną";
 
   const secondaryBtnLabel = isTenant
     ? "Bezpłatna wycena auta"
-    : "Zgłoś się do testów systemu";
+    : "Skontaktuj się z nami";
 
   return (
     <div
