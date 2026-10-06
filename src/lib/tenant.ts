@@ -89,7 +89,7 @@ export function tenantToTenant(tenant: Tenant): DealerTenant {
       footerBg: "#080808",
     },
     media: {
-      heroImageUrl,
+      heroImageUrl: heroImageUrl || undefined,
     },
   };
 

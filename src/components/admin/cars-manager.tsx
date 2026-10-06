@@ -3,7 +3,7 @@
 import React, { useState, useTransition } from "react";
 import Image from "next/image";
 import { Car } from "@/types/database";
-import { toggleCarSoldStatus, toggleCarFeaturedStatus, syncSeedCarsToDb } from "@/app/admin/actions";
+import { toggleCarSoldStatus, toggleCarFeaturedStatus } from "@/app/admin/actions";
 import { formatPrice, formatMileage } from "@/lib/utils";
 
 interface CarsManagerProps {
@@ -20,19 +20,7 @@ export function CarsManager({ cars: initialCars, tenantSlug, tenantName }: CarsM
   const [isPending, startTransition] = useTransition();
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [togglingFeaturedId, setTogglingFeaturedId] = useState<string | null>(null);
-  const [isSyncing, setIsSyncing] = useState(false);
 
-  const handleSync = async () => {
-    setIsSyncing(true);
-    try {
-      const synced = await syncSeedCarsToDb(tenantSlug);
-      setCars(synced);
-    } catch (err) {
-      alert(`Błąd synchronizacji: ${err instanceof Error ? err.message : "Nieznany błąd"}`);
-    } finally {
-      setIsSyncing(false);
-    }
-  };
 
   const availableCount = cars.filter((c) => !c.is_sold).length;
   const soldCount = cars.filter((c) => c.is_sold).length;
@@ -144,26 +132,9 @@ export function CarsManager({ cars: initialCars, tenantSlug, tenantName }: CarsM
       {cars.length === 0 ? (
         <div style={styles.emptyState}>
           <p style={{ fontSize: "48px", margin: "0 0 12px" }}>🚗</p>
-          <p style={{ color: "#94a3b8", fontSize: "15px", marginBottom: "16px" }}>
+          <p style={{ color: "#94a3b8", fontSize: "15px" }}>
             Brak samochodów w bazie Supabase.
           </p>
-          <button
-            onClick={handleSync}
-            disabled={isSyncing}
-            style={{
-              padding: "10px 24px",
-              borderRadius: "10px",
-              background: "rgba(16, 185, 129, 0.15)",
-              color: "#10b981",
-              border: "1px solid rgba(16, 185, 129, 0.3)",
-              fontSize: "14px",
-              fontWeight: "700",
-              cursor: isSyncing ? "not-allowed" : "pointer",
-              opacity: isSyncing ? 0.5 : 1,
-            }}
-          >
-            {isSyncing ? "⏳ Synchronizuję..." : "🔄 Zaimportuj auta z szablonu"}
-          </button>
         </div>
       ) : filteredCars.length === 0 ? (
         <div style={styles.emptyState}>
