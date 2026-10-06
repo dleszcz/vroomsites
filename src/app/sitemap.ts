@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { headers } from "next/headers";
-import { getAllProfiles, getCars } from "@/lib/data";
-import { profileToTenant, resolveTenant } from "@/lib/tenant";
+import { getAllTenants, getCars } from "@/lib/data";
+import { tenantToTenant, resolveTenant } from "@/lib/tenant";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://vroomdealer.pl";
@@ -47,8 +47,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // ── CASE 2: Main SaaS Platform Sitemap (vroomdealer.pl) ──
-  const rawProfiles = await getAllProfiles();
-  const profiles = rawProfiles.filter(
+  const rawTenants = await getAllTenants();
+  const tenants = rawTenants.filter(
     (p) => (p as unknown as { is_published?: boolean }).is_published !== false
   );
 
@@ -61,19 +61,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  const dealerPages: MetadataRoute.Sitemap = profiles
+  const dealerPages: MetadataRoute.Sitemap = tenants
     .filter((p) => !p.custom_domain)
-    .map((profile) => ({
-      url: `${baseUrl}/${profile.slug}`,
+    .map((tenant) => ({
+      url: `${baseUrl}/${tenant.slug}`,
       lastModified: new Date(),
       changeFrequency: "daily" as const,
       priority: 0.9,
     }));
 
   const localSeoPages: MetadataRoute.Sitemap = [];
-  for (const profile of profiles) {
-    if (profile.custom_domain) continue; // Custom domains serve their own isolated sitemaps
-    const tenant = profileToTenant(profile);
+  for (const tenant of tenants) {
+    if (tenant.custom_domain) continue; // Custom domains serve their own isolated sitemaps
+    const tenant = tenantToTenant(tenant);
 
     if (tenant.localSeo?.localPages) {
       for (const localPage of tenant.localSeo.localPages) {

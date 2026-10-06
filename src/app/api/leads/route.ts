@@ -41,20 +41,20 @@ export async function POST(request: Request) {
     if (supabaseUrl && !supabaseUrl.includes("placeholder") && supabaseKey) {
       try {
         const supabase = createClient(supabaseUrl, supabaseKey);
-        const { data: tenantProfile } = await supabase
+        const { data: tenantTenant } = await supabase
           .from("profiles")
           .select("notification_email, google_sheets_webhook_url")
           .or(`id.eq.${dealerId},slug.eq.${dealerSlug}`)
           .maybeSingle();
 
-        if (tenantProfile?.notification_email) {
-          tenantEmail = tenantProfile.notification_email;
+        if (tenantTenant?.notification_email) {
+          tenantEmail = tenantTenant.notification_email;
         }
-        if (tenantProfile?.google_sheets_webhook_url) {
-          googleSheetsWebhookUrl = tenantProfile.google_sheets_webhook_url;
+        if (tenantTenant?.google_sheets_webhook_url) {
+          googleSheetsWebhookUrl = tenantTenant.google_sheets_webhook_url;
         }
       } catch (dbErr) {
-        console.error("[API /api/leads] Error fetching tenant profile:", dbErr);
+        console.error("[API /api/leads] Error fetching tenant tenant:", dbErr);
       }
     }
 

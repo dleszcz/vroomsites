@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { allSeedProfiles } from "@/lib/data";
+import { allSeedTenants } from "@/lib/data";
 import { updateSession } from "@/lib/supabase/middleware";
 
 const PUBLIC_FILE = /\.(.*)$/;
@@ -36,8 +36,8 @@ async function resolveTenantSlugByHost(host: string): Promise<string | null> {
     }
   }
 
-  // 3. Generic match against dataset seed profiles
-  const seedMatch = allSeedProfiles.find(
+  // 3. Generic match against dataset seed tenants
+  const seedMatch = allSeedTenants.find(
     (p) => p.custom_domain && p.custom_domain.toLowerCase().replace(/^www\./, "") === cleanHost
   );
   if (seedMatch) {

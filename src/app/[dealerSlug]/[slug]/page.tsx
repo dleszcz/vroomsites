@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProfile, getCar, getCars } from "@/lib/data";
+import { getTenant, getCar, getCars } from "@/lib/data";
 import { formatPrice } from "@/lib/utils";
 import { CarGallery } from "@/components/car-gallery";
 import { CarSpecs } from "@/components/car-specs";
@@ -144,20 +144,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   // 3. Check if slug matches a car listing
-  const profile = await getProfile(dealerSlug);
+  const tenant = await getTenant(dealerSlug);
   const car = await getCar(slug);
 
-  if (!profile || !car) return {};
+  if (!tenant || !car) return {};
 
   const carName = `${car.make} ${car.model}${car.year ? ` (${car.year})` : ""}`;
   const priceStr = car.price ? `${formatPrice(car.price)} PLN` : "Zapytaj o cenę";
-  const title = `${carName} - ${priceStr} | ${profile.business_name}`;
+  const title = `${carName} - ${priceStr} | ${tenant.business_name}`;
   const description = `${carName}${
     car.mileage ? `, ${car.mileage.toLocaleString("pl-PL")} km` : ""
   }${
     car.fuel_type ? `, ${car.fuel_type}` : ""
-  }. Sprawdź ogłoszenie, wyposażenie i stan techniczny w ${profile.business_name}${
-    profile.city ? `, ${profile.city}` : ""
+  }. Sprawdź ogłoszenie, wyposażenie i stan techniczny w ${tenant.business_name}${
+    tenant.city ? `, ${tenant.city}` : ""
   }.`;
 
   const carImage = car.images?.[0]
@@ -222,13 +222,13 @@ export default async function DynamicSlugPage({ params }: Props) {
   }
 
   // 3. Check if slug is a Car Listing
-  const [profile, car, allCars] = await Promise.all([
-    getProfile(dealerSlug),
+  const [tenant, car, allCars] = await Promise.all([
+    getTenant(dealerSlug),
     getCar(slug),
     getCars(tenant.id),
   ]);
 
-  if (!profile || !car) {
+  if (!tenant || !car) {
     notFound();
   }
 
@@ -241,7 +241,7 @@ export default async function DynamicSlugPage({ params }: Props) {
     <>
       <VehicleSchema
         car={car}
-        dealerName={profile.business_name}
+        dealerName={tenant.business_name}
         url={pageUrl}
       />
       <SingleCarPage tenant={tenant} car={car} relatedCars={relatedCars} isCustomDomain={isCustomDomain} />

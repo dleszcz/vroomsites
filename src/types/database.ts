@@ -1,4 +1,4 @@
-export interface Profile {
+export interface Tenant {
   id: string;
   slug: string;
   business_name: string;
@@ -25,13 +25,14 @@ export interface Profile {
   google_sheets_webhook_url?: string | null;
   opening_hours?: Record<string, unknown>;
   is_super_admin?: boolean;
+  has_active_site?: boolean;
   created_at: string;
 }
 
 
 export interface Car {
   id: string;
-  profile_id: string;
+  tenant_id: string;
   slug: string;
   make: string;
   model: string;

@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentProfile, getProfileBySlug } from "@/app/admin/actions";
+import { getCurrentTenant, getTenantBySlug } from "@/app/admin/actions";
 import { redirect } from "next/navigation";
 import { LeadsTable } from "@/components/admin/leads-table";
 
@@ -12,29 +12,29 @@ export default async function AdminLeadsPage({
 }: {
   searchParams: Promise<{ tenant?: string }>;
 }) {
-  const profile = await getCurrentProfile();
-  if (!profile) redirect("/admin/login");
+  const tenant = await getCurrentTenant();
+  if (!tenant) redirect("/admin/login");
 
   const resolvedParams = await searchParams;
-  const isSuperAdmin = Boolean(profile.is_super_admin);
+  const isSuperAdmin = Boolean(tenant.is_super_admin);
 
   const supabase = await createClient();
 
-  // For Superadmin, default tenant filter is "all" (not profile.slug which is 'superadmin')
+  // For Superadmin, default tenant filter is "all" (not tenant.slug which is 'superadmin')
   const targetTenant = isSuperAdmin
     ? resolvedParams.tenant || "all"
-    : profile.slug;
+    : tenant.slug;
 
-  let targetProfile = profile;
+  let targetTenant = tenant;
   if (isSuperAdmin && targetTenant !== "all") {
-    const fetched = await getProfileBySlug(targetTenant);
-    if (fetched) targetProfile = fetched;
+    const fetched = await getTenantBySlug(targetTenant);
+    if (fetched) targetTenant = fetched;
   }
 
   let query = supabase.from("leads").select("*");
   if (targetTenant !== "all") {
-    if (targetProfile && targetProfile.id && targetProfile.slug) {
-      query = query.or(`dealer_id.eq.${targetProfile.id},dealer_id.eq.${targetProfile.slug}`);
+    if (targetTenant && targetTenant.id && targetTenant.slug) {
+      query = query.or(`dealer_id.eq.${targetTenant.id},dealer_id.eq.${targetTenant.slug}`);
     } else {
       query = query.eq("dealer_id", targetTenant);
     }
@@ -61,7 +61,7 @@ export default async function AdminLeadsPage({
             {isAllView ? "📊 Wszystkie Zgłoszenia (SaaS)" : "📋 Zgłoszenia (Leady)"}{" "}
             {isSuperAdmin && !isAllView && (
               <span style={headerStyles.tenantTag}>
-                [{targetProfile.business_name || targetTenant}]
+                [{targetTenant.business_name || targetTenant}]
               </span>
             )}
           </h1>
@@ -69,7 +69,7 @@ export default async function AdminLeadsPage({
             {isAllView
               ? "Zbiorczy podgląd zgłoszeń ze wszystkich uruchomionych komisów"
               : isSuperAdmin && targetTenant !== "all"
-              ? `Zarządzaj zgłoszeniami wycen klientów dla: ${targetProfile.business_name || targetTenant}`
+              ? `Zarządzaj zgłoszeniami wycen klientów dla: ${targetTenant.business_name || targetTenant}`
               : "Zarządzaj zgłoszeniami wycen od klientów"}
           </p>
         </div>

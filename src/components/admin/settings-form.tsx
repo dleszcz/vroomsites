@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateProfile } from "@/app/admin/actions";
+import { updateTenant } from "@/app/admin/actions";
 import { useSearchParams } from "next/navigation";
 
 interface SettingsFormProps {
   targetSlug?: string;
-  profile: {
+  tenant: {
     business_name: string | null;
     business_description: string | null;
     custom_domain: string | null;
@@ -38,7 +38,7 @@ const TABS = [
   { id: "seo", label: "🔍 SEO i Tagi Meta", icon: "🔍" },
 ];
 
-export function SettingsForm({ profile, targetSlug }: SettingsFormProps) {
+export function SettingsForm({ tenant, targetSlug }: SettingsFormProps) {
   const [activeTab, setActiveTab] = useState("general");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -46,11 +46,11 @@ export function SettingsForm({ profile, targetSlug }: SettingsFormProps) {
   const justSaved = searchParams.get("saved") === "true";
 
   // Pre-fill fields safely
-  const branding = profile.branding || {};
-  const analytics = profile.analytics || {};
-  const openingHours = profile.opening_hours || {};
-  const businessRules = profile.business_rules || {};
-  const seo = profile.seo || {};
+  const branding = tenant.branding || {};
+  const analytics = tenant.analytics || {};
+  const openingHours = tenant.opening_hours || {};
+  const businessRules = tenant.business_rules || {};
+  const seo = tenant.seo || {};
 
   const [primaryColor, setPrimaryColor] = useState(
     (branding.primaryColor as string) || (branding.colors as Record<string, string>)?.primary || "#1686E0"
@@ -63,7 +63,7 @@ export function SettingsForm({ profile, targetSlug }: SettingsFormProps) {
     setError(null);
     startTransition(async () => {
       try {
-        await updateProfile(formData);
+        await updateTenant(formData);
       } catch (e) {
         if (e instanceof Error && (e.message.includes("NEXT_REDIRECT") || e.message.includes("digest"))) {
           return;
@@ -119,7 +119,7 @@ export function SettingsForm({ profile, targetSlug }: SettingsFormProps) {
                 name="business_name"
                 type="text"
                 required
-                defaultValue={profile.business_name || ""}
+                defaultValue={tenant.business_name || ""}
                 placeholder="Np. D-CAR Dawid Woźniak"
                 style={styles.input}
               />
@@ -133,7 +133,7 @@ export function SettingsForm({ profile, targetSlug }: SettingsFormProps) {
                 id="business_description"
                 name="business_description"
                 rows={3}
-                defaultValue={profile.business_description || ""}
+                defaultValue={tenant.business_description || ""}
                 placeholder="Np. Skup aut za gotówkę, używane samochody z gwarancją..."
                 style={{ ...styles.input, resize: "vertical" }}
               />
@@ -147,7 +147,7 @@ export function SettingsForm({ profile, targetSlug }: SettingsFormProps) {
                 id="custom_domain"
                 name="custom_domain"
                 type="text"
-                defaultValue={profile.custom_domain || ""}
+                defaultValue={tenant.custom_domain || ""}
                 placeholder="d-car.com.pl"
                 style={styles.input}
               />
@@ -299,7 +299,7 @@ export function SettingsForm({ profile, targetSlug }: SettingsFormProps) {
                   id="contact_phone"
                   name="contact_phone"
                   type="tel"
-                  defaultValue={profile.contact_phone || ""}
+                  defaultValue={tenant.contact_phone || ""}
                   placeholder="+48 789 012 345"
                   style={styles.input}
                 />
@@ -313,7 +313,7 @@ export function SettingsForm({ profile, targetSlug }: SettingsFormProps) {
                   id="whatsapp_number"
                   name="whatsapp_number"
                   type="tel"
-                  defaultValue={profile.whatsapp_number || ""}
+                  defaultValue={tenant.whatsapp_number || ""}
                   placeholder="+48 789 012 345"
                   style={styles.input}
                 />
@@ -328,7 +328,7 @@ export function SettingsForm({ profile, targetSlug }: SettingsFormProps) {
                 id="notification_email"
                 name="notification_email"
                 type="email"
-                defaultValue={profile.notification_email || ""}
+                defaultValue={tenant.notification_email || ""}
                 placeholder="kontakt@d-car.com.pl"
                 style={styles.input}
               />
@@ -343,7 +343,7 @@ export function SettingsForm({ profile, targetSlug }: SettingsFormProps) {
                   id="address"
                   name="address"
                   type="text"
-                  defaultValue={profile.address || ""}
+                  defaultValue={tenant.address || ""}
                   placeholder="Topólka 14A"
                   style={styles.input}
                 />
@@ -357,7 +357,7 @@ export function SettingsForm({ profile, targetSlug }: SettingsFormProps) {
                   id="city"
                   name="city"
                   type="text"
-                  defaultValue={profile.city || ""}
+                  defaultValue={tenant.city || ""}
                   placeholder="Topólka"
                   style={styles.input}
                 />
@@ -373,7 +373,7 @@ export function SettingsForm({ profile, targetSlug }: SettingsFormProps) {
                   id="postal_code"
                   name="postal_code"
                   type="text"
-                  defaultValue={profile.postal_code || ""}
+                  defaultValue={tenant.postal_code || ""}
                   placeholder="87-875"
                   style={styles.input}
                 />
@@ -387,7 +387,7 @@ export function SettingsForm({ profile, targetSlug }: SettingsFormProps) {
                   id="county"
                   name="county"
                   type="text"
-                  defaultValue={profile.county || ""}
+                  defaultValue={tenant.county || ""}
                   placeholder="radziejowski"
                   style={styles.input}
                 />
@@ -401,7 +401,7 @@ export function SettingsForm({ profile, targetSlug }: SettingsFormProps) {
                   id="region"
                   name="region"
                   type="text"
-                  defaultValue={profile.region || ""}
+                  defaultValue={tenant.region || ""}
                   placeholder="Kujawsko-Pomorskie"
                   style={styles.input}
                 />
@@ -536,7 +536,7 @@ export function SettingsForm({ profile, targetSlug }: SettingsFormProps) {
                 id="google_sheets_webhook_url"
                 name="google_sheets_webhook_url"
                 type="url"
-                defaultValue={profile.google_sheets_webhook_url || ""}
+                defaultValue={tenant.google_sheets_webhook_url || ""}
                 placeholder="https://script.google.com/macros/s/..."
                 style={styles.input}
               />
@@ -554,7 +554,7 @@ export function SettingsForm({ profile, targetSlug }: SettingsFormProps) {
                   id="pixel_id"
                   name="pixel_id"
                   type="text"
-                  defaultValue={profile.pixel_id || (analytics.pixelId as string) || ""}
+                  defaultValue={tenant.pixel_id || (analytics.pixelId as string) || ""}
                   placeholder="123456789012345"
                   style={styles.input}
                 />

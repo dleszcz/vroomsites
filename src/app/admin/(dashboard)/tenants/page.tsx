@@ -1,4 +1,4 @@
-import { getCurrentProfile, getAllTenants } from "@/app/admin/actions";
+import { getCurrentTenant, getAllTenants } from "@/app/admin/actions";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { CreateTenantModal } from "@/components/admin/create-tenant-modal";
@@ -12,10 +12,10 @@ export default async function AdminTenantsPage({
 }: {
   searchParams: Promise<{ created?: string }>;
 }) {
-  const currentProfile = await getCurrentProfile();
-  if (!currentProfile) redirect("/admin/login");
+  const currentTenant = await getCurrentTenant();
+  if (!currentTenant) redirect("/admin/login");
 
-  if (!currentProfile.is_super_admin) {
+  if (!currentTenant.is_super_admin) {
     redirect("/admin/leads");
   }
 

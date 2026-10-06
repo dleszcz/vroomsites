@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
-import { getCurrentProfile } from "@/app/admin/actions";
+import { getCurrentTenant } from "@/app/admin/actions";
 
 export default async function AdminPage() {
-  const profile = await getCurrentProfile();
-  if (!profile) redirect("/admin/login");
+  const tenant = await getCurrentTenant();
+  if (!tenant) redirect("/admin/login");
 
-  if (profile.is_super_admin) {
+  if (tenant.is_super_admin) {
     redirect("/admin/tenants");
   } else {
     redirect("/admin/leads");

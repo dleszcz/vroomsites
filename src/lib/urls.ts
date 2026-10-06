@@ -9,7 +9,7 @@ export function getTenantUrl(
   customDomain?: string | null,
   isCustomDomainProp?: boolean
 ): string {
-  let cleanPath = path.startsWith("/") ? path : `/${path}`;
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
 
   let customDomainActive = isCustomDomainProp;
 
