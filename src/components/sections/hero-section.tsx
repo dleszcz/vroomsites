@@ -36,9 +36,8 @@ export function HeroSection({ tenant, config, isCustomDomain }: HeroSectionProps
       <div className="vd-container dealer-hero__content">
         <div className="dealer-hero__copy">
 
-
-          <h1 className="dealer-hero__title">{data.title || "Sprzedaj nam swoje auto"}</h1>
-          <p className="dealer-hero__description">{data.description || "Szybko, bezpiecznie i bez zbędnych formalności."}</p>
+          <h1 className="dealer-hero__title">{data.title || tenant.branding.heroTitle || "Sprzedaj nam swoje auto"}</h1>
+          <p className="dealer-hero__description">{data.description || tenant.branding.heroSubtitle || "Szybko, bezpiecznie i bez zbędnych formalności."}</p>
 
           <div className="dealer-hero__actions">
             <a className="vd-button vd-button--primary dealer-hero__button" href={primaryHref} onClick={() => trackEvent("lead_form_started", { source: "hero_primary_cta", dealer_id: tenant.id })}>

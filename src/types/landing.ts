@@ -23,6 +23,8 @@ export interface DealerBranding {
   logoUrl?: string | null;
   logoDarkUrl?: string | null;
   faviconUrl?: string | null;
+  heroTitle?: string | null;
+  heroSubtitle?: string | null;
   colors: {
     primary: string;
     primaryForeground: string;

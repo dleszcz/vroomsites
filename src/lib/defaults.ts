@@ -21,6 +21,8 @@ export const DEFAULT_BRANDING: DealerBranding = {
   logoUrl: null,
   logoDarkUrl: null,
   faviconUrl: null,
+  heroTitle: "Skup Aut",
+  heroSubtitle: "Szybka wycena i płatność gotówką",
   colors: DEFAULT_COLORS,
 };
 
@@ -97,6 +99,8 @@ export function mergeBranding(
     logoUrl: typeof tenantBranding.logoUrl === "string" ? tenantBranding.logoUrl : DEFAULT_BRANDING.logoUrl,
     logoDarkUrl: typeof tenantBranding.logoDarkUrl === "string" ? tenantBranding.logoDarkUrl : DEFAULT_BRANDING.logoDarkUrl,
     faviconUrl: typeof tenantBranding.faviconUrl === "string" ? tenantBranding.faviconUrl : DEFAULT_BRANDING.faviconUrl,
+    heroTitle: typeof tenantBranding.heroTitle === "string" ? tenantBranding.heroTitle : DEFAULT_BRANDING.heroTitle,
+    heroSubtitle: typeof tenantBranding.heroSubtitle === "string" ? tenantBranding.heroSubtitle : DEFAULT_BRANDING.heroSubtitle,
     colors: mergeColors(tenantBranding.colors),
     media: tenantBranding.media || DEFAULT_BRANDING.media,
   };
@@ -131,15 +135,28 @@ export function mergePageConfig(
     return { ...DEFAULT_PAGE_CONFIG };
   }
 
-  // Validate each section has required fields
-  const validSections = sections.filter((s): s is SectionConfig => {
-    if (!s || typeof s !== "object") return false;
-    const sec = s as Record<string, unknown>;
-    return typeof sec.id === "string" && typeof sec.type === "string";
+  // Create a map of overrides
+  const overridesMap = new Map<string, Partial<SectionConfig>>();
+  for (const s of sections) {
+    if (s && typeof s === "object") {
+      const sec = s as Record<string, unknown>;
+      if (typeof sec.id === "string") {
+        overridesMap.set(sec.id, s as Partial<SectionConfig>);
+      }
+    }
+  }
+
+  // Merge defaults with overrides based on section ID
+  const mergedSections = DEFAULT_SECTIONS.map((defaultSec) => {
+    const override = overridesMap.get(defaultSec.id);
+    if (override) {
+      return { ...defaultSec, ...override };
+    }
+    return defaultSec;
   });
 
   return {
-    sections: validSections.length > 0 ? validSections : [...DEFAULT_SECTIONS],
+    sections: mergedSections,
   };
 }
 

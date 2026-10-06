@@ -76,6 +76,8 @@ export function tenantToTenant(tenant: Tenant): DealerTenant {
     logoUrl,
     logoDarkUrl: (brandingRaw.logoDarkUrl as string) || null,
     faviconUrl: (brandingRaw.faviconUrl as string) || null,
+    heroTitle: (brandingRaw.heroTitle as string) || null,
+    heroSubtitle: (brandingRaw.heroSubtitle as string) || null,
     colors: {
       primary: primaryColor,
       primaryForeground: "#ffffff",
