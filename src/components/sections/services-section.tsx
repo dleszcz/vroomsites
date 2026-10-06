@@ -2,7 +2,7 @@
 
 import React from "react";
 import { CarFront, FileText, Siren, WalletCards } from "lucide-react";
-import { DealerTenant, SectionConfig } from "@/types/landing";
+import { DealerTenant, SectionConfig, hasCarBuying } from "@/types/landing";
 import { trackEvent } from "@/lib/analytics";
 
 interface Props { tenant: DealerTenant; config?: SectionConfig; }
@@ -15,15 +15,20 @@ const defaults = [
 ];
 
 export function ServicesSection({ tenant }: Props) {
+  const carBuying = hasCarBuying(tenant);
   const phone = tenant.contact.phone || "";
   const leadHref = tenant.contact.whatsapp ? `https://wa.me/${tenant.contact.whatsapp.replace(/\D/g, "")}` : phone ? `tel:${phone.replace(/\s/g, "")}` : "#about";
-  const configured = tenant.services.filter(s => s.enabled).slice(0, 4);
+  const configured = tenant.services
+    .filter(s => s.enabled)
+    .filter(s => carBuying || s.type !== "car_buying")
+    .slice(0, 4);
+  const baseDefaults = defaults.map((d, i) => ({ ...d, href: i === 2 ? `tel:${phone.replace(/\s/g, "")}` : d.href }));
   const cards = configured.length ? configured.map((service, i) => ({
     title: service.title,
     text: service.description,
     label: service.ctaLabel || defaults[i]?.label || "Sprawdź",
     href: service.ctaType === "phone" ? `tel:${(service.ctaValue || phone).replace(/\s/g, "")}` : service.ctaType === "whatsapp" || service.ctaType === "lead_form" ? leadHref : service.ctaValue || defaults[i]?.href || "#about",
-  })) : defaults.map((d, i) => ({ ...d, href: i === 2 ? `tel:${phone.replace(/\s/g, "")}` : d.href }));
+  })) : carBuying ? baseDefaults : baseDefaults.slice(1);
 
   return (
     <section id="services" className="vd-section vd-section--bordered">

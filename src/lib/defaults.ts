@@ -21,8 +21,8 @@ export const DEFAULT_BRANDING: DealerBranding = {
   logoUrl: null,
   logoDarkUrl: null,
   faviconUrl: null,
-  heroTitle: "Skup Aut",
-  heroSubtitle: "Szybka wycena i płatność gotówką",
+  heroTitle: "Komis Samochodowy",
+  heroSubtitle: "Sprawdzone samochody używane z gwarancją",
   colors: DEFAULT_COLORS,
 };
 
@@ -40,14 +40,14 @@ export const DEFAULT_SERVICES: DealerService[] = [
 ];
 
 export const DEFAULT_SECTIONS: SectionConfig[] = [
-  { id: "sec-hero", type: "hero", enabled: true, title: "Sprzedaj nam swoje auto" },
+  { id: "sec-hero", type: "hero", enabled: true, title: "Znajdź swoje wymarzone auto" },
   { id: "sec-value-props", type: "trust", enabled: true, title: "Dlaczego warto nam zaufać" },
   { id: "sec-process", type: "process", enabled: true, title: "Jak to działa?" },
   { id: "sec-services", type: "services", enabled: true, title: "Nasza oferta" },
   { id: "sec-trust", type: "reviews", enabled: true, title: "Dlaczego warto nam zaufać?" },
   { id: "sec-vehicles", type: "vehicles", enabled: true, title: "Aktualna oferta samochodów" },
   { id: "sec-about", type: "about", enabled: true, title: "O nas" },
-  { id: "sec-lead-form", type: "lead_form", enabled: true, title: "Darmowa Wycena" },
+  { id: "sec-lead-form", type: "lead_form", enabled: false, title: "Darmowa Wycena" },
 ];
 
 export const DEFAULT_PAGE_CONFIG: LandingPageConfig = {

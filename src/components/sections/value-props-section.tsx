@@ -1,6 +1,6 @@
 import React from "react";
 import { BadgeCheck, Banknote, Clock3, FileCheck2, ShieldCheck, Truck } from "lucide-react";
-import { DealerTenant, SectionConfig } from "@/types/landing";
+import { DealerTenant, SectionConfig, hasCarBuying } from "@/types/landing";
 
 interface Props { tenant: DealerTenant; config?: SectionConfig; }
 
@@ -13,16 +13,25 @@ const defaults = [
   ["Minimum formalności", "Wszystkie formalności i umowa na miejscu."],
 ];
 
+const salesDefaults = [
+  ["Sprawdzone auta", "Każdy samochód przechodzi kontrolę techniczną i weryfikację historii."],
+  ["Uczciwe ceny", "Jasne ceny bez ukrytych opłat."],
+  ["Jazda próbna", "Umów się i sprawdź auto osobiście."],
+  ["Finansowanie", "Pomożemy w kredycie lub leasingu."],
+  ["Minimum formalności", "Umowę i rejestrację przygotujemy za Ciebie."],
+];
+
 export function ValuePropsSection({ tenant, config }: Props) {
+  const carBuying = hasCarBuying(tenant);
   const data = (config?.data || {}) as { items?: { title: string; text: string; icon?: number }[] };
-  const items = data.items?.length ? data.items : defaults.map(([title, text], i) => ({ title, text, icon: i }));
+  const items = data.items?.length ? data.items : (carBuying ? defaults : salesDefaults).map(([title, text], i) => ({ title, text, icon: i }));
   return (
     <section className="vd-section vd-section--bordered" id="value-props">
 
       <div className="vd-container value-props__layout">
         <div className="value-props__intro">
           <span className="vd-eyebrow">Dlaczego {tenant.businessName}?</span>
-          <h2 className="vd-heading value-props__title">Skup i sprzedaż samochodów na jasnych zasadach</h2>
+          <h2 className="vd-heading value-props__title">{carBuying ? "Skup i sprzedaż samochodów na jasnych zasadach" : "Sprzedaż samochodów na jasnych zasadach"}</h2>
         </div>
         <div className="value-props__items">
           {items.slice(0, 5).map((item, i) => {

@@ -1,5 +1,5 @@
 import React from "react";
-import { DealerTenant, SectionConfig } from "@/types/landing";
+import { DealerTenant, SectionConfig, hasCarBuying } from "@/types/landing";
 
 interface Props {
   tenant: DealerTenant;
@@ -7,13 +7,16 @@ interface Props {
 }
 
 export function AboutSection({ tenant, config }: Props) {
+  const carBuying = hasCarBuying(tenant);
   const rawTitle = config?.title;
-  const title = !rawTitle || rawTitle.toLowerCase().includes("o nas") ? "Komis i skup aut" : rawTitle;
+  const title = !rawTitle || rawTitle.toLowerCase().includes("o nas") ? (carBuying ? "Komis i skup aut" : "Komis samochodowy") : rawTitle;
   const subtitle = config?.subtitle;
   const description =
     (config?.data?.description as string) ||
     tenant.businessDescription ||
-    `Jesteśmy lokalnym komisem samochodowym i skupem aut z wieloletnim doświadczeniem. Zapewniamy profesjonalne podejście, uczciwe rynkowe wyceny i natychmiastową wypłatę gotówki.`;
+    (carBuying
+      ? `Jesteśmy lokalnym komisem samochodowym i skupem aut z wieloletnim doświadczeniem. Zapewniamy profesjonalne podejście, uczciwe rynkowe wyceny i natychmiastową wypłatę gotówki.`
+      : `Jesteśmy lokalnym komisem samochodowym. Oferujemy sprawdzone auta używane, uczciwe ceny i pomoc w formalnościach.`);
   const image = (config?.data?.imageUrl as string) || tenant.branding.media?.heroImageUrl;
 
   return (

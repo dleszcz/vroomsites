@@ -200,6 +200,9 @@ export default async function DynamicSlugPage({ params }: Props) {
 
   // 2. Subpages handling
   if (slug === "skup-aut") {
+    if (tenant.features?.carBuying === false) {
+      notFound();
+    }
     return <SectionRenderer tenant={tenant} mode="skup-aut" isCustomDomain={isCustomDomain} />;
   }
 

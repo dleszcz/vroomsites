@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Menu, Phone, X } from "lucide-react";
-import { DealerTenant } from "@/types/landing";
+import { DealerTenant, hasCarBuying } from "@/types/landing";
 import { getTenantUrl } from "@/lib/urls";
 
 interface DealerHeaderProps {
@@ -23,9 +23,13 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
   const getUrl = (path: string) =>
     getTenantUrl(tenant.slug, path, tenant.customDomain, isCustomDomain);
 
+  const carBuying = hasCarBuying(tenant);
+  const ctaLabel = carBuying ? "Sprzedaj auto" : "Zobacz auta";
+  const ctaHref = carBuying ? primaryHref : getUrl("/samochody");
+
   const links = [
     ["Strona główna", getUrl("/")],
-    ["Skup aut", getUrl("/skup-aut")],
+    ...(carBuying ? [["Skup aut", getUrl("/skup-aut")]] : []),
     ["Samochody", getUrl("/samochody")],
     ["Usługi", getUrl("/#services")],
     ["O nas", getUrl("/#about")],
@@ -56,8 +60,8 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
         </nav>
 
         <div className="dealer-header__actions">
-          <a className="vd-button vd-button--primary dealer-header__cta" href={primaryHref}>
-            Sprzedaj auto
+          <a className="vd-button vd-button--primary dealer-header__cta" href={ctaHref}>
+            {ctaLabel}
           </a>
           {phone && (
             <a className="dealer-header__phone" href={`tel:${phone.replace(/\s/g, "")}`}>
@@ -82,8 +86,8 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
               {label}
             </a>
           ))}
-          <a className="vd-button vd-button--primary" href={primaryHref} onClick={() => setOpen(false)}>
-            Sprzedaj auto
+          <a className="vd-button vd-button--primary" href={ctaHref} onClick={() => setOpen(false)}>
+            {ctaLabel}
           </a>
         </div>
       )}

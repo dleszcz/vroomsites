@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { DealerTenant, SectionConfig } from "@/types/landing";
+import { DealerTenant, SectionConfig, hasCarBuying } from "@/types/landing";
 
 interface Props { tenant: DealerTenant; config?: SectionConfig; }
 
@@ -24,8 +24,15 @@ const defaultTestimonials = [
   },
 ];
 
+const salesTestimonials = [
+  { quote: "Kupiłem auto dokładnie takie, jak w ogłoszeniu. Pełna historia serwisowa i uczciwa cena.", author: "Pani Anna" },
+  { quote: "Jazda próbna od ręki, wszystkie formalności załatwione na miejscu. Polecam!", author: "Michał S." },
+  { quote: "Pomogli mi z finansowaniem, a auto odebrałem w 3 dni. Super obsługa.", author: "Karolina P." },
+];
+
 export function TrustSection({ tenant, config }: Props) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const testimonials = hasCarBuying(tenant) ? defaultTestimonials : salesTestimonials;
 
   const data = (config?.data || {}) as {
     heading?: string;
@@ -40,12 +47,12 @@ export function TrustSection({ tenant, config }: Props) {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % defaultTestimonials.length);
+      setActiveIndex((prev) => (prev + 1) % testimonials.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, []);
+  }, [testimonials.length]);
 
-  const currentReview = defaultTestimonials[activeIndex];
+  const currentReview = testimonials[activeIndex % testimonials.length];
 
   return (
     <section className="vd-section vd-section--bordered" id="trust">
@@ -70,7 +77,7 @@ export function TrustSection({ tenant, config }: Props) {
           </p>
           <div className="testimonial__author">{currentReview.author}</div>
           <div className="testimonial__dots" style={{ cursor: "pointer" }}>
-            {defaultTestimonials.map((_, idx) => (
+            {testimonials.map((_, idx) => (
               <span
                 key={idx}
                 onClick={() => setActiveIndex(idx)}

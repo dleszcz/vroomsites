@@ -37,7 +37,7 @@ export function tenantToTenant(tenant: Tenant): DealerTenant {
   const logoUrl =
     tenant.logo_url ||
     (brandingRaw.logoUrl as string) ||
-    "/icon";
+    null;
 
   // Build hero image: DB branding.heroImageUrl, DB branding.media.heroImageUrl, Seed media.heroImageUrl
   const heroImageUrl =
@@ -56,6 +56,16 @@ export function tenantToTenant(tenant: Tenant): DealerTenant {
   const pageConfig = mergePageConfig(
     (tenant.page_config as Record<string, unknown> | undefined)
   );
+
+  // Feature flags: explicit page_config.features, otherwise inferred from sections
+  const rawFeatures =
+    ((tenant.page_config as Record<string, unknown> | undefined)?.features as Record<string, unknown> | undefined) || {};
+  const leadFormEnabled = pageConfig.sections.some(
+    (s) => s.type === "lead_form" && s.enabled !== false
+  );
+  const features = {
+    carBuying: typeof rawFeatures.carBuying === "boolean" ? rawFeatures.carBuying : leadFormEnabled,
+  };
 
   // Build local SEO config
   const localSeo = mergeLocalSeo(
@@ -131,11 +141,14 @@ export function tenantToTenant(tenant: Tenant): DealerTenant {
         null,
     },
     seo: (tenant.seo as unknown as DealerTenant["seo"]) || {
-      metaTitle: `${tenant.business_name} - Skup aut i sprzedaż samochodów`,
+      metaTitle: features.carBuying
+        ? `${tenant.business_name} - Skup aut i sprzedaż samochodów`
+        : `${tenant.business_name} - Sprzedaż samochodów używanych`,
       metaDescription: tenant.business_description || undefined,
     },
     localSeo,
     businessRules,
+    features,
   };
 }
 

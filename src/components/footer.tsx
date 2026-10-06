@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Clock3, MapPin, Phone } from "lucide-react";
-import { DealerTenant } from "@/types/landing";
+import { DealerTenant, hasCarBuying } from "@/types/landing";
 
 function FacebookIcon({ size = 18 }: { size?: number }) {
   return (
@@ -55,6 +55,7 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
   const logo = tenant?.logoUrl || tenant?.branding?.logoUrl;
 
   const footerBg = tenant?.branding?.colors?.footerBg || "#080808";
+  const carBuying = hasCarBuying(tenant);
 
   const getUrl = (path: string) =>
     getTenantUrl(tenant?.slug || "", path, tenant?.customDomain, isCustomDomain);
@@ -78,7 +79,7 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
                 {name}
               </span>
             )}
-            <p className="dealer-footer__description">Skup i sprzedaż samochodów. Szybko, uczciwie, bezpiecznie.</p>
+            <p className="dealer-footer__description">{carBuying ? "Skup i sprzedaż samochodów." : "Sprzedaż samochodów używanych."} Szybko, uczciwie, bezpiecznie.</p>
             {(tenant?.contact?.facebook || tenant?.contact?.instagram || tenant?.contact?.tiktok || tenant?.contact?.youtube) && (
               <div className="dealer-footer__socials">
                 {tenant.contact.facebook && (
@@ -108,7 +109,7 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
             <h3 className="dealer-footer__heading">Szybkie linki</h3>
             <div className="dealer-footer__links">
               <a href={getUrl("/")}>Strona główna</a>
-              <a href={getUrl("/skup-aut")}>Skup aut</a>
+              {carBuying && <a href={getUrl("/skup-aut")}>Skup aut</a>}
               <a href={getUrl("/samochody")}>Samochody</a>
               <a href={getUrl("/#services")}>Usługi</a>
               <a href={getUrl("/#about")}>O nas</a>
@@ -123,7 +124,7 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
               <div className="dealer-footer__links">
                 {activeLocalPages.map((lp) => (
                   <a key={lp.slug} href={getUrl(`/${lp.slug}`)}>
-                    Skup aut {lp.city}
+                    {carBuying ? "Skup aut" : "Samochody"} {lp.city}
                   </a>
                 ))}
               </div>
@@ -132,7 +133,7 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
             <div>
               <h3 className="dealer-footer__heading">Usługi</h3>
               <div className="dealer-footer__links">
-                <a href={getUrl("/#lead-form")}>Skup aut</a>
+                {carBuying && <a href={getUrl("/#lead-form")}>Skup aut</a>}
                 <a href={getUrl("/samochody")}>Sprzedaż aut</a>
                 <a href={getUrl("/#services")}>Pomoc drogowa</a>
                 <a href={getUrl("/#services")}>Transport aut</a>

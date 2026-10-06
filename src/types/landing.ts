@@ -196,6 +196,17 @@ export interface DealerTenant {
   };
   localSeo?: LocalSeoConfig;
   businessRules?: DealerBusinessRules;
+  features?: DealerFeatures;
+}
+
+/** Tenant feature flags. Missing flag = enabled (backwards compatible). */
+export interface DealerFeatures {
+  /** "Skup aut" – buying cars from customers (lead form, /skup-aut, CTAs) */
+  carBuying: boolean;
+}
+
+export function hasCarBuying(tenant: { features?: DealerFeatures } | null | undefined): boolean {
+  return tenant?.features?.carBuying !== false;
 }
 
 
