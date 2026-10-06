@@ -144,20 +144,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   // 3. Check if slug matches a car listing
-  const tenant = await getTenant(dealerSlug);
+  const rawTenant = await getTenant(dealerSlug);
   const car = await getCar(slug);
 
-  if (!tenant || !car) return {};
+  if (!rawTenant || !car) return {};
 
   const carName = `${car.make} ${car.model}${car.year ? ` (${car.year})` : ""}`;
   const priceStr = car.price ? `${formatPrice(car.price)} PLN` : "Zapytaj o cenę";
-  const title = `${carName} - ${priceStr} | ${tenant.business_name}`;
+  const title = `${carName} - ${priceStr} | ${rawTenant.business_name}`;
   const description = `${carName}${
     car.mileage ? `, ${car.mileage.toLocaleString("pl-PL")} km` : ""
   }${
     car.fuel_type ? `, ${car.fuel_type}` : ""
-  }. Sprawdź ogłoszenie, wyposażenie i stan techniczny w ${tenant.business_name}${
-    tenant.city ? `, ${tenant.city}` : ""
+  }. Sprawdź ogłoszenie, wyposażenie i stan techniczny w ${rawTenant.business_name}${
+    rawTenant.city ? `, ${rawTenant.city}` : ""
   }.`;
 
   const carImage = car.images?.[0]
@@ -222,13 +222,13 @@ export default async function DynamicSlugPage({ params }: Props) {
   }
 
   // 3. Check if slug is a Car Listing
-  const [tenant, car, allCars] = await Promise.all([
+  const [rawTenantData, car, allCars] = await Promise.all([
     getTenant(dealerSlug),
     getCar(slug),
     getCars(tenant.id),
   ]);
 
-  if (!tenant || !car) {
+  if (!rawTenantData || !car) {
     notFound();
   }
 
@@ -241,7 +241,7 @@ export default async function DynamicSlugPage({ params }: Props) {
     <>
       <VehicleSchema
         car={car}
-        dealerName={tenant.business_name}
+        dealerName={tenant.businessName}
         url={pageUrl}
       />
       <SingleCarPage tenant={tenant} car={car} relatedCars={relatedCars} isCustomDomain={isCustomDomain} />

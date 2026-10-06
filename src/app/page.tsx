@@ -57,18 +57,18 @@ export default async function DirectoryPage() {
                 <div 
                   className="h-32 w-full relative flex items-center justify-center bg-black" 
                 >
-                  {tenant.branding?.media?.heroImageUrl && (
+                  {(tenant.branding as any)?.media?.heroImageUrl && (
                     <img 
-                      src={tenant.branding.media.heroImageUrl} 
+                      src={(tenant.branding as any).media.heroImageUrl} 
                       alt="" 
                       className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay"
                     />
                   )}
                   
                   {/* Logo or Fallback */}
-                  {tenant.logo_url || tenant.branding?.logoUrl ? (
+                  {tenant.logo_url || (tenant.branding as any)?.logoUrl ? (
                     <img 
-                      src={tenant.logo_url || tenant.branding?.logoUrl || ''} 
+                      src={tenant.logo_url || (tenant.branding as any)?.logoUrl || ''} 
                       alt={`Logo ${tenant.business_name}`} 
                       className="relative z-10 max-h-16 max-w-[80%] object-contain"
                     />

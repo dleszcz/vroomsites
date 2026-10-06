@@ -73,13 +73,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const localSeoPages: MetadataRoute.Sitemap = [];
   for (const tenant of tenants) {
     if (tenant.custom_domain) continue; // Custom domains serve their own isolated sitemaps
-    const tenant = tenantToTenant(tenant);
+    const parsedTenant = tenantToTenant(tenant);
 
-    if (tenant.localSeo?.localPages) {
-      for (const localPage of tenant.localSeo.localPages) {
+    if (parsedTenant.localSeo?.localPages) {
+      for (const localPage of parsedTenant.localSeo.localPages) {
         if (localPage.enabled && localPage.indexable) {
           localSeoPages.push({
-            url: `${baseUrl}/${tenant.slug}/${localPage.slug}`,
+            url: `${baseUrl}/${parsedTenant.slug}/${localPage.slug}`,
             lastModified: new Date(),
             changeFrequency: "weekly" as const,
             priority: 0.85,

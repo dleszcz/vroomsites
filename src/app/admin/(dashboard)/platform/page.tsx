@@ -1,6 +1,7 @@
 import { getCurrentTenant } from "@/app/admin/actions";
 import { redirect } from "next/navigation";
 
+import Link from "next/link";
 export const metadata = {
   title: "Konfiguracja Platformy VroomDealer | Panel Admina",
 };
@@ -47,12 +48,12 @@ export default async function AdminPlatformPage() {
           >
             🌐 Otwórz stronę główną VroomDealer.pl ↗
           </a>
-          <a
+          <Link
             href="/admin/tenants"
             style={styles.linkButtonAccent}
           >
             🏢 Przejdź do zarządzania komisami ➔
-          </a>
+          </Link>
         </div>
       </div>
     </div>

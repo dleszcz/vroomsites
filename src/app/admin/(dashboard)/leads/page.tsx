@@ -21,22 +21,22 @@ export default async function AdminLeadsPage({
   const supabase = await createClient();
 
   // For Superadmin, default tenant filter is "all" (not tenant.slug which is 'superadmin')
-  const targetTenant = isSuperAdmin
+  const targetTenantSlug = isSuperAdmin
     ? resolvedParams.tenant || "all"
     : tenant.slug;
 
-  let targetTenant = tenant;
-  if (isSuperAdmin && targetTenant !== "all") {
-    const fetched = await getTenantBySlug(targetTenant);
-    if (fetched) targetTenant = fetched;
+  let targetTenantObj = tenant;
+  if (isSuperAdmin && targetTenantSlug !== "all") {
+    const fetched = await getTenantBySlug(targetTenantSlug);
+    if (fetched) targetTenantObj = fetched;
   }
 
   let query = supabase.from("leads").select("*");
-  if (targetTenant !== "all") {
-    if (targetTenant && targetTenant.id && targetTenant.slug) {
-      query = query.or(`dealer_id.eq.${targetTenant.id},dealer_id.eq.${targetTenant.slug}`);
+  if (targetTenantSlug !== "all") {
+    if (targetTenantObj && targetTenantObj.id && targetTenantObj.slug) {
+      query = query.or(`dealer_id.eq.${targetTenantObj.id},dealer_id.eq.${targetTenantObj.slug}`);
     } else {
-      query = query.eq("dealer_id", targetTenant);
+      query = query.eq("dealer_id", targetTenantSlug);
     }
   }
 
@@ -51,7 +51,7 @@ export default async function AdminLeadsPage({
     );
   }
 
-  const isAllView = isSuperAdmin && targetTenant === "all";
+  const isAllView = isSuperAdmin && targetTenantSlug === "all";
 
   return (
     <div>
@@ -61,15 +61,15 @@ export default async function AdminLeadsPage({
             {isAllView ? "📊 Wszystkie Zgłoszenia (SaaS)" : "📋 Zgłoszenia (Leady)"}{" "}
             {isSuperAdmin && !isAllView && (
               <span style={headerStyles.tenantTag}>
-                [{targetTenant.business_name || targetTenant}]
+                [{targetTenantObj.business_name || targetTenantSlug}]
               </span>
             )}
           </h1>
           <p style={headerStyles.subtitle}>
             {isAllView
               ? "Zbiorczy podgląd zgłoszeń ze wszystkich uruchomionych komisów"
-              : isSuperAdmin && targetTenant !== "all"
-              ? `Zarządzaj zgłoszeniami wycen klientów dla: ${targetTenant.business_name || targetTenant}`
+              : isSuperAdmin && targetTenantSlug !== "all"
+              ? `Zarządzaj zgłoszeniami wycen klientów dla: ${targetTenantObj.business_name || targetTenantSlug}`
               : "Zarządzaj zgłoszeniami wycen od klientów"}
           </p>
         </div>
