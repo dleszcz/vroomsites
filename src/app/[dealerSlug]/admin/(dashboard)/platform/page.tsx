@@ -1,4 +1,5 @@
-import { getCurrentTenant } from "@/app/admin/actions";
+import { getAdminBasePath } from "@/lib/admin-utils";
+import { getCurrentTenant } from "@/app/[dealerSlug]/admin/actions";
 import { redirect } from "next/navigation";
 
 import Link from "next/link";
@@ -8,10 +9,12 @@ export const metadata = {
 
 export default async function AdminPlatformPage() {
   const currentTenant = await getCurrentTenant();
-  if (!currentTenant) redirect("/admin/login");
+  const basePath = await getAdminBasePath();
+  
+  if (!currentTenant) redirect(`${basePath}/admin/login`);
 
   if (!currentTenant.is_super_admin) {
-    redirect("/admin/leads");
+    redirect(`${basePath}/admin/login`);
   }
 
   return (
@@ -49,7 +52,7 @@ export default async function AdminPlatformPage() {
             🌐 Otwórz stronę główną VroomDealer.pl ↗
           </a>
           <Link
-            href="/admin/tenants"
+            href={`${getAdminBasePath()}/admin/tenants`}
             style={styles.linkButtonAccent}
           >
             🏢 Przejdź do zarządzania komisami ➔

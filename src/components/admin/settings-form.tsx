@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { updateTenant } from "@/app/admin/actions";
-import { useSearchParams } from "next/navigation";
+import { useState, useTransition, useEffect } from "react";
+import { updateTenant } from "@/app/[dealerSlug]/admin/actions";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 interface SettingsFormProps {
   targetSlug?: string;
@@ -29,21 +29,27 @@ interface SettingsFormProps {
 }
 
 const TABS = [
-  { id: "general", label: "🏢 Identyfikacja i Nazwa", icon: "🏢" },
-  { id: "branding", label: "🎨 Kolory i Logo", icon: "🎨" },
-  { id: "contact", label: "📞 Kontakt i Adres", icon: "📞" },
-  { id: "hours", label: "🕒 Godziny Otwarcia", icon: "🕒" },
-  { id: "rules", label: "⚙️ Zasady Skupu", icon: "⚙️" },
-  { id: "integrations", label: "🔗 Integracje i Webhooki", icon: "🔗" },
-  { id: "seo", label: "🔍 SEO i Tagi Meta", icon: "🔍" },
+  { id: "general", label: "Identyfikacja", icon: "" },
+  { id: "branding", label: "Kolory i Logo", icon: "" },
+  { id: "contact", label: "Kontakt i Godziny", icon: "" },
+  { id: "features", label: "Funkcje i SEO", icon: "" },
 ];
 
 export function SettingsForm({ tenant, targetSlug }: SettingsFormProps) {
-  const [activeTab, setActiveTab] = useState("general");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const urlTab = searchParams.get("tab");
+  const [activeTab, setActiveTab] = useState(urlTab || "general");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const searchParams = useSearchParams();
   const justSaved = searchParams.get("saved") === "true";
+
+  useEffect(() => {
+    if (urlTab) {
+      setActiveTab(urlTab);
+    }
+  }, [urlTab]);
 
   // Pre-fill fields safely
   const branding = tenant.branding || {};
@@ -78,11 +84,11 @@ export function SettingsForm({ tenant, targetSlug }: SettingsFormProps) {
       {targetSlug && <input type="hidden" name="target_slug" value={targetSlug} />}
       {justSaved && (
         <div style={styles.successBanner}>
-          ✅ Wszystkie ustawienia komisu zostały pomyślnie zapisane!
+          Wszystkie ustawienia komisu zostały pomyślnie zapisane!
         </div>
       )}
 
-      {error && <div style={styles.errorBanner}>❌ {error}</div>}
+      {error && <div style={styles.errorBanner}>{error}</div>}
 
       {/* Tabs Navigation */}
       <div style={styles.tabsBar}>
@@ -90,7 +96,12 @@ export function SettingsForm({ tenant, targetSlug }: SettingsFormProps) {
           <button
             key={tab.id}
             type="button"
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => {
+              setActiveTab(tab.id);
+              const newParams = new URLSearchParams(searchParams.toString());
+              newParams.set("tab", tab.id);
+              window.history.replaceState(null, '', `?${newParams.toString()}`);
+            }}
             style={{
               ...styles.tabBtn,
               ...(activeTab === tab.id ? styles.tabBtnActive : {}),
@@ -104,7 +115,7 @@ export function SettingsForm({ tenant, targetSlug }: SettingsFormProps) {
       {/* TAB 1: General */}
       {activeTab === "general" && (
         <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>🏢 Identyfikacja Firmy</h3>
+          <h3 style={styles.sectionTitle}>Identyfikacja Firmy</h3>
           <p style={styles.sectionDesc}>
             Podstawowe dane o Twoim komisie wyświetlane w nagłówku i stopce strony.
           </p>
@@ -162,7 +173,7 @@ export function SettingsForm({ tenant, targetSlug }: SettingsFormProps) {
       {/* TAB 2: Branding & Colors */}
       {activeTab === "branding" && (
         <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>🎨 Wygląd, Kolory i Logo</h3>
+          <h3 style={styles.sectionTitle}>Wygląd, Kolory i Logo</h3>
           <p style={styles.sectionDesc}>
             Personalizacja szaty graficznej, logo oraz haseł reklamowych sekcji Hero.
           </p>
@@ -281,128 +292,181 @@ export function SettingsForm({ tenant, targetSlug }: SettingsFormProps) {
         </div>
       )}
 
-      {/* TAB 3: Contact & Address */}
+      {/* TAB 3: Contact & Address & Hours */}
       {activeTab === "contact" && (
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>📞 Dane Kontaktowe i Adres</h3>
-          <p style={styles.sectionDesc}>
-            Wprowadź aktualne numery telefonów oraz dokładny adres fizyczny komisu.
-          </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+          <div style={styles.section}>
+            <h3 style={styles.sectionTitle}>Dane Kontaktowe i Adres</h3>
+            <p style={styles.sectionDesc}>
+              Wprowadź aktualne numery telefonów oraz dokładny adres fizyczny komisu.
+            </p>
 
-          <div style={styles.fieldsColumn}>
-            <div style={styles.fieldsRow}>
+            <div style={styles.fieldsColumn}>
+              <div style={styles.fieldsRow}>
+                <div style={styles.field}>
+                  <label htmlFor="contact_phone" style={styles.label}>
+                    Telefon główny
+                  </label>
+                  <input
+                    id="contact_phone"
+                    name="contact_phone"
+                    type="tel"
+                    defaultValue={tenant.contact_phone || ""}
+                    placeholder="+48 789 012 345"
+                    style={styles.input}
+                  />
+                </div>
+
+                <div style={styles.field}>
+                  <label htmlFor="whatsapp_number" style={styles.label}>
+                    Numer WhatsApp
+                  </label>
+                  <input
+                    id="whatsapp_number"
+                    name="whatsapp_number"
+                    type="tel"
+                    defaultValue={tenant.whatsapp_number || ""}
+                    placeholder="+48 789 012 345"
+                    style={styles.input}
+                  />
+                </div>
+              </div>
+
               <div style={styles.field}>
-                <label htmlFor="contact_phone" style={styles.label}>
-                  Telefon główny
+                <label htmlFor="notification_email" style={styles.label}>
+                  E-mail do powiadomień o wycenach (Lead Email)
                 </label>
                 <input
-                  id="contact_phone"
-                  name="contact_phone"
-                  type="tel"
-                  defaultValue={tenant.contact_phone || ""}
-                  placeholder="+48 789 012 345"
+                  id="notification_email"
+                  name="notification_email"
+                  type="email"
+                  defaultValue={tenant.notification_email || ""}
+                  placeholder="kontakt@autokomis-janusz.pl"
                   style={styles.input}
                 />
               </div>
 
-              <div style={styles.field}>
-                <label htmlFor="whatsapp_number" style={styles.label}>
-                  Numer WhatsApp
-                </label>
-                <input
-                  id="whatsapp_number"
-                  name="whatsapp_number"
-                  type="tel"
-                  defaultValue={tenant.whatsapp_number || ""}
-                  placeholder="+48 789 012 345"
-                  style={styles.input}
-                />
+              <div style={styles.fieldsRow}>
+                <div style={styles.field}>
+                  <label htmlFor="address" style={styles.label}>
+                    Adres (Ulica i numer)
+                  </label>
+                  <input
+                    id="address"
+                    name="address"
+                    type="text"
+                    defaultValue={tenant.address || ""}
+                    placeholder="Topólka 14A"
+                    style={styles.input}
+                  />
+                </div>
+
+                <div style={styles.field}>
+                  <label htmlFor="city" style={styles.label}>
+                    Miejscowość
+                  </label>
+                  <input
+                    id="city"
+                    name="city"
+                    type="text"
+                    defaultValue={tenant.city || ""}
+                    placeholder="Topólka"
+                    style={styles.input}
+                  />
+                </div>
+              </div>
+
+              <div style={styles.fieldsRow}>
+                <div style={styles.field}>
+                  <label htmlFor="postal_code" style={styles.label}>
+                    Kod pocztowy
+                  </label>
+                  <input
+                    id="postal_code"
+                    name="postal_code"
+                    type="text"
+                    defaultValue={tenant.postal_code || ""}
+                    placeholder="87-875"
+                    style={styles.input}
+                  />
+                </div>
+
+                <div style={styles.field}>
+                  <label htmlFor="county" style={styles.label}>
+                    Powiat
+                  </label>
+                  <input
+                    id="county"
+                    name="county"
+                    type="text"
+                    defaultValue={tenant.county || ""}
+                    placeholder="radziejowski"
+                    style={styles.input}
+                  />
+                </div>
+
+                <div style={styles.field}>
+                  <label htmlFor="region" style={styles.label}>
+                    Województwo
+                  </label>
+                  <input
+                    id="region"
+                    name="region"
+                    type="text"
+                    defaultValue={tenant.region || ""}
+                    placeholder="Kujawsko-Pomorskie"
+                    style={styles.input}
+                  />
+                </div>
               </div>
             </div>
+          </div>
 
-            <div style={styles.field}>
-              <label htmlFor="notification_email" style={styles.label}>
-                E-mail do powiadomień o wycenach (Lead Email)
-              </label>
-              <input
-                id="notification_email"
-                name="notification_email"
-                type="email"
-                defaultValue={tenant.notification_email || ""}
-                placeholder="kontakt@autokomis-janusz.pl"
-                style={styles.input}
-              />
-            </div>
+          <div style={styles.section}>
+            <h3 style={styles.sectionTitle}>Godziny Otwarcia Komisu</h3>
+            <p style={styles.sectionDesc}>
+              Godziny pracy widoczne w stopce oraz w sekcji kontaktowej.
+            </p>
 
-            <div style={styles.fieldsRow}>
+            <div style={styles.fieldsColumn}>
               <div style={styles.field}>
-                <label htmlFor="address" style={styles.label}>
-                  Adres (Ulica i numer)
+                <label htmlFor="hours_weekdays" style={styles.label}>
+                  Poniedziałek – Piątek
                 </label>
                 <input
-                  id="address"
-                  name="address"
+                  id="hours_weekdays"
+                  name="hours_weekdays"
                   type="text"
-                  defaultValue={tenant.address || ""}
-                  placeholder="Topólka 14A"
+                  defaultValue={(openingHours.weekdays as string) || "08:00 - 18:00"}
+                  placeholder="08:00 - 18:00"
                   style={styles.input}
                 />
               </div>
 
               <div style={styles.field}>
-                <label htmlFor="city" style={styles.label}>
-                  Miejscowość
+                <label htmlFor="hours_saturday" style={styles.label}>
+                  Sobota
                 </label>
                 <input
-                  id="city"
-                  name="city"
+                  id="hours_saturday"
+                  name="hours_saturday"
                   type="text"
-                  defaultValue={tenant.city || ""}
-                  placeholder="Topólka"
-                  style={styles.input}
-                />
-              </div>
-            </div>
-
-            <div style={styles.fieldsRow}>
-              <div style={styles.field}>
-                <label htmlFor="postal_code" style={styles.label}>
-                  Kod pocztowy
-                </label>
-                <input
-                  id="postal_code"
-                  name="postal_code"
-                  type="text"
-                  defaultValue={tenant.postal_code || ""}
-                  placeholder="87-875"
+                  defaultValue={(openingHours.saturday as string) || "09:00 - 14:00"}
+                  placeholder="09:00 - 14:00"
                   style={styles.input}
                 />
               </div>
 
               <div style={styles.field}>
-                <label htmlFor="county" style={styles.label}>
-                  Powiat
+                <label htmlFor="hours_sunday" style={styles.label}>
+                  Niedziela
                 </label>
                 <input
-                  id="county"
-                  name="county"
+                  id="hours_sunday"
+                  name="hours_sunday"
                   type="text"
-                  defaultValue={tenant.county || ""}
-                  placeholder="radziejowski"
-                  style={styles.input}
-                />
-              </div>
-
-              <div style={styles.field}>
-                <label htmlFor="region" style={styles.label}>
-                  Województwo
-                </label>
-                <input
-                  id="region"
-                  name="region"
-                  type="text"
-                  defaultValue={tenant.region || ""}
-                  placeholder="Kujawsko-Pomorskie"
+                  defaultValue={(openingHours.sunday as string) || "Zamknięte (na telefon)"}
+                  placeholder="Zamknięte / Na telefon"
                   style={styles.input}
                 />
               </div>
@@ -411,208 +475,151 @@ export function SettingsForm({ tenant, targetSlug }: SettingsFormProps) {
         </div>
       )}
 
-      {/* TAB 4: Opening Hours */}
-      {activeTab === "hours" && (
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>🕒 Godziny Otwarcia Komisu</h3>
-          <p style={styles.sectionDesc}>
-            Godziny pracy widoczne w stopce oraz w sekcji kontaktowej.
-          </p>
+      {/* TAB 5: Features & SEO */}
+      {activeTab === "features" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+          
+          <div style={styles.section}>
+            <h3 style={styles.sectionTitle}>Zasady Skupu i Przedziały Cenowe</h3>
+            <p style={styles.sectionDesc}>
+              Parametry przyjmowania samochodów w skupie i komunikacja gwarancji wyceny.
+            </p>
 
-          <div style={styles.fieldsColumn}>
-            <div style={styles.field}>
-              <label htmlFor="hours_weekdays" style={styles.label}>
-                Poniedziałek – Piątek
-              </label>
-              <input
-                id="hours_weekdays"
-                name="hours_weekdays"
-                type="text"
-                defaultValue={(openingHours.weekdays as string) || "08:00 - 18:00"}
-                placeholder="08:00 - 18:00"
-                style={styles.input}
-              />
-            </div>
+            <div style={styles.fieldsColumn}>
+              <div style={styles.fieldsRow}>
+                <div style={styles.field}>
+                  <label htmlFor="min_purchase_price" style={styles.label}>
+                    Minimalna wartość odkupu (PLN)
+                  </label>
+                  <input
+                    id="min_purchase_price"
+                    name="min_purchase_price"
+                    type="number"
+                    defaultValue={(businessRules.minPurchasePrice as number) || 500}
+                    style={styles.input}
+                  />
+                </div>
 
-            <div style={styles.field}>
-              <label htmlFor="hours_saturday" style={styles.label}>
-                Sobota
-              </label>
-              <input
-                id="hours_saturday"
-                name="hours_saturday"
-                type="text"
-                defaultValue={(openingHours.saturday as string) || "09:00 - 14:00"}
-                placeholder="09:00 - 14:00"
-                style={styles.input}
-              />
-            </div>
-
-            <div style={styles.field}>
-              <label htmlFor="hours_sunday" style={styles.label}>
-                Niedziela
-              </label>
-              <input
-                id="hours_sunday"
-                name="hours_sunday"
-                type="text"
-                defaultValue={(openingHours.sunday as string) || "Zamknięte (na telefon)"}
-                placeholder="Zamknięte / Na telefon"
-                style={styles.input}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* TAB 5: Business Rules */}
-      {activeTab === "rules" && (
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>⚙️ Zasady Skupu i Przedziały Cenowe</h3>
-          <p style={styles.sectionDesc}>
-            Parametry przyjmowania samochodów w skupie i komunikacja gwarancji wyceny.
-          </p>
-
-          <div style={styles.fieldsColumn}>
-            <div style={styles.fieldsRow}>
-              <div style={styles.field}>
-                <label htmlFor="min_purchase_price" style={styles.label}>
-                  Minimalna wartość odkupu (PLN)
-                </label>
-                <input
-                  id="min_purchase_price"
-                  name="min_purchase_price"
-                  type="number"
-                  defaultValue={(businessRules.minPurchasePrice as number) || 500}
-                  style={styles.input}
-                />
+                <div style={styles.field}>
+                  <label htmlFor="max_purchase_price" style={styles.label}>
+                    Maksymalna wartość odkupu (PLN)
+                  </label>
+                  <input
+                    id="max_purchase_price"
+                    name="max_purchase_price"
+                    type="number"
+                    defaultValue={(businessRules.maxPurchasePrice as number) || 150000}
+                    style={styles.input}
+                  />
+                </div>
               </div>
 
               <div style={styles.field}>
-                <label htmlFor="max_purchase_price" style={styles.label}>
-                  Maksymalna wartość odkupu (PLN)
+                <label htmlFor="guarantee_text" style={styles.label}>
+                  Komunikat czasowy wyceny (Gwarancja)
                 </label>
                 <input
-                  id="max_purchase_price"
-                  name="max_purchase_price"
-                  type="number"
-                  defaultValue={(businessRules.maxPurchasePrice as number) || 150000}
-                  style={styles.input}
-                />
-              </div>
-            </div>
-
-            <div style={styles.field}>
-              <label htmlFor="guarantee_text" style={styles.label}>
-                Komunikat czasowy wyceny (Gwarancja)
-              </label>
-              <input
-                id="guarantee_text"
-                name="guarantee_text"
-                type="text"
-                defaultValue={(businessRules.guaranteeText as string) || "Bezpłatna wycena w najkrótszym czasie"}
-                placeholder="Np. Wycena w najkrótszym czasie..."
-                style={styles.input}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* TAB 6: Integrations */}
-      {activeTab === "integrations" && (
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>🔗 Integracje Zewnętrzne</h3>
-          <p style={styles.sectionDesc}>
-            Wprowadź link Webhooka Google Sheets oraz identyfikatory analityczne.
-          </p>
-
-          <div style={styles.fieldsColumn}>
-            <div style={styles.field}>
-              <label htmlFor="google_sheets_webhook_url" style={styles.label}>
-                Google Sheets Webhook URL
-              </label>
-              <input
-                id="google_sheets_webhook_url"
-                name="google_sheets_webhook_url"
-                type="url"
-                defaultValue={tenant.google_sheets_webhook_url || ""}
-                placeholder="https://script.google.com/macros/s/..."
-                style={styles.input}
-              />
-              <p style={styles.hint}>
-                Adres skryptu Google Apps Script automatycznie dodający wyceny do Arkusza Google.
-              </p>
-            </div>
-
-            <div style={styles.fieldsRow}>
-              <div style={styles.field}>
-                <label htmlFor="pixel_id" style={styles.label}>
-                  Meta Pixel ID
-                </label>
-                <input
-                  id="pixel_id"
-                  name="pixel_id"
+                  id="guarantee_text"
+                  name="guarantee_text"
                   type="text"
-                  defaultValue={tenant.pixel_id || (analytics.pixelId as string) || ""}
-                  placeholder="123456789012345"
-                  style={styles.input}
-                />
-              </div>
-
-              <div style={styles.field}>
-                <label htmlFor="google_analytics_id" style={styles.label}>
-                  Google Analytics ID (GA4)
-                </label>
-                <input
-                  id="google_analytics_id"
-                  name="google_analytics_id"
-                  type="text"
-                  defaultValue={(analytics.googleAnalyticsId as string) || ""}
-                  placeholder="G-XXXXXXXXXX"
+                  defaultValue={(businessRules.guaranteeText as string) || "Bezpłatna wycena w najkrótszym czasie"}
+                  placeholder="Np. Wycena w najkrótszym czasie..."
                   style={styles.input}
                 />
               </div>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* TAB 7: SEO */}
-      {activeTab === "seo" && (
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>🔍 SEO i Tagi Meta (Google)</h3>
-          <p style={styles.sectionDesc}>
-            Optymalizacja pod kątem wyszukiwarki Google i udostępniania w social media.
-          </p>
+          <div style={styles.section}>
+            <h3 style={styles.sectionTitle}>Integracje Zewnętrzne</h3>
+            <p style={styles.sectionDesc}>
+              Wprowadź link Webhooka Google Sheets oraz identyfikatory analityczne.
+            </p>
 
-          <div style={styles.fieldsColumn}>
-            <div style={styles.field}>
-              <label htmlFor="meta_title" style={styles.label}>
-                Tytuł strony w Google (Meta Title)
-              </label>
-              <input
-                id="meta_title"
-                name="meta_title"
-                type="text"
-                defaultValue={(seo.metaTitle as string) || ""}
-                placeholder="Skup Aut Gotówka | Auto Komis Janusz"
-                style={styles.input}
-              />
+            <div style={styles.fieldsColumn}>
+              <div style={styles.field}>
+                <label htmlFor="google_sheets_webhook_url" style={styles.label}>
+                  Google Sheets Webhook URL
+                </label>
+                <input
+                  id="google_sheets_webhook_url"
+                  name="google_sheets_webhook_url"
+                  type="url"
+                  defaultValue={tenant.google_sheets_webhook_url || ""}
+                  placeholder="https://script.google.com/macros/s/..."
+                  style={styles.input}
+                />
+                <p style={styles.hint}>
+                  Adres skryptu Google Apps Script automatycznie dodający wyceny do Arkusza Google.
+                </p>
+              </div>
+
+              <div style={styles.fieldsRow}>
+                <div style={styles.field}>
+                  <label htmlFor="pixel_id" style={styles.label}>
+                    Meta Pixel ID
+                  </label>
+                  <input
+                    id="pixel_id"
+                    name="pixel_id"
+                    type="text"
+                    defaultValue={tenant.pixel_id || (analytics.pixelId as string) || ""}
+                    placeholder="123456789012345"
+                    style={styles.input}
+                  />
+                </div>
+
+                <div style={styles.field}>
+                  <label htmlFor="google_analytics_id" style={styles.label}>
+                    Google Analytics ID (GA4)
+                  </label>
+                  <input
+                    id="google_analytics_id"
+                    name="google_analytics_id"
+                    type="text"
+                    defaultValue={(analytics.googleAnalyticsId as string) || ""}
+                    placeholder="G-XXXXXXXXXX"
+                    style={styles.input}
+                  />
+                </div>
+              </div>
             </div>
+          </div>
 
-            <div style={styles.field}>
-              <label htmlFor="meta_description" style={styles.label}>
-                Opis strony w Google (Meta Description)
-              </label>
-              <textarea
-                id="meta_description"
-                name="meta_description"
-                rows={3}
-                defaultValue={(seo.metaDescription as string) || ""}
-                placeholder="Skupujemy auta za gotówkę w miejscowości Topólka i okolicach. Najlepsze ceny, bezpłatny dojazd..."
-                style={{ ...styles.input, resize: "vertical" }}
-              />
+          <div style={styles.section}>
+            <h3 style={styles.sectionTitle}>SEO i Tagi Meta (Google)</h3>
+            <p style={styles.sectionDesc}>
+              Optymalizacja pod kątem wyszukiwarki Google i udostępniania w social media.
+            </p>
+
+            <div style={styles.fieldsColumn}>
+              <div style={styles.field}>
+                <label htmlFor="meta_title" style={styles.label}>
+                  Tytuł strony w Google (Meta Title)
+                </label>
+                <input
+                  id="meta_title"
+                  name="meta_title"
+                  type="text"
+                  defaultValue={(seo.metaTitle as string) || ""}
+                  placeholder="Skup Aut Gotówka | Auto Komis Janusz"
+                  style={styles.input}
+                />
+              </div>
+
+              <div style={styles.field}>
+                <label htmlFor="meta_description" style={styles.label}>
+                  Opis strony w Google (Meta Description)
+                </label>
+                <textarea
+                  id="meta_description"
+                  name="meta_description"
+                  rows={3}
+                  defaultValue={(seo.metaDescription as string) || ""}
+                  placeholder="Skupujemy auta za gotówkę w miejscowości Topólka i okolicach. Najlepsze ceny, bezpłatny dojazd..."
+                  style={{ ...styles.input, resize: "vertical" }}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -624,7 +631,7 @@ export function SettingsForm({ tenant, targetSlug }: SettingsFormProps) {
           Naciśnij <strong>Zapisz ustawienia</strong>, aby od razu zaktualizować stronę komisu.
         </div>
         <button type="submit" disabled={isPending} style={styles.submitBtn}>
-          {isPending ? "⟳ Zapisuję..." : "💾 Zapisz ustawienia"}
+          {isPending ? "Zapisuję..." : "Zapisz ustawienia"}
         </button>
       </div>
     </form>

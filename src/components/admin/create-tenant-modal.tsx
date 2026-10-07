@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { createTenantAction } from "@/app/admin/actions";
+import { createTenantAction } from "@/app/[dealerSlug]/admin/actions";
 
 export function CreateTenantModal({ host }: { host: string }) {
   const [isOpen, setIsOpen] = useState(false);

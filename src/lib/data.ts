@@ -24,7 +24,7 @@ export const getTenant = unstable_cache(
     }
   },
   ['tenant-by-slug'],
-  { revalidate: process.env.NODE_ENV === 'development' ? 1 : 3600, tags: ['tenants'] }
+  { revalidate: process.env.NODE_ENV === 'development' ? 1 : 60, tags: ['tenants'] }
 );
 
 export const getCars = unstable_cache(

@@ -1,4 +1,5 @@
-import { getCurrentTenant, getAllTenants } from "@/app/admin/actions";
+import { getAdminBasePath } from "@/lib/admin-utils";
+import { getCurrentTenant, getAllTenants } from "@/app/[dealerSlug]/admin/actions";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { CreateTenantModal } from "@/components/admin/create-tenant-modal";
@@ -14,10 +15,12 @@ export default async function AdminTenantsPage({
   searchParams: Promise<{ created?: string }>;
 }) {
   const currentTenant = await getCurrentTenant();
-  if (!currentTenant) redirect("/admin/login");
+  const basePath = await getAdminBasePath();
+  
+  if (!currentTenant) redirect(`${basePath}/admin/login`);
 
   if (!currentTenant.is_super_admin) {
-    redirect("/admin/leads");
+    redirect(`${basePath}/admin/login`);
   }
 
   const { created } = await searchParams;
@@ -30,7 +33,7 @@ export default async function AdminTenantsPage({
     <div>
       <div style={styles.header}>
         <div>
-          <h1 style={styles.title}>🏢 Lista Komisów Samochodowych (Tenanci)</h1>
+          <h1 style={styles.title}>Lista Komisów Samochodowych (Tenanci)</h1>
           <p style={styles.subtitle}>
             Zarządzaj wszystkimi uruchomionymi komisami na platformie VroomDealer SaaS
           </p>
@@ -45,7 +48,7 @@ export default async function AdminTenantsPage({
 
       {created && (
         <div style={styles.createdBanner}>
-          🎉 Pomyślnie utworzono nowy komis <strong>/{created}</strong>! Możesz go teraz skonfigurować lub otworzyć jego stronę.
+          Pomyślnie utworzono nowy komis <strong>/{created}</strong>! Możesz go teraz skonfigurować lub otworzyć jego stronę.
         </div>
       )}
 
@@ -69,7 +72,7 @@ export default async function AdminTenantsPage({
               <div style={styles.cardBody}>
                 {t.custom_domain ? (
                   <p style={styles.detailRow}>
-                    <strong>🌐 Domena podpięta:</strong>{" "}
+                    <strong>Domena podpięta:</strong>{" "}
                     <a
                       href={`https://${t.custom_domain}`}
                       target="_blank"
@@ -81,22 +84,22 @@ export default async function AdminTenantsPage({
                   </p>
                 ) : (
                   <p style={styles.detailRow}>
-                    <strong>🌐 Własna domena:</strong> <span style={{ color: "#64748b" }}>Brak (używa {host}/{t.slug})</span>
+                    <strong>Własna domena:</strong> <span style={{ color: "#64748b" }}>Brak (używa {host}/{t.slug})</span>
                   </p>
                 )}
                 {t.contact_phone && (
                   <p style={styles.detailRow}>
-                    <strong>📞 Telefon:</strong> {t.contact_phone}
+                    <strong>Telefon:</strong> {t.contact_phone}
                   </p>
                 )}
                 {t.notification_email && (
                   <p style={styles.detailRow}>
-                    <strong>✉️ Powiadomienia:</strong> {t.notification_email}
+                    <strong>Powiadomienia:</strong> {t.notification_email}
                   </p>
                 )}
                 {t.city && (
                   <p style={styles.detailRow}>
-                    <strong>📍 Miasto:</strong> {t.city}
+                    <strong>Miasto:</strong> {t.city}
                   </p>
                 )}
               </div>
@@ -108,21 +111,21 @@ export default async function AdminTenantsPage({
                   rel="noreferrer"
                   style={styles.viewSiteBtn}
                 >
-                  🔗 Wizytówka Live ↗
+                  Wizytówka Live ↗
                 </a>
 
                 <Link
                   href={`/admin/leads?tenant=${t.slug}`}
                   style={styles.leadsBtn}
                 >
-                  📋 Leady
+                  Leady
                 </Link>
 
                 <Link
                   href={`/admin/settings?tenant=${t.slug}`}
                   style={styles.manageBtn}
                 >
-                  ⚙️ Edytuj
+                  Edytuj
                 </Link>
               </div>
             </div>

@@ -38,7 +38,8 @@ export default function AdminLoginPage() {
       // Cookies are now set by the API route's Set-Cookie headers.
       // Full page reload ensures middleware reads the fresh cookies.
       const params = new URLSearchParams(window.location.search);
-      const redirectTo = params.get("redirect") || "/admin/leads";
+      const defaultRedirect = window.location.pathname.replace("/login", "/settings");
+      const redirectTo = params.get("redirect") || defaultRedirect;
       window.location.href = redirectTo;
     } catch (err: unknown) {
       console.error("[Login Exception]:", err);

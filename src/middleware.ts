@@ -52,30 +52,9 @@ export async function middleware(req: NextRequest) {
   // Normalize host (strip port and www)
   const host = hostname.split(":")[0].replace(/^www\./, "");
 
-  // ── Admin Panel Auth Protection ──
-  if (pathname.startsWith("/admin")) {
-    // /admin/login is public
-    if (pathname === "/admin/login") {
-      const { supabaseResponse } = await updateSession(req);
-      return supabaseResponse;
-    }
-
-    // All other /admin/* routes require authentication
-    const allCookieNames = req.cookies.getAll().map((c) => c.name);
-    const sbCookie = req.cookies.get("sb-xfagkubntiqvrvbmoira-auth-token");
-    console.log("[MW-DEBUG]", pathname, "cookies:", allCookieNames, "sb-cookie-present:", !!sbCookie, "sb-cookie-len:", sbCookie?.value?.length);
-    
-    const { supabaseResponse, user } = await updateSession(req);
-    console.log("[MW-DEBUG]", pathname, "user-after-updateSession:", user?.email || "NULL");
-    
-    if (!user) {
-      const loginUrl = new URL("/admin/login", req.url);
-      loginUrl.searchParams.set("redirect", pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-
-    return supabaseResponse;
-  }
+  // Update session to keep auth tokens fresh (even though we'll check auth in layouts)
+  const { supabaseResponse, user } = await updateSession(req);
+  // We don't block access here anymore; it will be handled by [dealerSlug]/admin/layout.tsx
 
   // Platform root domains where main SaaS landing page & subpaths /[dealerSlug] live
   const isPlatformDomain =
@@ -99,6 +78,7 @@ export async function middleware(req: NextRequest) {
       url.pathname = "/api/icon";
       url.searchParams.set("tenant", tenantSlug);
       const res = NextResponse.rewrite(url, { request: { headers: req.headers } });
+      supabaseResponse.cookies.getAll().forEach((c) => res.cookies.set(c.name, c.value));
       res.headers.set("x-tenant-slug", tenantSlug);
       res.headers.set("x-is-custom-domain", "true");
       return res;
@@ -113,6 +93,7 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith(`/${tenantSlug}`)
     ) {
       const res = NextResponse.next({ request: { headers: req.headers } });
+      supabaseResponse.cookies.getAll().forEach((c) => res.cookies.set(c.name, c.value));
       res.headers.set("x-tenant-slug", tenantSlug);
       res.headers.set("x-is-custom-domain", "true");
       return res;
@@ -121,12 +102,13 @@ export async function middleware(req: NextRequest) {
     // 3. Rewrite root & subpaths internally to /[dealerSlug] routes
     url.pathname = `/${tenantSlug}${pathname === "/" ? "" : pathname}`;
     const res = NextResponse.rewrite(url, { request: { headers: req.headers } });
+    supabaseResponse.cookies.getAll().forEach((c) => res.cookies.set(c.name, c.value));
     res.headers.set("x-tenant-slug", tenantSlug);
     res.headers.set("x-is-custom-domain", "true");
     return res;
   }
 
-  return NextResponse.next();
+  return supabaseResponse;
 }
 
 export const config = {

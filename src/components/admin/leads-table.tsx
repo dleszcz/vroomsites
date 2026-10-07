@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateLeadStatus } from "@/app/admin/actions";
+import { updateLeadStatus } from "@/app/[dealerSlug]/admin/actions";
 import { useRouter } from "next/navigation";
 
 interface Lead {

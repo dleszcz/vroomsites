@@ -1,5 +1,6 @@
+import { getAdminBasePath } from "@/lib/admin-utils";
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentTenant, getTenantBySlug } from "@/app/admin/actions";
+import { getCurrentTenant, getTenantBySlug } from "@/app/[dealerSlug]/admin/actions";
 import { redirect } from "next/navigation";
 import { LeadsTable } from "@/components/admin/leads-table";
 
@@ -8,25 +9,26 @@ export const metadata = {
 };
 
 export default async function AdminLeadsPage({
-  searchParams,
+  params,
 }: {
-  searchParams: Promise<{ tenant?: string }>;
+  params: Promise<{ dealerSlug: string }>;
 }) {
   const tenant = await getCurrentTenant();
-  if (!tenant) redirect("/admin/login");
+  const basePath = await getAdminBasePath();
+  if (!tenant) redirect(`${basePath}/admin/login`);
 
-  const resolvedParams = await searchParams;
+  const { dealerSlug } = await params;
   const isSuperAdmin = Boolean(tenant.is_super_admin);
 
   const supabase = await createClient();
 
-  // For Superadmin, default tenant filter is "all" (not tenant.slug which is 'superadmin')
-  const targetTenantSlug = isSuperAdmin
-    ? resolvedParams.tenant || "all"
+  // For Superadmin, target tenant is the one in the URL
+  const targetTenantSlug = isSuperAdmin && dealerSlug !== "superadmin"
+    ? dealerSlug
     : tenant.slug;
 
   let targetTenantObj = tenant;
-  if (isSuperAdmin && targetTenantSlug !== "all") {
+  if (isSuperAdmin && targetTenantSlug !== "superadmin") {
     const fetched = await getTenantBySlug(targetTenantSlug);
     if (fetched) targetTenantObj = fetched;
   }
@@ -58,18 +60,11 @@ export default async function AdminLeadsPage({
       <div style={headerStyles.wrapper}>
         <div>
           <h1 style={headerStyles.title}>
-            {isAllView ? "📊 Wszystkie Zgłoszenia (SaaS)" : "📋 Zgłoszenia (Leady)"}{" "}
-            {isSuperAdmin && !isAllView && (
-              <span style={headerStyles.tenantTag}>
-                [{targetTenantObj.business_name || targetTenantSlug}]
-              </span>
-            )}
+            {isAllView ? "Wszystkie Zgłoszenia (SaaS)" : "Skup (Leady)"}
           </h1>
           <p style={headerStyles.subtitle}>
             {isAllView
               ? "Zbiorczy podgląd zgłoszeń ze wszystkich uruchomionych komisów"
-              : isSuperAdmin && targetTenantSlug !== "all"
-              ? `Zarządzaj zgłoszeniami wycen klientów dla: ${targetTenantObj.business_name || targetTenantSlug}`
               : "Zarządzaj zgłoszeniami wycen od klientów"}
           </p>
         </div>

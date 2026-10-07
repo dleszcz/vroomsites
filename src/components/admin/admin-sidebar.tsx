@@ -2,7 +2,7 @@
 
 import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { signOut } from "@/app/admin/actions";
+import { signOut } from "@/app/[dealerSlug]/admin/actions";
 
 interface TenantItem {
   slug: string;
@@ -13,184 +13,133 @@ interface TenantItem {
 interface AdminSidebarProps {
   businessName: string;
   slug: string;
+  basePath?: string;
   isSuperAdmin?: boolean;
+  userEmail?: string;
+  targetLogoUrl?: string | null;
   allTenants?: TenantItem[];
+  siteUrl?: string;
 }
 
 export function AdminSidebar({
   businessName,
   slug,
+  basePath = "",
   isSuperAdmin = false,
-  allTenants = [],
+  userEmail,
+  targetLogoUrl,
+  siteUrl,
 }: AdminSidebarProps) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const activeTenantParam = searchParams.get("tenant");
-
-  // Determine active context
-  const activeTenant = isSuperAdmin && activeTenantParam && activeTenantParam !== "all"
-    ? allTenants.find((t) => t.slug === activeTenantParam) || { slug: activeTenantParam, businessName: activeTenantParam }
-    : null;
 
   return (
     <aside style={styles.sidebar}>
-      {/* Brand Header */}
-      <div style={styles.brandSection}>
-        <div style={styles.brandIcon}>🚗</div>
-        <div>
-          <div style={styles.brandName}>
-            VroomDealer
-            {isSuperAdmin && <span style={styles.crownBadge} title="Konto Superadmina">👑</span>}
-          </div>
-          <div style={styles.brandSub}>
-            {isSuperAdmin ? "Panel Właściciela SaaS" : businessName}
-          </div>
+      {/* User Info Header */}
+      <div style={styles.userSection}>
+        <div style={styles.userAvatar}>
+          {userEmail ? userEmail.charAt(0).toUpperCase() : "A"}
+        </div>
+        <div style={styles.userInfo}>
+          <div style={styles.userEmail}>{userEmail || "Administrator"}</div>
+          {isSuperAdmin ? (
+            <div style={styles.superAdminBadge}>Super Administrator</div>
+          ) : (
+            <div style={styles.roleText}>Właściciel Komisu</div>
+          )}
         </div>
       </div>
 
-      {/* Superadmin Context Switcher Dropdown */}
-      {isSuperAdmin && (
-        <div style={styles.switcherBox}>
-          <label style={styles.switcherLabel}>🏢 KONTEKST ZARZĄDZANIA</label>
-          <select
-            value={activeTenantParam || "all"}
-            onChange={(e) => {
-              const val = e.target.value;
-              if (val === "all") {
-                window.location.href = "/admin/tenants";
-              } else {
-                window.location.href = `/admin/leads?tenant=${val}`;
-              }
-            }}
-            style={styles.switcherSelect}
+      {/* Target Tenant Header */}
+      <div style={styles.brandSection}>
+        {targetLogoUrl ? (
+          <img src={targetLogoUrl} alt={businessName} style={styles.tenantLogo} />
+        ) : (
+          <div style={styles.brandIcon}>
+            {businessName ? businessName.charAt(0).toUpperCase() : "C"}
+          </div>
+        )}
+        <div style={styles.brandInfo}>
+          <div style={styles.brandLabel}>ZARZĄDZASZ KOMISEM</div>
+          <div style={styles.brandName}>{businessName}</div>
+          <div style={styles.brandSlug}>ID: {slug}</div>
+          <a
+            href={siteUrl || `/${slug}`}
+            target="_blank"
+            rel="noreferrer"
+            style={{...styles.liveSiteLink, marginTop: "12px", display: "inline-flex"}}
           >
-            <option value="all">🌐 Widok SaaS (Wszystkie komisy)</option>
-            <optgroup label="── Poszczególne Komisy ──">
-              {allTenants.map((t) => (
-                <option key={t.slug} value={t.slug}>
-                  🏢 {t.businessName || t.slug}
-                </option>
-              ))}
-            </optgroup>
-          </select>
+            <svg style={{ width: "14px", height: "14px", flexShrink: 0 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+            {siteUrl ? siteUrl.replace(/^https?:\/\//, '') : `/${slug}`}
+          </a>
         </div>
-      )}
+      </div>
 
       {/* Navigation Groups */}
       <nav style={styles.nav}>
-        {/* SECTION 1: Superadmin SaaS Navigation */}
-        {isSuperAdmin && (
-          <div style={styles.group}>
-            <div style={styles.groupTitle}>PLATFORMA SAAS</div>
-            <Link
-              href="/admin/tenants"
-              style={{
-                ...styles.navItem,
-                ...(pathname.startsWith("/admin/tenants") ? styles.navItemActive : {}),
-              }}
-            >
-              <span style={styles.navIcon}>🏢</span>
-              <span>Lista Komisów</span>
-            </Link>
+        <div style={styles.group}>
 
-            <Link
-              href="/admin/leads?tenant=all"
-              style={{
-                ...styles.navItem,
-                ...(pathname.startsWith("/admin/leads") && activeTenantParam === "all" ? styles.navItemActive : {}),
-              }}
-            >
-              <span style={styles.navIcon}>📊</span>
-              <span>Wszystkie Leady</span>
-            </Link>
 
-            <Link
-              href="/admin/platform"
-              style={{
-                ...styles.navItem,
-                ...(pathname.startsWith("/admin/platform") ? styles.navItemActive : {}),
-              }}
-            >
-              <span style={styles.navIcon}>🌐</span>
-              <span>Strona VroomDealer</span>
-            </Link>
-          </div>
-        )}
+          <Link
+            href={`${basePath}/admin/settings`}
+            style={{
+              ...styles.navItem,
+              ...(pathname.startsWith(`${basePath}/admin/settings`) ? styles.navItemActive : {}),
+            }}
+          >
+            <svg style={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span>Konfiguracja Komisu</span>
+          </Link>
 
-        {/* SECTION 2: Active Tenant Management (Only shown when a tenant is selected or for regular dealer) */}
-        {(!isSuperAdmin || activeTenant) && (
-          <div style={styles.group}>
-            <div style={styles.groupTitle}>
-              {activeTenant
-                ? `WYBRANY KOMIS: ${activeTenant.businessName.toUpperCase()}`
-                : "ZARZĄDZANIE KOMISEM"}
-            </div>
+          <Link
+            href={`${basePath}/admin/cars`}
+            style={{
+              ...styles.navItem,
+              ...(pathname.startsWith(`${basePath}/admin/cars`) ? styles.navItemActive : {}),
+            }}
+          >
+            <svg style={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a2 2 0 0 0-1.6-.8H8.3a2 2 0 0 0-1.6.8L4 11l-5.16.86a1 1 0 0 0-.84.99V16h3m10 0a2 2 0 1 1-4 0m4 0a2 2 0 1 0-4 0m-10 0a2 2 0 1 1-4 0m4 0a2 2 0 1 0-4 0"></path>
+            </svg>
+            <span>Oferta Samochodów</span>
+          </Link>
 
-            <Link
-              href={
-                activeTenant
-                  ? `/admin/leads?tenant=${activeTenant.slug}`
-                  : "/admin/leads"
-              }
-              style={{
-                ...styles.navItem,
-                ...(pathname.startsWith("/admin/leads") && activeTenantParam !== "all" ? styles.navItemActive : {}),
-              }}
-            >
-              <span style={styles.navIcon}>📋</span>
-              <span>Leady Komisu</span>
-            </Link>
-
-            <Link
-              href={
-                activeTenant
-                  ? `/admin/cars?tenant=${activeTenant.slug}`
-                  : "/admin/cars"
-              }
-              style={{
-                ...styles.navItem,
-                ...(pathname.startsWith("/admin/cars") ? styles.navItemActive : {}),
-              }}
-            >
-              <span style={styles.navIcon}>🚗</span>
-              <span>Oferta Samochodów</span>
-            </Link>
-
-            <Link
-              href={
-                activeTenant
-                  ? `/admin/settings?tenant=${activeTenant.slug}`
-                  : "/admin/settings"
-              }
-              style={{
-                ...styles.navItem,
-                ...(pathname.startsWith("/admin/settings") ? styles.navItemActive : {}),
-              }}
-            >
-              <span style={styles.navIcon}>⚙️</span>
-              <span>Ustawienia Komisu</span>
-            </Link>
-          </div>
-        )}
+          <Link
+            href={`${basePath}/admin/leads`}
+            style={{
+              ...styles.navItem,
+              ...(pathname.startsWith(`${basePath}/admin/leads`) ? styles.navItemActive : {}),
+            }}
+          >
+            <svg style={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <span>Skup (Leady)</span>
+          </Link>
+        </div>
       </nav>
 
       {/* Footer */}
       <div style={styles.footer}>
-        {(activeTenant || !isSuperAdmin) && (
-          <a
-            href={activeTenant ? `/${activeTenant.slug}` : `/${slug}`}
-            target="_blank"
-            rel="noreferrer"
-            style={styles.liveSiteLink}
-          >
-            🔗 Podgląd wizytówki ({activeTenant ? activeTenant.slug : slug}) ↗
-          </a>
-        )}
-
         <button onClick={() => signOut()} style={styles.logoutBtn}>
-          🚪 Wyloguj się
+          <svg style={{ width: "16px", height: "16px", flexShrink: 0 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          Wyloguj się
         </button>
-        <div style={styles.poweredBy}>VroomDealer SaaS Engine</div>
+        <div style={styles.poweredBy}>VroomDealer Engine</div>
       </div>
     </aside>
   );
@@ -199,45 +148,115 @@ export function AdminSidebar({
 const styles: Record<string, React.CSSProperties> = {
   sidebar: {
     width: "270px",
-    minHeight: "100vh",
+    height: "100vh",
     background: "linear-gradient(180deg, #1e293b 0%, #0f172a 100%)",
     borderRight: "1px solid rgba(148, 163, 184, 0.1)",
     display: "flex",
     flexDirection: "column",
     padding: "24px 16px",
-    position: "sticky",
-    top: 0,
     flexShrink: 0,
   },
-  brandSection: {
+  userSection: {
     display: "flex",
     alignItems: "center",
     gap: "12px",
     padding: "12px",
-    marginBottom: "16px",
-    borderBottom: "1px solid rgba(148, 163, 184, 0.1)",
-    paddingBottom: "16px",
+    marginBottom: "8px",
   },
-  brandIcon: {
-    fontSize: "32px",
-  },
-  brandName: {
-    color: "#f1f5f9",
-    fontSize: "17px",
-    fontWeight: "800",
-    lineHeight: "1.2",
+  userAvatar: {
+    width: "36px",
+    height: "36px",
+    borderRadius: "50%",
+    background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+    color: "#fff",
     display: "flex",
     alignItems: "center",
-    gap: "6px",
-    letterSpacing: "-0.3px",
-  },
-  crownBadge: {
+    justifyContent: "center",
     fontSize: "14px",
+    fontWeight: "700",
   },
-  brandSub: {
+  userInfo: {
+    display: "flex",
+    flexDirection: "column",
+    overflow: "hidden",
+  },
+  userEmail: {
+    color: "#f1f5f9",
+    fontSize: "13px",
+    fontWeight: "600",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+  superAdminBadge: {
+    color: "#10b981",
+    fontSize: "11px",
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: "0.5px",
+    marginTop: "2px",
+  },
+  roleText: {
     color: "#94a3b8",
-    fontSize: "12px",
+    fontSize: "11px",
     fontWeight: "500",
+    marginTop: "2px",
+  },
+  brandSection: {
+    background: "rgba(15, 23, 42, 0.4)",
+    border: "1px solid rgba(148, 163, 184, 0.1)",
+    borderRadius: "12px",
+    display: "flex",
+    alignItems: "center",
+    gap: "14px",
+    padding: "16px",
+    marginBottom: "24px",
+  },
+  tenantLogo: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "8px",
+    objectFit: "contain",
+    background: "#fff",
+    padding: "2px",
+  },
+  brandIcon: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "8px",
+    background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+    color: "#fff",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "18px",
+    fontWeight: "800",
+  },
+  brandInfo: {
+    display: "flex",
+    flexDirection: "column",
+    overflow: "hidden",
+  },
+  brandLabel: {
+    color: "#64748b",
+    fontSize: "10px",
+    fontWeight: "800",
+    textTransform: "uppercase",
+    letterSpacing: "0.5px",
+    marginBottom: "2px",
+  },
+  brandName: {
+    color: "#f8fafc",
+    fontSize: "15px",
+    fontWeight: "700",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+  brandSlug: {
+    color: "#94a3b8",
+    fontSize: "11px",
+    fontFamily: "monospace",
     marginTop: "2px",
   },
   switcherBox: {
@@ -303,7 +322,10 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: "700",
   },
   navIcon: {
-    fontSize: "16px",
+    width: "20px",
+    height: "20px",
+    flexShrink: 0,
+    opacity: 0.85,
   },
   footer: {
     borderTop: "1px solid rgba(148, 163, 184, 0.1)",
@@ -314,18 +336,19 @@ const styles: Record<string, React.CSSProperties> = {
     marginTop: "16px",
   },
   liveSiteLink: {
-    display: "block",
-    background: "rgba(59, 130, 246, 0.1)",
-    border: "1px solid rgba(59, 130, 246, 0.2)",
-    borderRadius: "8px",
-    padding: "8px 12px",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "6px",
     color: "#60a5fa",
     fontSize: "12px",
     fontWeight: "600",
-    textDecoration: "none",
-    textAlign: "center",
+    textDecoration: "underline",
+    textUnderlineOffset: "2px",
   },
   logoutBtn: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
     background: "transparent",
     border: "1px solid rgba(148, 163, 184, 0.15)",
     borderRadius: "10px",
@@ -333,7 +356,6 @@ const styles: Record<string, React.CSSProperties> = {
     color: "#94a3b8",
     fontSize: "13px",
     cursor: "pointer",
-    textAlign: "left",
     transition: "all 0.15s ease",
   },
   poweredBy: {

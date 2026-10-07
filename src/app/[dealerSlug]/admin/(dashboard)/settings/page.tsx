@@ -1,4 +1,5 @@
-import { getCurrentTenant, getTenantBySlug } from "@/app/admin/actions";
+import { getAdminBasePath } from "@/lib/admin-utils";
+import { getCurrentTenant, getTenantBySlug } from "@/app/[dealerSlug]/admin/actions";
 import { redirect } from "next/navigation";
 import { SettingsForm } from "@/components/admin/settings-form";
 
@@ -7,20 +8,21 @@ export const metadata = {
 };
 
 export default async function AdminSettingsPage({
-  searchParams,
+  params,
 }: {
-  searchParams: Promise<{ tenant?: string }>;
+  params: Promise<{ dealerSlug: string }>;
 }) {
   const currentTenant = await getCurrentTenant();
-  if (!currentTenant) redirect("/admin/login");
+  const basePath = await getAdminBasePath();
+  if (!currentTenant) redirect(`${basePath}/admin/login`);
 
-  const resolvedParams = await searchParams;
+  const { dealerSlug } = await params;
   const isSuperAdmin = Boolean(currentTenant.is_super_admin);
 
   let targetTenant = currentTenant;
 
-  if (isSuperAdmin && resolvedParams.tenant) {
-    const fetched = await getTenantBySlug(resolvedParams.tenant);
+  if (isSuperAdmin && dealerSlug !== "superadmin") {
+    const fetched = await getTenantBySlug(dealerSlug);
     if (fetched) {
       targetTenant = fetched;
     }
@@ -30,14 +32,10 @@ export default async function AdminSettingsPage({
     <div>
       <div style={headerStyles.wrapper}>
         <h1 style={headerStyles.title}>
-          ⚙️ Ustawienia komisu{" "}
-          {isSuperAdmin && targetTenant.slug !== currentTenant.slug && (
-            <span style={headerStyles.tenantTag}>[{targetTenant.slug}]</span>
-          )}
+          Ustawienia komisu
         </h1>
         <p style={headerStyles.subtitle}>
           Kompleksowa konfiguracja wizytówki, brandingu, kontaktów, integracji i SEO
-          {isSuperAdmin && ` (Zarządzany komis: ${targetTenant.business_name || targetTenant.slug})`}
         </p>
       </div>
 
