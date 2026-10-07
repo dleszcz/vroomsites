@@ -147,7 +147,10 @@ export function tenantToTenant(tenant: Tenant): DealerTenant {
       metaDescription: tenant.business_description || undefined,
     },
     localSeo,
-    businessRules,
+    businessRules: {
+      ...businessRules,
+      tradeIn: businessRules?.tradeIn || { enabled: features.carBuying },
+    },
     features,
   };
 }

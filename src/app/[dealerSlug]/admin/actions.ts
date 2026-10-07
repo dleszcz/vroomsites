@@ -310,6 +310,9 @@ export async function updateTenant(formData: FormData) {
     throw new Error(`Błąd zapisu: ${error.message}`);
   }
 
+  const { revalidateTag } = await import("next/cache");
+  revalidateTag("tenants", "max");
+
   const redirectUrl = isSuperAdmin && targetSlug
     ? `${await getBasePath()}/admin/settings?tenant=${targetSlug}&saved=true`
     : `${await getBasePath()}/admin/settings?saved=true`;

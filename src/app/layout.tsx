@@ -36,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pl" className={GeistSans.variable}>
+    <html lang="pl" className={GeistSans.variable} data-scroll-behavior="smooth">
       <body>
         {children}
         <Analytics />

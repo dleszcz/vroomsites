@@ -64,7 +64,7 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
 
   const breadcrumbs = [
     { label: tenant.businessName, href: getTenantUrl(tenant.slug, "/", tenant.customDomain) },
-    { label: "Skup aut", href: getTenantUrl(tenant.slug, "/#lead-form", tenant.customDomain) },
+    { label: "Skup aut", href: getTenantUrl(tenant.slug, "/skup-aut", tenant.customDomain) },
     { label: localPage.city },
   ];
 

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Menu, Phone, X } from "lucide-react";
+import Link from "next/link";
 import { DealerTenant, hasCarBuying } from "@/types/landing";
 import { getTenantUrl } from "@/lib/urls";
 
@@ -53,9 +54,9 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
 
         <nav className="dealer-header__nav" aria-label="Główna nawigacja">
           {links.map(([label, href]) => (
-            <a key={href} href={href}>
+            <Link key={href} href={href}>
               {label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -82,9 +83,9 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
       {open && (
         <div className="dealer-header__mobile-menu">
           {links.map(([label, href]) => (
-            <a key={href} href={href} onClick={() => setOpen(false)}>
+            <Link key={href} href={href} onClick={() => setOpen(false)}>
               {label}
-            </a>
+            </Link>
           ))}
           <a className="vd-button vd-button--primary" href={ctaHref} onClick={() => setOpen(false)}>
             {ctaLabel}

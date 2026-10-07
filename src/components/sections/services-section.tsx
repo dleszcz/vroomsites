@@ -8,7 +8,7 @@ import { trackEvent } from "@/lib/analytics";
 interface Props { tenant: DealerTenant; config?: SectionConfig; }
 const icons = [WalletCards, CarFront, Siren, FileText];
 const defaults = [
-  { title: "Skup aut", text: "Skupujemy auta wszystkich marek, w każdym stanie technicznym.", label: "Sprzedaj auto", href: "#lead-form" },
+  { title: "Skup aut", text: "Skupujemy auta wszystkich marek, w każdym stanie technicznym.", label: "Sprzedaj auto", href: "/skup-aut" },
   { title: "Sprzedaż aut", text: "Szeroki wybór sprawdzonych samochodów.", label: "Zobacz ofertę", href: "#vehicles" },
   { title: "Pomoc drogowa", text: "Laweta 24/7 na terenie całego kraju.", label: "Zadzwoń", href: "" },
   { title: "Inne usługi", text: "Transport aut, przygotowanie do rejestracji i inne.", label: "Sprawdź", href: "#contact" },

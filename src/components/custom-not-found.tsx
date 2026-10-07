@@ -28,7 +28,7 @@ export function CustomNotFound({
 
   const isTenant = Boolean(effectiveTenantSlug);
   const homeHref = isTenant ? `/${effectiveTenantSlug}` : "/";
-  const valuationHref = isTenant ? `/${effectiveTenantSlug}/skup-aut` : "/#lead-form";
+  const valuationHref = isTenant ? `/${effectiveTenantSlug}/skup-aut` : "/skup-aut";
 
   const primaryBtnLabel = isTenant
     ? "Wróć do strony głównej komisu"

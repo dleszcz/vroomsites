@@ -55,7 +55,7 @@ export function LocalSeoSchema({ tenant, localPage, canonicalUrl }: LocalSeoSche
         "@type": "ListItem",
         position: 2,
         name: "Skup aut",
-        item: `${tenant.customDomain ? `https://${tenant.customDomain}` : `https://vroomdealer.pl/${tenant.slug}`}#lead-form`,
+        item: `${tenant.customDomain ? `https://${tenant.customDomain}` : `https://vroomdealer.pl/${tenant.slug}`}/skup-aut`,
       },
       {
         "@type": "ListItem",

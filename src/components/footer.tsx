@@ -3,6 +3,7 @@
 import React from "react";
 import { Clock3, MapPin, Phone } from "lucide-react";
 import { DealerTenant, hasCarBuying } from "@/types/landing";
+import Link from "next/link";
 
 function FacebookIcon({ size = 18 }: { size?: number }) {
   return (
@@ -133,11 +134,11 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
             <div>
               <h3 className="dealer-footer__heading">Usługi</h3>
               <div className="dealer-footer__links">
-                {carBuying && <a href={getUrl("/#lead-form")}>Skup aut</a>}
-                <a href={getUrl("/samochody")}>Sprzedaż aut</a>
-                <a href={getUrl("/#services")}>Pomoc drogowa</a>
-                <a href={getUrl("/#services")}>Transport aut</a>
-                <a href={getUrl("/#services")}>Inne usługi</a>
+                {carBuying && <Link href={getUrl("/skup-aut")}>Skup aut</Link>}
+                <Link href={getUrl("/samochody")}>Sprzedaż aut</Link>
+                <Link href={getUrl("/#services")}>Pomoc drogowa</Link>
+                <Link href={getUrl("/#services")}>Transport aut</Link>
+                <Link href={getUrl("/#services")}>Inne usługi</Link>
               </div>
             </div>
           )}
@@ -157,8 +158,8 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
         <div className="dealer-footer__bottom">
           <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center" }}>
             <span>© {new Date().getFullYear()} {name}</span>
-            <a href={getUrl("/polityka-prywatnosci")} style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", fontSize: "13px" }}>Polityka prywatności</a>
-            <a href={getUrl("/regulamin")} style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", fontSize: "13px" }}>Regulamin</a>
+            <Link href={getUrl("/polityka-prywatnosci")} style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", fontSize: "13px" }}>Polityka prywatności</Link>
+            <Link href={getUrl("/regulamin")} style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", fontSize: "13px" }}>Regulamin</Link>
           </div>
 
         </div>

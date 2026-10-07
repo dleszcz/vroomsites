@@ -42,7 +42,7 @@ export function SingleCarPage({ tenant, car, relatedCars = [], isCustomDomain }:
   const displayRelated = relatedCars.slice(0, 3);
   const hasMoreRelated = relatedCars.length > displayRelated.length;
 
-  const tradeInHref = getTenantUrl(tenant.slug, "/#lead-form", tenant.customDomain);
+  const tradeInHref = getTenantUrl(tenant.slug, "/skup-aut", tenant.customDomain);
 
   return (
     <div style={{ background: "#f8fafc", minHeight: "100vh" }}>
@@ -337,12 +337,12 @@ export function SingleCarPage({ tenant, car, relatedCars = [], isCustomDomain }:
                     <p style={{ margin: "0 0 8px", fontSize: "12px", color: "var(--color-text-soft)", lineHeight: 1.4 }}>
                       Zostaw swój obecny samochód w rozliczeniu przy zakupie tego auta!
                     </p>
-                    <a
+                    <Link
                       href={tradeInHref}
                       style={{ fontSize: "12px", fontWeight: 700, color: primaryColor, textDecoration: "none", display: "inline-block" }}
                     >
                       Zgłoś auto do darmowej wyceny ➔
-                    </a>
+                    </Link>
                   </div>
                 )}
 

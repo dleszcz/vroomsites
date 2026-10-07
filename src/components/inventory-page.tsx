@@ -7,6 +7,7 @@ import { DealerTenant } from "@/types/landing";
 import { Car } from "@/types/database";
 import { CarCard } from "@/components/car-card";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { getTenantUrl } from "@/lib/urls";
 
 interface InventoryPageProps {
   tenant: DealerTenant;
@@ -45,7 +46,7 @@ export function InventoryPage({ tenant, cars, isCustomDomain }: InventoryPagePro
     return new Date(b.created_at || "").getTime() - new Date(a.created_at || "").getTime();
   });
 
-  const tradeInHref = `/${tenant.slug}#lead-form`;
+  const tradeInHref = getTenantUrl(tenant.slug, "/skup-aut", tenant.customDomain);
 
   return (
     <div style={{ background: "#f8fafc", minHeight: "100vh" }}>
