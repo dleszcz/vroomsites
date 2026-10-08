@@ -56,6 +56,13 @@ export function SectionRenderer({ tenant, mode = "all", isCustomDomain }: Sectio
     });
   } else if (mode === "uslugi") {
     enabled = enabled.filter((s) => s.type === "services" || s.type === "faq" || s.type === "service_areas");
+    
+    // Inject service areas section at the end of the services page if tenant has local pages
+    const hasLocalPages = (tenant.localSeo?.localPages?.filter((lp) => lp.enabled && lp.indexable) || []).length > 0;
+    if (hasLocalPages && !enabled.some((s) => s.type === "service_areas")) {
+      enabled.push({ id: "injected-service-areas", type: "service_areas", enabled: true });
+    }
+
     enabled.sort((a, b) => {
       if (a.type === "services") return -1;
       if (b.type === "services") return 1;
@@ -177,7 +184,6 @@ export function SectionRenderer({ tenant, mode = "all", isCustomDomain }: Sectio
               <React.Fragment key={config.id}>
                 <LeadFormSection tenant={tenant} config={config} />
                 {isRecentlyBoughtCarsSectionEnabled && <RecentlyBoughtCarsSection tenant={tenant} />}
-                {!hasServiceAreasSection && hasLocalPages && <ServiceAreasSection tenant={tenant} isCustomDomain={isCustomDomain} />}
               </React.Fragment>
             );
           case "faq":

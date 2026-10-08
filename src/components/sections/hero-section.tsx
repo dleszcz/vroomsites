@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { Banknote, ClipboardCheck, Scale, Truck } from "lucide-react";
 import { DealerTenant, HeroConfig, SectionConfig, hasCarBuying } from "@/types/landing";
 import { trackEvent } from "@/lib/analytics";
@@ -36,7 +37,7 @@ export function HeroSection({ tenant, config, isCustomDomain }: HeroSectionProps
   const vehiclesHref = getTenantUrl(tenant.slug, "/samochody", tenant.customDomain, isCustomDomain);
   const contactHref = getTenantUrl(tenant.slug, "/#footer", tenant.customDomain, isCustomDomain);
   const primaryHref = data.primaryCta?.href || (carBuying ? getTenantUrl(tenant.slug, "/skup-aut", tenant.customDomain, isCustomDomain) : vehiclesHref);
-  const secondaryHref = data.secondaryCta?.href || (carBuying ? getTenantUrl(tenant.slug, "/#vehicles", tenant.customDomain, isCustomDomain) : contactHref);
+  const secondaryHref = data.secondaryCta?.href || (carBuying ? vehiclesHref : contactHref);
   const primaryLabel = data.primaryCta?.label || (carBuying ? "Sprzedaj auto" : "Zobacz samochody");
   const primarySub = data.primaryCta?.sublabel || (carBuying ? "Bezpłatna wycena" : "Aktualna oferta");
   const secondaryLabel = data.secondaryCta?.label || (carBuying ? "Zobacz samochody" : "Skontaktuj się");
@@ -52,14 +53,14 @@ export function HeroSection({ tenant, config, isCustomDomain }: HeroSectionProps
           <p className="dealer-hero__description">{data.description || tenant.branding.heroSubtitle || (carBuying ? "Szybko, bezpiecznie i bez zbędnych formalności." : "Sprawdzone samochody używane w uczciwych cenach.")}</p>
 
           <div className="dealer-hero__actions">
-            <a className="vd-button vd-button--primary dealer-hero__button" href={primaryHref} onClick={() => carBuying && trackEvent("lead_form_started", { source: "hero_primary_cta", dealer_id: tenant.id })}>
+            <Link className="vd-button vd-button--primary dealer-hero__button" href={primaryHref} onClick={() => carBuying && trackEvent("lead_form_started", { source: "hero_primary_cta", dealer_id: tenant.id })}>
               <span>{primaryLabel}</span>
               <small>{primarySub}</small>
-            </a>
-            <a className="vd-button vd-button--outline-dark dealer-hero__button" href={secondaryHref}>
+            </Link>
+            <Link className="vd-button vd-button--outline-dark dealer-hero__button" href={secondaryHref}>
               <span>{secondaryLabel}</span>
               <small>{secondarySub}</small>
-            </a>
+            </Link>
           </div>
 
           <div className="dealer-hero__benefits">

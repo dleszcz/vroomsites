@@ -37,26 +37,29 @@ export function ContactSection({ tenant, config, hideHeader }: ContactSectionPro
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "2rem" }}>
           {/* Phone box */}
-          <div style={{ background: "var(--color-background)", border: "1px solid var(--color-border)", borderRadius: "16px", padding: "2rem", textAlign: "center" }}>
-            <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>📞</div>
-            <h3 style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--color-foreground)", marginBottom: "0.5rem" }}>
-              Telefon Bezpośredni
-            </h3>
-            <p style={{ color: "var(--color-text-secondary)", fontSize: "0.9rem", marginBottom: "1.25rem" }}>
-              Szybka rozmowa z doradcą i natychmiastowa darmowa wycena.
-            </p>
+          <div style={{ background: "var(--color-background)", border: "1px solid var(--color-border)", borderRadius: "16px", padding: "1.5rem", textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div>
+              <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>📞</div>
+              <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--color-foreground)", marginBottom: "0.5rem" }}>
+                Telefon Bezpośredni
+              </h3>
+              <p style={{ color: "var(--color-text-secondary)", fontSize: "0.9rem", marginBottom: "1.25rem" }}>
+                Szybka rozmowa z doradcą i natychmiastowa darmowa wycena.
+              </p>
+            </div>
             {phone && (
               <a
                 href={telUrl}
                 onClick={() => trackEvent("phone_clicked", { source: "contact_section" })}
                 style={{
-                  display: "inline-block",
-                  padding: "0.85rem 1.5rem",
+                  display: "block",
+                  padding: "0.75rem 1rem",
                   borderRadius: "8px",
                   background: "var(--color-primary)",
                   color: "var(--color-primary-fg)",
-                  fontWeight: 700,
-                  fontSize: "1.05rem",
+                  fontWeight: 600,
+                  fontSize: "0.95rem",
+                  marginTop: "auto"
                 }}
               >
                 {phone}
@@ -65,14 +68,16 @@ export function ContactSection({ tenant, config, hideHeader }: ContactSectionPro
           </div>
 
           {/* WhatsApp box */}
-          <div style={{ background: "var(--color-background)", border: "1px solid var(--color-border)", borderRadius: "16px", padding: "2rem", textAlign: "center" }}>
-            <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>💬</div>
-            <h3 style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--color-foreground)", marginBottom: "0.5rem" }}>
-              Wiadomość WhatsApp
-            </h3>
-            <p style={{ color: "var(--color-text-secondary)", fontSize: "0.9rem", marginBottom: "1.25rem" }}>
-              Wyślij zdjęcia samochodu i opis do wyceny w kilkadziesiąt sekund.
-            </p>
+          <div style={{ background: "var(--color-background)", border: "1px solid var(--color-border)", borderRadius: "16px", padding: "1.5rem", textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div>
+              <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>💬</div>
+              <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--color-foreground)", marginBottom: "0.5rem" }}>
+                Wiadomość WhatsApp
+              </h3>
+              <p style={{ color: "var(--color-text-secondary)", fontSize: "0.9rem", marginBottom: "1.25rem" }}>
+                Wyślij zdjęcia samochodu i opis do wyceny w kilkadziesiąt sekund.
+              </p>
+            </div>
             {whatsappUrl && (
               <a
                 href={whatsappUrl}
@@ -80,13 +85,14 @@ export function ContactSection({ tenant, config, hideHeader }: ContactSectionPro
                 rel="noopener noreferrer"
                 onClick={() => trackEvent("whatsapp_clicked", { source: "contact_section" })}
                 style={{
-                  display: "inline-block",
-                  padding: "0.85rem 1.5rem",
+                  display: "block",
+                  padding: "0.75rem 1rem",
                   borderRadius: "8px",
                   background: "#25d366",
                   color: "#ffffff",
-                  fontWeight: 700,
-                  fontSize: "1.05rem",
+                  fontWeight: 600,
+                  fontSize: "0.95rem",
+                  marginTop: "auto"
                 }}
               >
                 Napisz na WhatsApp
@@ -95,16 +101,16 @@ export function ContactSection({ tenant, config, hideHeader }: ContactSectionPro
           </div>
 
             {/* Location box */}
-            <div style={{ background: "var(--color-background)", border: "1px solid var(--color-border)", borderRadius: "16px", padding: "2rem", textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div style={{ background: "var(--color-background)", border: "1px solid var(--color-border)", borderRadius: "16px", padding: "1.5rem", textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
               <div>
-                <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>📍</div>
-                <h3 style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--color-foreground)", marginBottom: "0.5rem" }}>
+                <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>📍</div>
+                <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--color-foreground)", marginBottom: "0.5rem" }}>
                   Adres i Siedziba
                 </h3>
-                <p style={{ color: "var(--color-foreground)", fontWeight: 600, fontSize: "1rem", marginBottom: "0.25rem" }}>
+                <p style={{ color: "var(--color-foreground)", fontWeight: 600, fontSize: "0.95rem", marginBottom: "0.25rem" }}>
                   {tenant.businessName}
                 </p>
-                <p style={{ color: "var(--color-text-secondary)", fontSize: "0.95rem" }}>
+                <p style={{ color: "var(--color-text-secondary)", fontSize: "0.9rem" }}>
                   {tenant.location?.address ? `${tenant.location.address}, ` : ""}
                   {tenant.location?.city || ""}
                 </p>
@@ -114,30 +120,30 @@ export function ContactSection({ tenant, config, hideHeader }: ContactSectionPro
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
-                  display: "inline-block",
-                  padding: "0.85rem 1.5rem",
+                  display: "block",
+                  padding: "0.75rem 1rem",
                   borderRadius: "8px",
                   background: "#4285F4",
                   color: "#ffffff",
-                  fontWeight: 700,
-                  fontSize: "1.05rem",
+                  fontWeight: 600,
+                  fontSize: "0.95rem",
                   marginTop: "1.25rem",
                 }}
               >
-                Sprawdź nas w Google
+                Sprawdź w Google
               </a>
             </div>
 
             {/* Facebook box */}
             {facebookUrl && (
-              <div style={{ background: "var(--color-background)", border: "1px solid var(--color-border)", borderRadius: "16px", padding: "2rem", textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+              <div style={{ background: "var(--color-background)", border: "1px solid var(--color-border)", borderRadius: "16px", padding: "1.5rem", textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                 <div>
-                  <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>📘</div>
-                  <h3 style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--color-foreground)", marginBottom: "0.5rem" }}>
-                    Nasz profil na Facebooku
+                  <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>📘</div>
+                  <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--color-foreground)", marginBottom: "0.5rem" }}>
+                    Nasz Facebook
                   </h3>
                   <p style={{ color: "var(--color-text-secondary)", fontSize: "0.9rem", marginBottom: "1.25rem" }}>
-                    Odwiedź nas na Facebooku, by być na bieżąco z nowościami i opiniami.
+                    Odwiedź nas na Facebooku, by być na bieżąco.
                   </p>
                 </div>
                 <a
@@ -146,13 +152,13 @@ export function ContactSection({ tenant, config, hideHeader }: ContactSectionPro
                   rel="noopener noreferrer"
                   onClick={() => trackEvent("facebook_clicked", { source: "contact_section" })}
                   style={{
-                    display: "inline-block",
-                    padding: "0.85rem 1.5rem",
+                    display: "block",
+                    padding: "0.75rem 1rem",
                     borderRadius: "8px",
                     background: "#1877F2",
                     color: "#ffffff",
-                    fontWeight: 700,
-                    fontSize: "1.05rem",
+                    fontWeight: 600,
+                    fontSize: "0.95rem",
                     marginTop: "1.25rem",
                   }}
                 >
