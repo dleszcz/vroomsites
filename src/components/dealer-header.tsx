@@ -32,9 +32,9 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
     ["Strona główna", getUrl("/")],
     ...(carBuying ? [["Skup aut", getUrl("/skup-aut")]] : []),
     ["Samochody", getUrl("/samochody")],
-    ["Usługi", getUrl("/#services")],
-    ["O nas", getUrl("/#about")],
-    ["Kontakt", getUrl("/#footer")],
+    ["Usługi", getUrl("/uslugi")],
+    ["O nas", getUrl("/o-nas")],
+    ["Kontakt", getUrl("/kontakt")],
   ];
 
   const headerBg = tenant.branding?.colors?.headerBg || "#080808";

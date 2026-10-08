@@ -136,9 +136,9 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
               <div className="dealer-footer__links">
                 {carBuying && <Link href={getUrl("/skup-aut")}>Skup aut</Link>}
                 <Link href={getUrl("/samochody")}>Sprzedaż aut</Link>
-                <Link href={getUrl("/#services")}>Pomoc drogowa</Link>
-                <Link href={getUrl("/#services")}>Transport aut</Link>
-                <Link href={getUrl("/#services")}>Inne usługi</Link>
+                <Link href={getUrl("/uslugi")}>Pomoc drogowa</Link>
+                <Link href={getUrl("/uslugi")}>Transport aut</Link>
+                <Link href={getUrl("/uslugi")}>Inne usługi</Link>
               </div>
             </div>
           )}

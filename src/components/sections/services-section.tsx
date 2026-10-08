@@ -4,17 +4,19 @@ import React from "react";
 import { CarFront, FileText, Siren, WalletCards } from "lucide-react";
 import { DealerTenant, SectionConfig, hasCarBuying } from "@/types/landing";
 import { trackEvent } from "@/lib/analytics";
+import Link from "next/link";
+import { getTenantUrl } from "@/lib/urls";
 
-interface Props { tenant: DealerTenant; config?: SectionConfig; }
+interface Props { tenant: DealerTenant; config?: SectionConfig; isCustomDomain?: boolean; }
 const icons = [WalletCards, CarFront, Siren, FileText];
 const defaults = [
   { title: "Skup aut", text: "Skupujemy auta wszystkich marek, w każdym stanie technicznym.", label: "Sprzedaj auto", href: "/skup-aut" },
-  { title: "Sprzedaż aut", text: "Szeroki wybór sprawdzonych samochodów.", label: "Zobacz ofertę", href: "#vehicles" },
+  { title: "Sprzedaż aut", text: "Szeroki wybór sprawdzonych samochodów.", label: "Zobacz ofertę", href: "/samochody" },
   { title: "Pomoc drogowa", text: "Laweta 24/7 na terenie całego kraju.", label: "Zadzwoń", href: "" },
-  { title: "Inne usługi", text: "Transport aut, przygotowanie do rejestracji i inne.", label: "Sprawdź", href: "#contact" },
+  { title: "Inne usługi", text: "Transport aut, przygotowanie do rejestracji i inne.", label: "Sprawdź", href: "/kontakt" },
 ];
 
-export function ServicesSection({ tenant }: Props) {
+export function ServicesSection({ tenant, isCustomDomain }: Props) {
   const carBuying = hasCarBuying(tenant);
   const phone = tenant.contact.phone || "";
   const leadHref = tenant.contact.whatsapp ? `https://wa.me/${tenant.contact.whatsapp.replace(/\D/g, "")}` : phone ? `tel:${phone.replace(/\s/g, "")}` : "#about";
@@ -27,7 +29,7 @@ export function ServicesSection({ tenant }: Props) {
     title: service.title,
     text: service.description,
     label: service.ctaLabel || defaults[i]?.label || "Sprawdź",
-    href: service.ctaType === "phone" ? `tel:${(service.ctaValue || phone).replace(/\s/g, "")}` : service.ctaType === "whatsapp" || service.ctaType === "lead_form" ? leadHref : service.ctaValue || defaults[i]?.href || "#about",
+    href: service.ctaType === "phone" ? `tel:${(service.ctaValue || phone).replace(/\s/g, "")}` : service.ctaType === "whatsapp" || service.ctaType === "lead_form" ? leadHref : service.ctaValue || defaults[i]?.href || "/kontakt",
   })) : carBuying ? baseDefaults : baseDefaults.slice(1);
 
   return (
@@ -44,7 +46,13 @@ export function ServicesSection({ tenant }: Props) {
               <Icon className="service-card__icon" strokeWidth={1.7} />
               <h3 className="service-card__title">{card.title}</h3>
               <p className="service-card__text">{card.text}</p>
-              <a className="vd-button vd-button--outline service-card__button" href={card.href} onClick={() => trackEvent("service_clicked", { dealer_id: tenant.id, service: card.title })}>{card.label}</a>
+              {card.href.startsWith("tel:") || card.href.startsWith("http") || card.href.startsWith("mailto:") ? (
+                <a className="vd-button vd-button--outline service-card__button" href={card.href} onClick={() => trackEvent("service_clicked", { dealer_id: tenant.id, service: card.title })}>{card.label}</a>
+              ) : (
+                <Link className="vd-button vd-button--outline service-card__button" href={getTenantUrl(tenant.slug, card.href, tenant.customDomain, isCustomDomain)} onClick={() => trackEvent("service_clicked", { dealer_id: tenant.id, service: card.title })}>
+                  {card.label}
+                </Link>
+              )}
             </div>;
           })}
         </div>

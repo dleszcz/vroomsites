@@ -130,6 +130,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return buildMetadata(title, description);
   }
 
+  if (slug === "uslugi") {
+    const title = `Usługi | ${tenant.businessName}`;
+    const description = `Sprawdź zakres usług świadczonych przez ${tenant.businessName}. Oferujemy kompleksową obsługę i profesjonalne doradztwo.`;
+    return buildMetadata(title, description);
+  }
+
   // 2b. Legal pages
   if (slug === "polityka-prywatnosci") {
     const title = `Polityka prywatności | ${tenant.businessName}`;
@@ -211,8 +217,8 @@ export default async function DynamicSlugPage({ params }: Props) {
     return <InventoryPage tenant={tenant} cars={allCars} isCustomDomain={isCustomDomain} />;
   }
 
-  if (["kontakt", "o-nas"].includes(slug)) {
-    return <SectionRenderer tenant={tenant} mode="all" isCustomDomain={isCustomDomain} />;
+  if (["kontakt", "o-nas", "uslugi"].includes(slug)) {
+    return <SectionRenderer tenant={tenant} mode={slug as "kontakt" | "o-nas" | "uslugi"} isCustomDomain={isCustomDomain} />;
   }
 
   // 2b. Legal pages

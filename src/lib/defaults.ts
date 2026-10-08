@@ -48,6 +48,7 @@ export const DEFAULT_SECTIONS: SectionConfig[] = [
   { id: "sec-vehicles", type: "vehicles", enabled: true, title: "Aktualna oferta samochodów" },
   { id: "sec-about", type: "about", enabled: true, title: "O nas" },
   { id: "sec-lead-form", type: "lead_form", enabled: true, title: "Darmowa Wycena" },
+  { id: "sec-contact", type: "contact", enabled: true, title: "Kontakt" },
 ];
 
 export const DEFAULT_PAGE_CONFIG: LandingPageConfig = {
@@ -174,11 +175,14 @@ export function mergeLocalSeo(
   }
 
   const primaryLocation = tenantLocalSeo.primaryLocation as import("@/types/landing").PrimaryLocation | undefined;
-  const serviceAreas = (Array.isArray(tenantLocalSeo.serviceAreas)
-    ? tenantLocalSeo.serviceAreas
+  const serviceAreasRaw = tenantLocalSeo.serviceAreas || tenantLocalSeo.service_areas;
+  const serviceAreas = (Array.isArray(serviceAreasRaw)
+    ? serviceAreasRaw
     : []) as import("@/types/landing").ServiceArea[];
-  const localPages = (Array.isArray(tenantLocalSeo.localPages)
-    ? tenantLocalSeo.localPages
+  
+  const localPagesRaw = tenantLocalSeo.localPages || tenantLocalSeo.local_pages;
+  const localPages = (Array.isArray(localPagesRaw)
+    ? localPagesRaw
     : []) as import("@/types/landing").LocalPageConfig[];
 
   return {
