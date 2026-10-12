@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Banknote, ClipboardCheck, Scale, Truck } from "lucide-react";
 import { DealerTenant, HeroConfig, SectionConfig, hasCarBuying } from "@/types/landing";
 import { trackEvent } from "@/lib/analytics";
@@ -19,6 +20,12 @@ const iconMap = { cash: Banknote, check: ClipboardCheck, truck: Truck, scale: Sc
 export function HeroSection({ tenant, config, isCustomDomain }: HeroSectionProps) {
   const data = (config?.data || {}) as HeroConfig;
   const heroImage = data.image || tenant.branding.media?.heroImageUrl || "";
+  const isLocalOrKnownRemote =
+    heroImage.startsWith("/") ||
+    heroImage.includes("supabase.co") ||
+    heroImage.includes("unsplash.com") ||
+    heroImage.includes("olxcdn.com") ||
+    heroImage.includes("wikimedia.org");
   const carBuying = hasCarBuying(tenant);
   const benefits = data.benefits?.length ? data.benefits : carBuying ? [
     { label: "Gotówka od ręki", icon: "cash" },
@@ -45,7 +52,21 @@ export function HeroSection({ tenant, config, isCustomDomain }: HeroSectionProps
 
   return (
     <section id="hero" className="dealer-hero">
-      {heroImage && <div className="dealer-hero__media" style={{ backgroundImage: `url(${heroImage})` }} aria-hidden="true" />}
+      {heroImage && (
+        <div className="dealer-hero__media" aria-hidden="true">
+          <Image
+            src={heroImage}
+            alt=""
+            fill
+            priority
+            fetchPriority="high"
+            sizes="100vw"
+            quality={85}
+            className="dealer-hero__image"
+            unoptimized={!isLocalOrKnownRemote}
+          />
+        </div>
+      )}
       <div className="vd-container dealer-hero__content">
         <div className="dealer-hero__copy">
 

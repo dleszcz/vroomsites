@@ -6,3 +6,6 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # Build Check Before Push
 ALWAYS run `npm run build` locally and ensure it passes successfully BEFORE executing `git push`. Never push code to the repository without confirming that the build is green.
+
+# QA & Testing
+ALWAYS thoroughly verify changes and manually test the UI before declaring a task as 'done' or pushing to the repo. Never show the user an unfinished product with dummy text or styling errors.

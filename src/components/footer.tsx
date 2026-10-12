@@ -4,6 +4,7 @@ import React from "react";
 import { Clock3, MapPin, Phone } from "lucide-react";
 import { DealerTenant, hasCarBuying } from "@/types/landing";
 import Link from "next/link";
+import Image from "next/image";
 
 function FacebookIcon({ size = 18 }: { size?: number }) {
   return (
@@ -74,7 +75,20 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
         <div className="dealer-footer__grid">
           <div>
             {logo ? (
-              <img className="dealer-footer__logo" src={logo} alt={name} />
+              <Image
+                className="dealer-footer__logo"
+                src={logo}
+                alt={name}
+                width={160}
+                height={72}
+                unoptimized={
+                  !logo.startsWith("/") &&
+                  !logo.includes("supabase.co") &&
+                  !logo.includes("unsplash.com") &&
+                  !logo.includes("olxcdn.com") &&
+                  !logo.includes("wikimedia.org")
+                }
+              />
             ) : (
               <span style={{ fontWeight: 800, fontSize: "20px", color: "#fff", display: "block", marginBottom: "12px" }}>
                 {name}

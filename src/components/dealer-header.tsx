@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Menu, Phone, X } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { DealerTenant, hasCarBuying } from "@/types/landing";
 import { getTenantUrl } from "@/lib/urls";
 
@@ -15,6 +16,12 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
   const [open, setOpen] = useState(false);
   const phone = tenant.contact.phone || "";
   const logo = tenant.logoUrl || tenant.branding.logoUrl;
+  const isLocalOrKnownRemote =
+    logo?.startsWith("/") ||
+    logo?.includes("supabase.co") ||
+    logo?.includes("unsplash.com") ||
+    logo?.includes("olxcdn.com") ||
+    logo?.includes("wikimedia.org");
   const primaryHref = tenant.contact.whatsapp
     ? `https://wa.me/${tenant.contact.whatsapp.replace(/\D/g, "")}`
     : phone
@@ -44,7 +51,15 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
       <div className="dealer-header__inner">
         <a href={getUrl("/")} aria-label={tenant.businessName}>
           {logo ? (
-            <img className="dealer-header__logo" src={logo} alt={tenant.businessName} />
+            <Image
+              className="dealer-header__logo"
+              src={logo}
+              alt={tenant.businessName}
+              width={145}
+              height={62}
+              priority
+              unoptimized={!isLocalOrKnownRemote}
+            />
           ) : (
             <span style={{ fontWeight: 800, fontSize: "18px", color: "#fff" }}>
               {tenant.businessName}

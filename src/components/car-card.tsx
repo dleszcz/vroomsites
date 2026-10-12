@@ -28,6 +28,7 @@ export function CarCard({ car, dealerSlug, customDomain, isCustomDomain }: CarCa
             alt={`${car.make} ${car.model} ${car.year ?? ""}`}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            quality={75}
             style={{ objectFit: "cover" }}
             className="car-card__image"
           />
