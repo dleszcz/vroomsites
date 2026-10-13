@@ -85,24 +85,9 @@ export function InventoryPage({ tenant, cars, isCustomDomain }: InventoryPagePro
       <section style={{ padding: "32px 0 60px" }}>
         <div className="vd-container">
           {/* Controls Bar */}
-          <div
-            className="inventory-filter-bar"
-            style={{
-              padding: "16px 20px",
-              borderRadius: "16px",
-              background: "#ffffff",
-              border: "1.5px solid #e2e8f0",
-              boxShadow: "0 2px 12px rgba(0,0,0,0.03)",
-              marginBottom: "32px",
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "14px",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
+          <div className="inventory-filter-bar">
             {/* Search Input */}
-            <div style={{ position: "relative", flex: "1 1 280px" }}>
+            <div className="inventory-filter-bar__search" style={{ height: "44px" }}>
               <Search
                 size={18}
                 style={{
@@ -111,6 +96,7 @@ export function InventoryPage({ tenant, cars, isCustomDomain }: InventoryPagePro
                   top: "50%",
                   transform: "translateY(-50%)",
                   color: "#64748b",
+                  pointerEvents: "none",
                 }}
               />
               <input
@@ -118,40 +104,15 @@ export function InventoryPage({ tenant, cars, isCustomDomain }: InventoryPagePro
                 placeholder="Szukaj marki lub modelu (np. BMW, Audi)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                style={{
-                  width: "100%",
-                  height: "44px",
-                  padding: "0 14px 0 42px",
-                  borderRadius: "10px",
-                  border: "1.5px solid #cbd5e1",
-                  fontSize: "14px",
-                  color: "#0f172a",
-                  background: "#f8fafc",
-                  outline: "none",
-                  transition: "border-color 0.2s ease",
-                }}
               />
             </div>
 
             {/* Fuel Filter & Sort Selects */}
-            <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center" }}>
-              <div style={{ position: "relative" }}>
+            <div className="inventory-filter-bar__selects">
+              <div className="inventory-filter-bar__select-wrap">
                 <select
                   value={selectedFuel}
                   onChange={(e) => setSelectedFuel(e.target.value)}
-                  style={{
-                    height: "44px",
-                    padding: "0 36px 0 16px",
-                    borderRadius: "10px",
-                    border: "1.5px solid #cbd5e1",
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    color: "#0f172a",
-                    background: "#ffffff",
-                    cursor: "pointer",
-                    appearance: "none",
-                    minWidth: "160px",
-                  }}
                 >
                   <option value="all">Wszystkie napędy</option>
                   <option value="diesel">Diesel</option>
@@ -162,23 +123,10 @@ export function InventoryPage({ tenant, cars, isCustomDomain }: InventoryPagePro
                 <ChevronDown size={16} style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "#64748b" }} />
               </div>
 
-              <div style={{ position: "relative" }}>
+              <div className="inventory-filter-bar__select-wrap">
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as "newest" | "price_asc" | "price_desc")}
-                  style={{
-                    height: "44px",
-                    padding: "0 36px 0 16px",
-                    borderRadius: "10px",
-                    border: "1.5px solid #cbd5e1",
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    color: "#0f172a",
-                    background: "#ffffff",
-                    cursor: "pointer",
-                    appearance: "none",
-                    minWidth: "180px",
-                  }}
                 >
                   <option value="newest">Najnowsze ogłoszenia</option>
                   <option value="price_asc">Cena: od najniższej</option>

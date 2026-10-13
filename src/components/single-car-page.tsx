@@ -64,9 +64,9 @@ export function SingleCarPage({ tenant, car, relatedCars = [], isCustomDomain }:
               { label: `${car.make} ${car.model}` },
             ]}
           />
-          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "16px", marginTop: "12px" }}>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "16px", marginTop: "12px", minWidth: 0, width: "100%" }}>
+            <div style={{ minWidth: 0, flex: "1 1 auto" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px", flexWrap: "wrap" }}>
                 {car.is_sold ? (
                   <span style={{ padding: "3px 8px", borderRadius: "4px", background: "#ef4444", color: "#fff", fontSize: "11px", fontWeight: 700, textTransform: "uppercase" }}>
                     Sprzedany
@@ -82,7 +82,7 @@ export function SingleCarPage({ tenant, car, relatedCars = [], isCustomDomain }:
                   </span>
                 )}
               </div>
-              <h1 className="vd-heading" style={{ fontSize: "clamp(24px, 3vw, 34px)", color: "#fff", margin: 0, lineHeight: 1.2 }}>
+              <h1 className="vd-heading" style={{ fontSize: "clamp(22px, 3vw, 34px)", color: "#fff", margin: 0, lineHeight: 1.2, wordBreak: "break-word" }}>
                 {carName}
               </h1>
             </div>
@@ -97,6 +97,7 @@ export function SingleCarPage({ tenant, car, relatedCars = [], isCustomDomain }:
                 fontSize: "14px",
                 textDecoration: "none",
                 fontWeight: 600,
+                flexShrink: 0,
               }}
             >
               <ArrowLeft size={16} /> Powrót do oferty
@@ -113,92 +114,74 @@ export function SingleCarPage({ tenant, car, relatedCars = [], isCustomDomain }:
             {/* Left Column: Gallery, Specs, Description */}
             <div className="car-detail-main">
               {/* Photo Gallery Box */}
-              <div
-                style={{
-                  background: "#ffffff",
-                  padding: "16px",
-                  borderRadius: "16px",
-                  border: "1px solid var(--color-border)",
-                  boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
-                  marginBottom: "24px",
-                }}
-              >
+              <div className="car-detail-card" style={{ padding: "14px" }}>
                 <CarGallery images={car.images || []} alt={carName} />
               </div>
 
               {/* Technical Specifications Grid */}
-              <div
-                style={{
-                  background: "#ffffff",
-                  padding: "24px",
-                  borderRadius: "16px",
-                  border: "1px solid var(--color-border)",
-                  boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
-                  marginBottom: "24px",
-                }}
-              >
+              <div className="car-detail-card">
                 <h2 style={{ fontSize: "18px", fontWeight: 800, marginBottom: "18px", display: "flex", alignItems: "center", gap: "10px" }}>
-                  <ShieldCheck size={22} style={{ color: primaryColor }} />
+                  <ShieldCheck size={22} style={{ color: primaryColor, flexShrink: 0 }} />
                   Dane techniczne pojazdu
                 </h2>
 
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "14px" }}>
+                <div className="car-detail-specs-grid">
                   {car.year && (
-                    <div style={{ padding: "12px 14px", borderRadius: "10px", background: "var(--color-bg-subtle)", display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div className="car-detail-spec-item">
                       <Calendar size={20} style={{ color: primaryColor, flexShrink: 0 }} />
                       <div>
                         <span style={{ fontSize: "11px", color: "var(--color-text-soft)", textTransform: "uppercase", fontWeight: 700, display: "block" }}>Rok produkcji</span>
-                        <strong style={{ fontSize: "14px", color: "var(--color-foreground)" }}>{car.year}</strong>
+                        <strong>{car.year}</strong>
                       </div>
                     </div>
                   )}
 
                   {car.mileage && (
-                    <div style={{ padding: "12px 14px", borderRadius: "10px", background: "var(--color-bg-subtle)", display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div className="car-detail-spec-item">
                       <Gauge size={20} style={{ color: primaryColor, flexShrink: 0 }} />
                       <div>
                         <span style={{ fontSize: "11px", color: "var(--color-text-soft)", textTransform: "uppercase", fontWeight: 700, display: "block" }}>Przebieg</span>
-                        <strong style={{ fontSize: "14px", color: "var(--color-foreground)" }}>{formatMileage(car.mileage)}</strong>
+                        <strong>{formatMileage(car.mileage)}</strong>
                       </div>
                     </div>
                   )}
 
                   {car.fuel_type && (
-                    <div style={{ padding: "12px 14px", borderRadius: "10px", background: "var(--color-bg-subtle)", display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div className="car-detail-spec-item">
                       <Fuel size={20} style={{ color: primaryColor, flexShrink: 0 }} />
                       <div>
                         <span style={{ fontSize: "11px", color: "var(--color-text-soft)", textTransform: "uppercase", fontWeight: 700, display: "block" }}>Rodzaj paliwa</span>
-                        <strong style={{ fontSize: "14px", color: "var(--color-foreground)" }}>{car.fuel_type}</strong>
+                        <strong>{car.fuel_type}</strong>
                       </div>
                     </div>
                   )}
 
                   {car.engine_capacity && (
-                    <div style={{ padding: "12px 14px", borderRadius: "10px", background: "var(--color-bg-subtle)", display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div className="car-detail-spec-item">
                       <Settings size={20} style={{ color: primaryColor, flexShrink: 0 }} />
                       <div>
                         <span style={{ fontSize: "11px", color: "var(--color-text-soft)", textTransform: "uppercase", fontWeight: 700, display: "block" }}>Silnik</span>
-                        <strong style={{ fontSize: "14px", color: "var(--color-foreground)" }}>{car.engine_capacity}</strong>
+                        <strong>{car.engine_capacity}</strong>
                       </div>
                     </div>
                   )}
 
                   {car.transmission && (
-                    <div style={{ padding: "12px 14px", borderRadius: "10px", background: "var(--color-bg-subtle)", display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div className="car-detail-spec-item">
                       <Settings size={20} style={{ color: primaryColor, flexShrink: 0 }} />
                       <div>
                         <span style={{ fontSize: "11px", color: "var(--color-text-soft)", textTransform: "uppercase", fontWeight: 700, display: "block" }}>Skrzynia biegów</span>
-                        <strong style={{ fontSize: "14px", color: "var(--color-foreground)" }}>{car.transmission}</strong>
+                        <strong>{car.transmission}</strong>
                       </div>
                     </div>
                   )}
 
                   {car.color && (
-                    <div style={{ padding: "12px 14px", borderRadius: "10px", background: "var(--color-bg-subtle)", display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div className="car-detail-spec-item">
                       <Palette size={20} style={{ color: primaryColor, flexShrink: 0 }} />
                       <div>
                         <span style={{ fontSize: "11px", color: "var(--color-text-soft)", textTransform: "uppercase", fontWeight: 700, display: "block" }}>Kolor nadwozia</span>
-                        <strong style={{ fontSize: "14px", color: "var(--color-foreground)" }}>{car.color}</strong>
+                        <strong>{car.color}</strong>
                       </div>
                     </div>
                   )}
@@ -207,37 +190,18 @@ export function SingleCarPage({ tenant, car, relatedCars = [], isCustomDomain }:
 
               {/* Description Box with top padding & heading */}
               {car.description && (
-                <div
-                  style={{
-                    background: "#ffffff",
-                    padding: "24px",
-                    borderRadius: "16px",
-                    border: "1px solid var(--color-border)",
-                    boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
-                    marginBottom: "24px",
-                  }}
-                >
+                <div className="car-detail-card">
                   <h2 style={{ fontSize: "18px", fontWeight: 800, marginBottom: "14px", marginTop: 0 }}>
                     Opis pojazdu
                   </h2>
-                  <p style={{ fontSize: "15px", lineHeight: 1.7, color: "#334155", whiteSpace: "pre-line", margin: 0 }}>
+                  <p style={{ fontSize: "15px", lineHeight: 1.7, color: "#334155", whiteSpace: "pre-line", margin: 0, wordBreak: "break-word" }}>
                     {car.description}
                   </p>
                 </div>
               )}
 
               {/* Trust Badges */}
-              <div
-                style={{
-                  background: "#ffffff",
-                  padding: "20px 24px",
-                  borderRadius: "16px",
-                  border: "1px solid var(--color-border)",
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                  gap: "14px",
-                }}
-              >
+              <div className="car-detail-card car-detail-trust-grid" style={{ padding: "18px 20px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <CheckCircle2 size={18} style={{ color: "#10b981", flexShrink: 0 }} />
                   <span style={{ fontSize: "13px", fontWeight: 600 }}>Sprawdzony stan techniczny</span>
@@ -256,11 +220,8 @@ export function SingleCarPage({ tenant, car, relatedCars = [], isCustomDomain }:
             {/* Right Column: Sticky Purchasing & Dealer Box */}
             <div className="car-detail-sidebar">
               <div
+                className="car-detail-card"
                 style={{
-                  background: "#ffffff",
-                  padding: "24px",
-                  borderRadius: "16px",
-                  border: "1px solid var(--color-border)",
                   boxShadow: "0 4px 20px rgba(0,0,0,0.04)",
                   display: "flex",
                   flexDirection: "column",

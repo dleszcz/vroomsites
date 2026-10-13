@@ -26,19 +26,7 @@ export function CarGallery({ images, alt }: CarGalleryProps) {
   return (
     <div className="gallery" id="car-gallery">
       {/* Main image */}
-      <div
-        className="gallery__main"
-        style={{
-          position: "relative",
-          width: "100%",
-          aspectRatio: "16 / 10",
-          minHeight: "280px",
-          maxHeight: "520px",
-          borderRadius: "12px",
-          overflow: "hidden",
-          background: "#0f172a",
-        }}
-      >
+      <div className="gallery__main">
         <Image
           src={images[activeIndex]}
           alt={`${alt} - zdjęcie ${activeIndex + 1}`}
@@ -51,7 +39,7 @@ export function CarGallery({ images, alt }: CarGalleryProps) {
           blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjZjhmYWZjIi8+PC9zdmc+"
         />
         {images.length > 1 && (
-          <div className="gallery__counter" style={{ background: 'rgba(0,0,0,0.7)', padding: '0.375rem 0.875rem', fontSize: '0.8125rem' }}>
+          <div className="gallery__counter">
             {activeIndex + 1} / {images.length}
           </div>
         )}
@@ -64,7 +52,7 @@ export function CarGallery({ images, alt }: CarGalleryProps) {
               }
               aria-label="Poprzednie zdjęcie"
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
             </button>
             <button
               className="gallery__nav gallery__nav--next"
@@ -73,7 +61,7 @@ export function CarGallery({ images, alt }: CarGalleryProps) {
               }
               aria-label="Następne zdjęcie"
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
             </button>
           </>
         )}
@@ -81,12 +69,11 @@ export function CarGallery({ images, alt }: CarGalleryProps) {
 
       {/* Thumbnails */}
       {images.length > 1 && (
-        <div className="gallery__thumbs" style={{ display: 'flex', overflowX: 'auto', gap: '0.75rem', marginTop: '1rem', scrollSnapType: 'x mandatory', paddingBottom: '4px' }}>
+        <div className="gallery__thumbs">
           {images.map((src, i) => (
             <button
               key={i}
               className={`gallery__thumb ${i === activeIndex ? "gallery__thumb--active" : ""}`}
-              style={{ position: "relative", overflow: "hidden", width: '80px', height: '60px', flexShrink: 0, scrollSnapAlign: 'start', borderRadius: 'var(--radius-sm)', border: i === activeIndex ? "2px solid var(--color-primary, #1686E0)" : "1px solid #cbd5e1" }}
               onClick={() => setActiveIndex(i)}
               aria-label={`Zdjęcie ${i + 1}`}
             >
