@@ -219,6 +219,11 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
   };
 
   const onSubmit = async (data: LeadFormData) => {
+    if (photoPreviews.length === 0) {
+      setErrorMsg("Dodaj przynajmniej 1 zdjęcie samochodu (zdjęcia są wymagane).");
+      return;
+    }
+
     setLoading(true);
     setErrorMsg("");
 
@@ -738,14 +743,14 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
               </div>
             )}
 
-            {/* STEP 4: ZDJĘCIA (OPCJONALNIE) */}
+            {/* STEP 4: ZDJĘCIA (WYMAGANE) */}
             {step === 4 && (
               <div>
                 <h3 style={{ fontSize: "22px", fontWeight: 800, color: "#ffffff", marginBottom: "6px" }}>
-                  4. Dodaj Zdjęcia Pojazdu (Opcjonalnie)
+                  4. Dodaj Zdjęcia Pojazdu (Wymagane) <span style={{ color: "#ef4444" }}>*</span>
                 </h3>
                 <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.7)", marginBottom: "20px" }}>
-                  Zdjęcia pomagają nam w dokładniejszej i szybszej wycenie. Max 4 zdjęcia.
+                  Dodaj przynajmniej 1 zdjęcie pojazdu (np. z zewnątrz lub wnętrze). Zdjęcia są niezbędne do przygotowania rzetelnej oferty odkupu. (Max 4 zdjęcia).
                 </p>
 
                 <div
