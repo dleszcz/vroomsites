@@ -202,6 +202,7 @@ export function LegalPage({ tenant, type }: LegalPageProps) {
             <li>Użytkownik zobowiązany jest do podawania prawdziwych i aktualnych danych.</li>
             <li>Przesłanie formularza jest równoznaczne z wyrażeniem zgody na kontakt telefoniczny w celu przedstawienia wyceny pojazdu.</li>
             <li>Dane przesłane w formularzu są przetwarzane zgodnie z Polityką prywatności.</li>
+            <li>Użytkownik przesyłając zdjęcia pojazdu oświadcza, że posiada do nich pełne prawa i zezwala na ich udostępnienie w celu przygotowania wyceny. Użytkownik zobowiązuje się do nieumieszczania na zdjęciach dokumentów tożsamości (dowód osobisty, paszport, PESEL), danych osób trzecich ani wizerunku osób fizycznych. Widoczność standardowych tablic rejestracyjnych na fotografiach pojazdu jest dozwolona i służy wyłącznie weryfikacji danych technicznych pojazdu.</li>
           </ol>
         </section>
 
