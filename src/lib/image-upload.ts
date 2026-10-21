@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/client";
+import { createClient as createAnonClient } from "@supabase/supabase-js";
 
 /**
  * Compresses an image client-side to a max dimension and quality,
@@ -74,7 +74,9 @@ export async function compressImage(
  */
 export async function uploadCarPhoto(file: File, tenantSlug: string): Promise<string> {
   const compressedBlob = await compressImage(file);
-  const supabase = createClient();
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co";
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-key";
+  const supabase = createAnonClient(supabaseUrl, supabaseKey);
 
   const timestamp = Date.now();
   const randomSuffix = Math.random().toString(36).substring(2, 8);

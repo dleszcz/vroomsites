@@ -1,9 +1,9 @@
 -- ============================================================
--- VroomSites / VroomDealer — Migracja v7: Uprawnienia Admina do aut i komisów (RLS)
+-- VroomSites / VroomDealer — Migracja v7: Uprawnienia Admina do aut, komisów i zdjęć (RLS)
 -- Uruchom w Supabase Dashboard -> SQL Editor (projekt axzenvjqkhcbctnvofkl)
 -- ============================================================
 
--- 1. Upewnij się, że RLS jest włączone
+-- 1. Upewnij się, że RLS jest włączone dla CARS
 ALTER TABLE cars ENABLE ROW LEVEL SECURITY;
 
 -- 2. Zezwól zalogowanym użytkownikom (panel admina) na dodawanie aut
@@ -32,7 +32,7 @@ CREATE POLICY "Public can read cars" ON cars
   USING (true);
 
 -- ============================================================
--- 6. Tabela TENANTS (dla pewności, żeby edycja ustawień i dodawanie komisów nie były blokowane)
+-- 6. Tabela TENANTS (edycja komisu i ustawień w panelu)
 -- ============================================================
 ALTER TABLE tenants ENABLE ROW LEVEL SECURITY;
 
@@ -51,3 +51,22 @@ DROP POLICY IF EXISTS "Public can read tenants" ON tenants;
 CREATE POLICY "Public can read tenants" ON tenants
   FOR SELECT TO public
   USING (true);
+
+-- ============================================================
+-- 7. Supabase Storage: Bucket 'scout-photos'
+-- Zezwolenie na wgrywanie zdjęć dla anonimów oraz zalogowanych użytkowników
+-- ============================================================
+DROP POLICY IF EXISTS "Allow authenticated upload to scout-photos" ON storage.objects;
+CREATE POLICY "Allow authenticated upload to scout-photos" ON storage.objects
+  FOR INSERT TO authenticated
+  WITH CHECK (bucket_id = 'scout-photos');
+
+DROP POLICY IF EXISTS "Allow anon upload to scout-photos" ON storage.objects;
+CREATE POLICY "Allow anon upload to scout-photos" ON storage.objects
+  FOR INSERT TO anon
+  WITH CHECK (bucket_id = 'scout-photos');
+
+DROP POLICY IF EXISTS "Allow public view scout-photos" ON storage.objects;
+CREATE POLICY "Allow public view scout-photos" ON storage.objects
+  FOR SELECT TO public
+  USING (bucket_id = 'scout-photos');
