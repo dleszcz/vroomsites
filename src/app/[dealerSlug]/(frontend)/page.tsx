@@ -62,9 +62,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       images: ogImageUrl ? [ogImageUrl] : [],
     },
-    other: {
-      "fb:app_id": process.env.NEXT_PUBLIC_FB_APP_ID || "",
-    },
+    facebook: process.env.NEXT_PUBLIC_FB_APP_ID
+      ? {
+          appId: process.env.NEXT_PUBLIC_FB_APP_ID,
+        }
+      : undefined,
   };
 }
 
