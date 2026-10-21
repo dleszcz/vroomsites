@@ -46,7 +46,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     imageUrl?: string,
     isIndexable = true
   ): Metadata => {
-    const finalOgImage = imageUrl || ogImageUrl;
+    const rawImage = imageUrl || ogImageUrl;
+    const finalOgImage = rawImage
+      ? rawImage.startsWith("http")
+        ? `${baseUrl}/api/og-image?url=${encodeURIComponent(rawImage)}`
+        : `${baseUrl}${rawImage}`
+      : undefined;
+
     return {
       title,
       description,
@@ -64,7 +70,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         locale: "pl_PL",
         type: "website",
         images: finalOgImage
-          ? [{ url: finalOgImage, width: 1200, height: 630, alt: title }]
+          ? [
+              {
+                url: finalOgImage,
+                secureUrl: finalOgImage,
+                width: 1200,
+                height: 630,
+                alt: title,
+                type: "image/jpeg",
+              },
+            ]
           : [],
       },
       twitter: {
