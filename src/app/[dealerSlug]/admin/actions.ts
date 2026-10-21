@@ -381,139 +381,169 @@ export async function getAdminCars(tenantSlug: string) {
 
 
 export async function toggleCarSoldStatus(carId: string, isSold: boolean, tenantSlug: string) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  if (!user) {
-    throw new Error("Nie jesteś zalogowany");
+    if (!user) {
+      return { success: false, error: "Nie jesteś zalogowany" };
+    }
+
+    const { error } = await supabase
+      .from("cars")
+      .update({ is_sold: isSold })
+      .eq("id", carId);
+
+    if (error) {
+      return { success: false, error: `Błąd aktualizacji statusu auta: ${error.message}` };
+    }
+
+    // Revalidate relevant pages
+    const { revalidatePath } = await import("next/cache");
+    revalidatePath(`/${tenantSlug}/admin/cars`);
+    revalidatePath(`/${tenantSlug}`);
+    revalidatePath(`/${tenantSlug}/samochody`);
+
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || "Wystąpił nieoczekiwany błąd" };
   }
-
-  const { error } = await supabase
-    .from("cars")
-    .update({ is_sold: isSold })
-    .eq("id", carId);
-
-  if (error) {
-    throw new Error(`Błąd aktualizacji statusu auta: ${error.message}`);
-  }
-
-  // Revalidate relevant pages
-  const { revalidatePath } = await import("next/cache");
-  revalidatePath(`/${tenantSlug}/admin/cars`);
-  revalidatePath(`/${tenantSlug}`);
-  revalidatePath(`/${tenantSlug}/samochody`);
 }
 
 export async function toggleCarFeaturedStatus(carId: string, isFeatured: boolean, tenantSlug: string) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  if (!user) {
-    throw new Error("Nie jesteś zalogowany");
+    if (!user) {
+      return { success: false, error: "Nie jesteś zalogowany" };
+    }
+
+    const { error } = await supabase
+      .from("cars")
+      .update({ is_featured: isFeatured })
+      .eq("id", carId);
+
+    if (error) {
+      return { success: false, error: `Błąd aktualizacji wyróżnienia auta: ${error.message}` };
+    }
+
+    // Revalidate relevant pages
+    const { revalidatePath } = await import("next/cache");
+    revalidatePath(`/${tenantSlug}/admin/cars`);
+    revalidatePath(`/${tenantSlug}`);
+    revalidatePath(`/${tenantSlug}/samochody`);
+
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || "Wystąpił nieoczekiwany błąd" };
   }
-
-  const { error } = await supabase
-    .from("cars")
-    .update({ is_featured: isFeatured })
-    .eq("id", carId);
-
-  if (error) {
-    throw new Error(`Błąd aktualizacji wyróżnienia auta: ${error.message}`);
-  }
-
-  // Revalidate relevant pages
-  const { revalidatePath } = await import("next/cache");
-  revalidatePath(`/${tenantSlug}/admin/cars`);
-  revalidatePath(`/${tenantSlug}`);
-  revalidatePath(`/${tenantSlug}/samochody`);
 }
 
 export async function createCar(carData: any, tenantSlug: string) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Nie jesteś zalogowany");
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: "Nie jesteś zalogowany" };
 
-  const tenant = await getTenantBySlug(tenantSlug);
-  if (!tenant) throw new Error("Nie znaleziono komisu");
+    const tenant = await getTenantBySlug(tenantSlug);
+    if (!tenant) return { success: false, error: "Nie znaleziono komisu" };
 
-  const slug = `${carData.make}-${carData.model}-${carData.year || ''}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Math.random().toString(36).substring(2, 6);
+    const slug = `${carData.make}-${carData.model}-${carData.year || ''}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Math.random().toString(36).substring(2, 6);
 
-  const { error } = await supabase.from("cars").insert({
-    tenant_id: tenant.id,
-    slug,
-    make: carData.make,
-    model: carData.model,
-    year: carData.year ? parseInt(String(carData.year)) : null,
-    price: carData.price ? parseFloat(String(carData.price)) : null,
-    mileage: carData.mileage ? parseInt(String(carData.mileage)) : null,
-    fuel_type: carData.fuel_type || null,
-    engine_capacity: carData.engine_capacity || null,
-    transmission: carData.transmission || null,
-    color: carData.color || null,
-    description: carData.description || null,
-    images: carData.images || [],
-    is_sold: false,
-    is_featured: false
-  });
+    const { error } = await supabase.from("cars").insert({
+      tenant_id: tenant.id,
+      slug,
+      make: carData.make,
+      model: carData.model,
+      year: carData.year ? parseInt(String(carData.year)) : null,
+      price: carData.price ? parseFloat(String(carData.price)) : null,
+      mileage: carData.mileage ? parseInt(String(carData.mileage)) : null,
+      fuel_type: carData.fuel_type || null,
+      engine_capacity: carData.engine_capacity || null,
+      transmission: carData.transmission || null,
+      color: carData.color || null,
+      description: carData.description || null,
+      images: carData.images || [],
+      is_sold: false,
+      is_featured: false
+    });
 
-  if (error) {
-    throw new Error(`Błąd zapisywania auta: ${error.message}`);
+    if (error) {
+      return { success: false, error: `Błąd zapisywania auta: ${error.message}` };
+    }
+
+    const { revalidatePath } = await import("next/cache");
+    revalidatePath(`/${tenantSlug}/admin/cars`);
+    revalidatePath(`/${tenantSlug}`);
+    revalidatePath(`/${tenantSlug}/samochody`);
+
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || "Wystąpił nieoczekiwany błąd" };
   }
-
-  const { revalidatePath } = await import("next/cache");
-  revalidatePath(`/${tenantSlug}/admin/cars`);
-  revalidatePath(`/${tenantSlug}`);
-  revalidatePath(`/${tenantSlug}/samochody`);
 }
 
 export async function updateCar(carId: string, carData: any, tenantSlug: string) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Nie jesteś zalogowany");
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: "Nie jesteś zalogowany" };
 
-  const { error } = await supabase.from("cars").update({
-    make: carData.make,
-    model: carData.model,
-    year: carData.year ? parseInt(String(carData.year)) : null,
-    price: carData.price ? parseFloat(String(carData.price)) : null,
-    mileage: carData.mileage ? parseInt(String(carData.mileage)) : null,
-    fuel_type: carData.fuel_type || null,
-    engine_capacity: carData.engine_capacity || null,
-    transmission: carData.transmission || null,
-    color: carData.color || null,
-    description: carData.description || null,
-    images: carData.images || [],
-  }).eq("id", carId);
+    const { error } = await supabase.from("cars").update({
+      make: carData.make,
+      model: carData.model,
+      year: carData.year ? parseInt(String(carData.year)) : null,
+      price: carData.price ? parseFloat(String(carData.price)) : null,
+      mileage: carData.mileage ? parseInt(String(carData.mileage)) : null,
+      fuel_type: carData.fuel_type || null,
+      engine_capacity: carData.engine_capacity || null,
+      transmission: carData.transmission || null,
+      color: carData.color || null,
+      description: carData.description || null,
+      images: carData.images || [],
+    }).eq("id", carId);
 
-  if (error) {
-    throw new Error(`Błąd aktualizacji auta: ${error.message}`);
+    if (error) {
+      return { success: false, error: `Błąd aktualizacji auta: ${error.message}` };
+    }
+
+    const { revalidatePath } = await import("next/cache");
+    revalidatePath(`/${tenantSlug}/admin/cars`);
+    revalidatePath(`/${tenantSlug}`);
+    revalidatePath(`/${tenantSlug}/samochody`);
+
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || "Wystąpił nieoczekiwany błąd" };
   }
-
-  const { revalidatePath } = await import("next/cache");
-  revalidatePath(`/${tenantSlug}/admin/cars`);
-  revalidatePath(`/${tenantSlug}`);
-  revalidatePath(`/${tenantSlug}/samochody`);
 }
 
 export async function deleteCar(carId: string, tenantSlug: string) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Nie jesteś zalogowany");
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: "Nie jesteś zalogowany" };
 
-  const { error } = await supabase.from("cars").delete().eq("id", carId);
+    const { error } = await supabase.from("cars").delete().eq("id", carId);
 
-  if (error) {
-    throw new Error(`Błąd usuwania auta: ${error.message}`);
+    if (error) {
+      return { success: false, error: `Błąd usuwania auta: ${error.message}` };
+    }
+
+    const { revalidatePath } = await import("next/cache");
+    revalidatePath(`/${tenantSlug}/admin/cars`);
+    revalidatePath(`/${tenantSlug}`);
+    revalidatePath(`/${tenantSlug}/samochody`);
+
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || "Wystąpił nieoczekiwany błąd" };
   }
-
-  const { revalidatePath } = await import("next/cache");
-  revalidatePath(`/${tenantSlug}/admin/cars`);
-  revalidatePath(`/${tenantSlug}`);
-  revalidatePath(`/${tenantSlug}/samochody`);
 }
 
 

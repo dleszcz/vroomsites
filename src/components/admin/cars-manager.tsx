@@ -53,7 +53,13 @@ export function CarsManager({ cars: initialCars, tenantSlug, tenantName, siteUrl
 
     startTransition(async () => {
       try {
-        await toggleCarSoldStatus(carId, !currentIsSold, tenantSlug);
+        const res = await toggleCarSoldStatus(carId, !currentIsSold, tenantSlug);
+        if (res && !res.success) {
+          setCars((prev) =>
+            prev.map((c) => (c.id === carId ? { ...c, is_sold: currentIsSold } : c))
+          );
+          alert(`Błąd: ${res.error}`);
+        }
       } catch (err) {
         // Revert on error
         setCars((prev) =>
@@ -75,7 +81,13 @@ export function CarsManager({ cars: initialCars, tenantSlug, tenantName, siteUrl
 
     startTransition(async () => {
       try {
-        await toggleCarFeaturedStatus(carId, !currentIsFeatured, tenantSlug);
+        const res = await toggleCarFeaturedStatus(carId, !currentIsFeatured, tenantSlug);
+        if (res && !res.success) {
+          setCars((prev) =>
+            prev.map((c) => (c.id === carId ? { ...c, is_featured: currentIsFeatured } : c))
+          );
+          alert(`Błąd: ${res.error}`);
+        }
       } catch (err) {
         // Revert on error
         setCars((prev) =>

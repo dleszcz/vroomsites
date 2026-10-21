@@ -32,11 +32,18 @@ export function CarForm({ tenantSlug, initialData, onSuccess, onCancel }: CarFor
     e.preventDefault();
     startTransition(async () => {
       try {
+        let res: { success: boolean; error?: string };
         if (initialData) {
-          await updateCar(initialData.id, formData, tenantSlug);
+          res = await updateCar(initialData.id, formData, tenantSlug);
         } else {
-          await createCar(formData, tenantSlug);
+          res = await createCar(formData, tenantSlug);
         }
+
+        if (res && !res.success) {
+          alert(res.error || "Błąd podczas zapisywania.");
+          return;
+        }
+
         onSuccess();
       } catch (err: any) {
         alert(err.message || "Błąd podczas zapisywania.");
@@ -49,7 +56,11 @@ export function CarForm({ tenantSlug, initialData, onSuccess, onCancel }: CarFor
     if (confirm("Czy na pewno chcesz usunąć to auto? Ta akcja jest nieodwracalna.")) {
       startTransition(async () => {
         try {
-          await deleteCar(initialData.id, tenantSlug);
+          const res = await deleteCar(initialData.id, tenantSlug);
+          if (res && !res.success) {
+            alert(res.error || "Błąd podczas usuwania.");
+            return;
+          }
           onSuccess();
         } catch (err: any) {
           alert(err.message || "Błąd podczas usuwania.");
