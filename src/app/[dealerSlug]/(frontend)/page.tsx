@@ -74,7 +74,7 @@ export async function generateViewport({ params }: Props): Promise<import("next"
   const { dealerSlug } = await params;
   const tenant = await resolveTenant({ slug: dealerSlug });
   return {
-    themeColor: tenant?.branding?.colors?.headerBg || tenant?.branding?.colors?.primary || "#ffffff",
+    themeColor: tenant?.branding?.colors?.headerBg || "#09090b",
   };
 }
 

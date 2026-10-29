@@ -44,7 +44,7 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
     ["Kontakt", getUrl("/kontakt")],
   ];
 
-  const headerBg = tenant.branding?.colors?.headerBg || "#ffffff";
+  const headerBg = tenant.branding?.colors?.headerBg || "#09090b";
 
   return (
     <header className="dealer-header" style={{ background: headerBg }}>
@@ -61,7 +61,7 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
               unoptimized={!isLocalOrKnownRemote}
             />
           ) : (
-            <span style={{ fontWeight: 800, fontSize: "18px", color: "#09090b" }}>
+            <span style={{ fontWeight: 800, fontSize: "18px", color: "#ffffff" }}>
               {tenant.businessName}
             </span>
           )}

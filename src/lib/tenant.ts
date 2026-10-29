@@ -26,21 +26,13 @@ export function tenantToTenant(tenant: Tenant): DealerTenant {
   };
 
   const cleanHeaderBg = (val?: string | null) => {
-    if (!val) return "#ffffff";
-    const hex = val.trim().toLowerCase();
-    if (["#080808", "#09090b", "#000000", "#18181b", "#111827", "#0f172a"].includes(hex)) {
-      return "#ffffff";
-    }
-    return val;
+    if (!val) return "#09090b";
+    return val.trim();
   };
 
   const cleanFooterBg = (val?: string | null) => {
-    if (!val) return "#f8fafc";
-    const hex = val.trim().toLowerCase();
-    if (["#080808", "#09090b", "#000000", "#18181b", "#111827", "#0f172a"].includes(hex)) {
-      return "#f8fafc";
-    }
-    return val;
+    if (!val) return "#09090b";
+    return val.trim();
   };
 
   // Build colors: DB flat (primaryColor), DB nested (colors.primary), Seed, or Default
@@ -135,8 +127,8 @@ export function tenantToTenant(tenant: Tenant): DealerTenant {
       accentForeground: "#ffffff",
       surface: "#F1F3F5",
       muted: "#E2E8F0",
-      headerBg: headerBg || "#ffffff",
-      footerBg: footerBg || "#f8fafc",
+      headerBg: headerBg || "#09090b",
+      footerBg: footerBg || "#09090b",
     },
     media: {
       heroImageUrl: heroImageUrl || undefined,

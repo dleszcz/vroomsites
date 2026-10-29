@@ -62,8 +62,8 @@ BEGIN
         'foreground', '#09090b',
         'surface', '#f8fafc',
         'muted', '#64748b',
-        'headerBg', '#ffffff',
-        'footerBg', '#f8fafc'
+        'headerBg', '#09090b',
+        'footerBg', '#09090b'
       )
     ),
     jsonb_build_array(

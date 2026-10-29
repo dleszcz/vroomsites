@@ -93,8 +93,8 @@ export function SectionRenderer({ tenant, cars = [], mode = "all", isCustomDomai
 
   const primaryColor = tenant.branding?.colors?.primary || "#1686E0";
   const accentColor = tenant.branding?.colors?.accent || primaryColor;
-  const headerBg = tenant.branding?.colors?.headerBg || "#ffffff";
-  const footerBg = tenant.branding?.colors?.footerBg || "#f8fafc";
+  const headerBg = tenant.branding?.colors?.headerBg || "#09090b";
+  const footerBg = tenant.branding?.colors?.footerBg || "#09090b";
 
   const hasServiceAreasSection = enabled.some((s) => s.type === "service_areas");
   const hasLocalPages = (tenant.localSeo?.localPages?.filter((lp) => lp.enabled && lp.indexable) || []).length > 0;
