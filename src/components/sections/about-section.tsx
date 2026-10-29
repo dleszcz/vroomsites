@@ -126,7 +126,7 @@ export function AboutSection({ tenant, config }: Props) {
       ];
 
   return (
-    <section id="about" className="vd-section vd-section--bordered bg-white dark:bg-zinc-950">
+    <section id="about" className="vd-section vd-section--bordered bg-white">
       <div className="vd-container">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
           {/* Left Column: Brand Story & Location */}
@@ -138,7 +138,7 @@ export function AboutSection({ tenant, config }: Props) {
               >
                 O nas i naszych zasadach
               </span>
-              <h2 className="vd-heading mb-4 text-zinc-950 dark:text-zinc-50">{title}</h2>
+              <h2 className="vd-heading mb-4 text-zinc-950">{title}</h2>
               {subtitle && (
                 <p
                   className="text-base font-semibold mb-4"
@@ -147,12 +147,12 @@ export function AboutSection({ tenant, config }: Props) {
                   {subtitle}
                 </p>
               )}
-              <p className="vd-copy text-zinc-700 dark:text-zinc-300 leading-relaxed mb-6 font-normal">
+              <p className="vd-copy text-zinc-700 leading-relaxed mb-6 font-normal">
                 {description}
               </p>
 
               {customImage && (
-                <div className="relative rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm aspect-16/10 mb-6">
+                <div className="relative rounded-lg overflow-hidden border border-zinc-200 shadow-sm aspect-16/10 mb-6">
                   <img
                     src={customImage}
                     alt={tenant.businessName}
@@ -165,7 +165,7 @@ export function AboutSection({ tenant, config }: Props) {
 
             <div className="space-y-3 pt-2">
               {hasLocation && (
-                <div className="flex items-center gap-3 text-sm font-semibold p-3.5 rounded-lg border bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-2xs">
+                <div className="flex items-center gap-3 text-sm font-semibold p-3.5 rounded-lg border bg-zinc-50 border-zinc-200 text-zinc-900 shadow-2xs">
                   <div
                     className="w-8 h-8 rounded-md flex items-center justify-center shrink-0"
                     style={{
@@ -179,7 +179,7 @@ export function AboutSection({ tenant, config }: Props) {
                     <span className="block text-[11px] font-bold uppercase tracking-wider text-zinc-500">
                       Siedziba komisu
                     </span>
-                    <span className="font-medium text-zinc-900 dark:text-zinc-100">
+                    <span className="font-medium text-zinc-900">
                       {tenant.location?.address}
                       {tenant.location?.address && tenant.location?.city ? ", " : ""}
                       {tenant.location?.city}
@@ -191,7 +191,7 @@ export function AboutSection({ tenant, config }: Props) {
               {tenant.contact?.phone && (
                 <a
                   href={`tel:${tenant.contact.phone.replace(/\s/g, "")}`}
-                  className="flex items-center gap-3 text-sm font-semibold p-3.5 rounded-lg border bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-2xs hover:border-zinc-300 transition-colors"
+                  className="flex items-center gap-3 text-sm font-semibold p-3.5 rounded-lg border bg-zinc-50 border-zinc-200 text-zinc-900 shadow-2xs hover:border-zinc-300 transition-colors"
                 >
                   <div
                     className="w-8 h-8 rounded-md flex items-center justify-center shrink-0"
@@ -206,7 +206,7 @@ export function AboutSection({ tenant, config }: Props) {
                     <span className="block text-[11px] font-bold uppercase tracking-wider text-zinc-500">
                       Kontakt bezpośredni
                     </span>
-                    <span className="font-mono tabular-nums font-bold text-zinc-900 dark:text-zinc-100">
+                    <span className="font-mono tabular-nums font-bold text-zinc-900">
                       {tenant.contact.phone}
                     </span>
                   </div>
@@ -223,7 +223,7 @@ export function AboutSection({ tenant, config }: Props) {
                 return (
                   <div
                     key={idx}
-                    className="p-4 rounded-lg bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors shadow-2xs flex flex-col justify-start"
+                    className="p-4 rounded-lg bg-zinc-50 border border-zinc-200 hover:border-zinc-300 transition-colors shadow-2xs flex flex-col justify-start"
                   >
                     <div
                       className="w-8 h-8 rounded-md flex items-center justify-center mb-3 shrink-0"
@@ -234,10 +234,10 @@ export function AboutSection({ tenant, config }: Props) {
                     >
                       <Icon className="w-4 h-4" strokeWidth={2.2} />
                     </div>
-                    <h3 className="font-heading font-bold text-sm text-zinc-950 dark:text-zinc-50 mb-1.5">
+                    <h3 className="font-heading font-bold text-sm text-zinc-950 mb-1.5">
                       {pillar.title}
                     </h3>
-                    <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
+                    <p className="text-xs text-zinc-600 leading-relaxed font-normal">
                       {pillar.description}
                     </p>
                   </div>

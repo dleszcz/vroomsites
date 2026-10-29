@@ -19,7 +19,7 @@ export function SingleCarRelated({
   if (cars.length === 0) return null;
 
   return (
-    <section className="pt-10 border-t border-slate-200/80 dark:border-slate-800 space-y-6">
+    <section className="pt-10 border-t border-zinc-200 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <span
@@ -28,7 +28,7 @@ export function SingleCarRelated({
           >
             Pozostała oferta
           </span>
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900">
             Podobne samochody w ofercie
           </h2>
         </div>

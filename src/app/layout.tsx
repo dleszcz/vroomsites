@@ -47,7 +47,8 @@ export default function RootLayout({
   return (
     <html
       lang="pl"
-      className={`${GeistSans.variable} ${GeistMono.variable} ${plusJakartaSans.variable}`}
+      className={`light ${GeistSans.variable} ${GeistMono.variable} ${plusJakartaSans.variable}`}
+      style={{ colorScheme: "light" }}
       data-scroll-behavior="smooth"
     >
       <body>

@@ -71,11 +71,11 @@ export function CookieConsent({ primaryColor = "#1686E0", privacyPolicyUrl = "#"
         left: 0,
         right: 0,
         zIndex: 10000,
-        background: "rgba(10, 15, 29, 0.97)",
-        backdropFilter: "blur(20px)",
-        borderTop: "1px solid rgba(255, 255, 255, 0.12)",
-        padding: "20px 24px calc(20px + env(safe-area-inset-bottom, 0px))",
-        boxShadow: "0 -8px 32px rgba(0, 0, 0, 0.5)",
+        background: "rgba(255, 255, 255, 0.98)",
+        backdropFilter: "blur(16px)",
+        borderTop: "1px solid #e4e4e7",
+        padding: "16px 24px calc(16px + env(safe-area-inset-bottom, 0px))",
+        boxShadow: "0 -4px 24px rgba(0, 0, 0, 0.06)",
       }}
     >
       <div
@@ -92,9 +92,9 @@ export function CookieConsent({ primaryColor = "#1686E0", privacyPolicyUrl = "#"
           <p
             style={{
               margin: 0,
-              color: "rgba(255, 255, 255, 0.85)",
-              fontSize: "14px",
-              lineHeight: 1.6,
+              color: "#3f3f46",
+              fontSize: "13.5px",
+              lineHeight: 1.55,
             }}
           >
             Ta strona używa plików cookies oraz narzędzi analitycznych (w tym Meta Pixel)
@@ -111,13 +111,13 @@ export function CookieConsent({ primaryColor = "#1686E0", privacyPolicyUrl = "#"
           <button
             onClick={handleReject}
             style={{
-              padding: "10px 20px",
-              borderRadius: "10px",
-              background: "rgba(255, 255, 255, 0.08)",
-              border: "1px solid rgba(255, 255, 255, 0.15)",
-              color: "#fff",
-              fontSize: "14px",
-              fontWeight: 700,
+              padding: "8px 18px",
+              borderRadius: "6px",
+              background: "#f4f4f5",
+              border: "1px solid #e4e4e7",
+              color: "#18181b",
+              fontSize: "13px",
+              fontWeight: 600,
               cursor: "pointer",
             }}
           >
@@ -126,15 +126,15 @@ export function CookieConsent({ primaryColor = "#1686E0", privacyPolicyUrl = "#"
           <button
             onClick={handleAccept}
             style={{
-              padding: "10px 24px",
-              borderRadius: "10px",
+              padding: "8px 20px",
+              borderRadius: "6px",
               background: primaryColor,
               border: "none",
-              color: "#fff",
-              fontSize: "14px",
+              color: "#ffffff",
+              fontSize: "13px",
               fontWeight: 700,
               cursor: "pointer",
-              boxShadow: `0 4px 14px ${primaryColor}55`,
+              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
             }}
           >
             Akceptuję

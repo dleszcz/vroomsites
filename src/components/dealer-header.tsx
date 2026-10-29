@@ -44,7 +44,7 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
     ["Kontakt", getUrl("/kontakt")],
   ];
 
-  const headerBg = tenant.branding?.colors?.headerBg || "#080808";
+  const headerBg = tenant.branding?.colors?.headerBg || "#ffffff";
 
   return (
     <header className="dealer-header" style={{ background: headerBg }}>
@@ -61,7 +61,7 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
               unoptimized={!isLocalOrKnownRemote}
             />
           ) : (
-            <span style={{ fontWeight: 800, fontSize: "18px", color: "#fff" }}>
+            <span style={{ fontWeight: 800, fontSize: "18px", color: "#09090b" }}>
               {tenant.businessName}
             </span>
           )}
@@ -77,8 +77,8 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
 
         <div className="dealer-header__actions">
           <a
-            style={{ color: "#09090b" }}
-            className="h-9 px-4 rounded-md bg-white hover:bg-zinc-100 font-heading font-bold text-xs uppercase tracking-wider inline-flex items-center justify-center transition-colors shadow-sm"
+            style={{ color: "#ffffff" }}
+            className="h-9 px-4 rounded-md bg-[var(--color-primary,#1686E0)] hover:brightness-105 font-heading font-bold text-xs uppercase tracking-wider inline-flex items-center justify-center transition-all shadow-xs"
             href={ctaHref}
           >
             {ctaLabel}
@@ -107,8 +107,8 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
             </Link>
           ))}
           <a
-            style={{ color: "#09090b" }}
-            className="h-10 px-4 rounded-md bg-white hover:bg-zinc-100 font-heading font-bold text-xs uppercase tracking-wider flex items-center justify-center transition-colors"
+            style={{ color: "#ffffff" }}
+            className="h-10 px-4 rounded-md bg-[var(--color-primary,#1686E0)] hover:brightness-105 font-heading font-bold text-xs uppercase tracking-wider flex items-center justify-center transition-all"
             href={ctaHref}
             onClick={() => setOpen(false)}
           >

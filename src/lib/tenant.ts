@@ -19,10 +19,28 @@ export function tenantToTenant(tenant: Tenant): DealerTenant {
     if (!val) return fallback;
     const trimmed = val.trim().replace(/^#+/, "#");
     const hex = trimmed.startsWith("#") ? trimmed : `#${trimmed}`;
-    if (hex.toLowerCase() === "#0d94e7" || hex.toLowerCase() === "#18181b") {
+    if (hex.toLowerCase() === "#0d94e7" || hex.toLowerCase() === "#18181b" || hex.toLowerCase() === "#09090b" || hex.toLowerCase() === "#000000") {
       return fallback;
     }
     return hex;
+  };
+
+  const cleanHeaderBg = (val?: string | null) => {
+    if (!val) return "#ffffff";
+    const hex = val.trim().toLowerCase();
+    if (["#080808", "#09090b", "#000000", "#18181b", "#111827", "#0f172a"].includes(hex)) {
+      return "#ffffff";
+    }
+    return val;
+  };
+
+  const cleanFooterBg = (val?: string | null) => {
+    if (!val) return "#f8fafc";
+    const hex = val.trim().toLowerCase();
+    if (["#080808", "#09090b", "#000000", "#18181b", "#111827", "#0f172a"].includes(hex)) {
+      return "#f8fafc";
+    }
+    return val;
   };
 
   // Build colors: DB flat (primaryColor), DB nested (colors.primary), Seed, or Default
@@ -35,6 +53,12 @@ export function tenantToTenant(tenant: Tenant): DealerTenant {
     (brandingRaw.accentColor as string) ||
     rawColors.accent ||
     "#38BDF8"
+  );
+  const headerBg = cleanHeaderBg(
+    (brandingRaw.headerBg as string) || rawColors.headerBg
+  );
+  const footerBg = cleanFooterBg(
+    (brandingRaw.footerBg as string) || rawColors.footerBg
   );
 
   // Build logo: DB logo_url, DB branding.logoUrl, Seed logo_url, Seed branding.logoUrl
@@ -111,8 +135,8 @@ export function tenantToTenant(tenant: Tenant): DealerTenant {
       accentForeground: "#ffffff",
       surface: "#F1F3F5",
       muted: "#E2E8F0",
-      headerBg: "#080808",
-      footerBg: "#080808",
+      headerBg: headerBg || "#ffffff",
+      footerBg: footerBg || "#f8fafc",
     },
     media: {
       heroImageUrl: heroImageUrl || undefined,

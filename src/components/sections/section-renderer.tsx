@@ -93,8 +93,8 @@ export function SectionRenderer({ tenant, cars = [], mode = "all", isCustomDomai
 
   const primaryColor = tenant.branding?.colors?.primary || "#1686E0";
   const accentColor = tenant.branding?.colors?.accent || primaryColor;
-  const headerBg = tenant.branding?.colors?.headerBg || "#080808";
-  const footerBg = tenant.branding?.colors?.footerBg || "#080808";
+  const headerBg = tenant.branding?.colors?.headerBg || "#ffffff";
+  const footerBg = tenant.branding?.colors?.footerBg || "#f8fafc";
 
   const hasServiceAreasSection = enabled.some((s) => s.type === "service_areas");
   const hasLocalPages = (tenant.localSeo?.localPages?.filter((lp) => lp.enabled && lp.indexable) || []).length > 0;
@@ -113,32 +113,32 @@ export function SectionRenderer({ tenant, cars = [], mode = "all", isCustomDomai
     >
       {/* Top Header for Subpages */}
       {mode === "kontakt" && (
-        <section className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 py-10 md:py-12 text-zinc-900 dark:text-zinc-50">
+        <section className="bg-zinc-50 border-b border-zinc-200 py-10 md:py-12 text-zinc-900">
           <div className="vd-container text-center max-w-2xl mx-auto">
-            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-950 dark:text-zinc-50 mb-2 font-heading">Kontakt</h1>
-            <p className="text-zinc-600 dark:text-zinc-400 text-sm md:text-base leading-relaxed">
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-950 mb-2 font-heading">Kontakt</h1>
+            <p className="text-zinc-600 text-sm md:text-base leading-relaxed">
               Skontaktuj się z nami w dowolnej sprawie. Jesteśmy do Twojej dyspozycji 7 dni w tygodniu.
             </p>
           </div>
         </section>
       )}
       {mode === "o-nas" && (
-        <section className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 py-10 md:py-12 text-zinc-900 dark:text-zinc-50">
+        <section className="bg-zinc-50 border-b border-zinc-200 py-10 md:py-12 text-zinc-900">
           <div className="vd-container text-center max-w-2xl mx-auto">
-            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-950 dark:text-zinc-50 mb-2 font-heading">O nas</h1>
-            <p className="text-zinc-600 dark:text-zinc-400 text-sm md:text-base leading-relaxed">
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-950 mb-2 font-heading">O nas</h1>
+            <p className="text-zinc-600 text-sm md:text-base leading-relaxed">
               Poznaj naszą historię, standardy i zespół, który dba o najwyższą jakość obsługi klienta.
             </p>
           </div>
         </section>
       )}
       {mode === "uslugi" && (
-        <section className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 py-10 md:py-12 text-zinc-900 dark:text-zinc-50">
+        <section className="bg-zinc-50 border-b border-zinc-200 py-10 md:py-12 text-zinc-900">
           <div className="vd-container text-center max-w-2xl mx-auto">
-            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-950 dark:text-zinc-50 mb-2 font-heading">
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-950 mb-2 font-heading">
               {hasCarBuying(tenant) ? "Nasze usługi" : "Nasza oferta i usługi"}
             </h1>
-            <p className="text-zinc-600 dark:text-zinc-400 text-sm md:text-base leading-relaxed">
+            <p className="text-zinc-600 text-sm md:text-base leading-relaxed">
               {hasCarBuying(tenant)
                 ? "Sprawdź pełen zakres profesjonalnych usług motoryzacyjnych przygotowanych dla kierowców."
                 : "Sprawdź zakres profesjonalnych usług związanych ze sprzedażą, sprowadzaniem i przygotowaniem pojazdów."}

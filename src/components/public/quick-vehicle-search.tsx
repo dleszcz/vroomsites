@@ -106,9 +106,9 @@ export function QuickVehicleSearch({ tenant, cars, isCustomDomain }: QuickVehicl
   };
 
   return (
-    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 sm:p-5 shadow-sm text-zinc-900 dark:text-zinc-100">
+    <div className="bg-white border border-zinc-200 rounded-lg p-4 sm:p-5 shadow-sm text-zinc-900">
       {/* Search Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-zinc-100 dark:border-zinc-800">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-zinc-100">
         <div className="flex items-center gap-2">
           <span
             className="w-7 h-7 rounded-md flex items-center justify-center text-white"
@@ -117,7 +117,7 @@ export function QuickVehicleSearch({ tenant, cars, isCustomDomain }: QuickVehicl
             <Search className="w-3.5 h-3.5" strokeWidth={2.2} />
           </span>
           <div>
-            <h3 className="text-sm font-bold tracking-tight text-zinc-950 dark:text-zinc-50 font-heading">
+            <h3 className="text-sm font-bold tracking-tight text-zinc-950 font-heading">
               Wyszukaj samochód na placu
             </h3>
             <p className="text-[11px] text-zinc-500">
@@ -130,7 +130,7 @@ export function QuickVehicleSearch({ tenant, cars, isCustomDomain }: QuickVehicl
           <button
             type="button"
             onClick={handleReset}
-            className="text-xs font-semibold text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 inline-flex items-center gap-1 transition-colors"
+            className="text-xs font-semibold text-zinc-500 hover:text-zinc-900 inline-flex items-center gap-1 transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" strokeWidth={1.75} />
             <span>Wyczyść filtry</span>
@@ -152,7 +152,7 @@ export function QuickVehicleSearch({ tenant, cars, isCustomDomain }: QuickVehicl
                 setSelectedMake(e.target.value);
                 setSelectedModel("all");
               }}
-              className="w-full h-10 appearance-none bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md pl-3 pr-8 text-xs font-medium text-zinc-900 dark:text-zinc-100 focus:bg-white dark:focus:bg-zinc-900 focus:border-zinc-400 focus:outline-none transition-colors cursor-pointer"
+              className="w-full h-10 appearance-none bg-zinc-50 border border-zinc-200 rounded-md pl-3 pr-8 text-xs font-medium text-zinc-900 focus:bg-white focus:border-zinc-400 focus:outline-none transition-colors cursor-pointer"
             >
               <option value="all">Wszystkie marki ({makes.length})</option>
               {makes.map((make) => (
@@ -175,7 +175,7 @@ export function QuickVehicleSearch({ tenant, cars, isCustomDomain }: QuickVehicl
               value={selectedModel}
               onChange={(e) => setSelectedModel(e.target.value)}
               disabled={models.length === 0}
-              className="w-full h-10 appearance-none bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md pl-3 pr-8 text-xs font-medium text-zinc-900 dark:text-zinc-100 focus:bg-white dark:focus:bg-zinc-900 focus:border-zinc-400 focus:outline-none disabled:opacity-60 transition-colors cursor-pointer"
+              className="w-full h-10 appearance-none bg-zinc-50 border border-zinc-200 rounded-md pl-3 pr-8 text-xs font-medium text-zinc-900 focus:bg-white focus:border-zinc-400 focus:outline-none disabled:opacity-60 transition-colors cursor-pointer"
             >
               <option value="all">Wszystkie modele</option>
               {models.map((model) => (
@@ -197,7 +197,7 @@ export function QuickVehicleSearch({ tenant, cars, isCustomDomain }: QuickVehicl
             <select
               value={selectedMaxPrice}
               onChange={(e) => setSelectedMaxPrice(e.target.value)}
-              className="w-full h-10 appearance-none bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md pl-3 pr-8 text-xs font-medium text-zinc-900 dark:text-zinc-100 focus:bg-white dark:focus:bg-zinc-900 focus:border-zinc-400 focus:outline-none transition-colors font-mono cursor-pointer"
+              className="w-full h-10 appearance-none bg-zinc-50 border border-zinc-200 rounded-md pl-3 pr-8 text-xs font-medium text-zinc-900 focus:bg-white focus:border-zinc-400 focus:outline-none transition-colors font-mono cursor-pointer"
             >
               <option value="all">Dowolna cena</option>
               <option value="5000">do 5 000 zł</option>
@@ -219,7 +219,7 @@ export function QuickVehicleSearch({ tenant, cars, isCustomDomain }: QuickVehicl
             <select
               value={selectedMinYear}
               onChange={(e) => setSelectedMinYear(e.target.value)}
-              className="w-full h-10 appearance-none bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md pl-3 pr-8 text-xs font-medium text-zinc-900 dark:text-zinc-100 focus:bg-white dark:focus:bg-zinc-900 focus:border-zinc-400 focus:outline-none transition-colors font-mono cursor-pointer"
+              className="w-full h-10 appearance-none bg-zinc-50 border border-zinc-200 rounded-md pl-3 pr-8 text-xs font-medium text-zinc-900 focus:bg-white focus:border-zinc-400 focus:outline-none transition-colors font-mono cursor-pointer"
             >
               <option value="all">Dowolny rocznik</option>
               <option value="2000">od 2000</option>
@@ -241,7 +241,7 @@ export function QuickVehicleSearch({ tenant, cars, isCustomDomain }: QuickVehicl
             <select
               value={selectedMaxMileage}
               onChange={(e) => setSelectedMaxMileage(e.target.value)}
-              className="w-full h-10 appearance-none bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md pl-3 pr-8 text-xs font-medium text-zinc-900 dark:text-zinc-100 focus:bg-white dark:focus:bg-zinc-900 focus:border-zinc-400 focus:outline-none transition-colors font-mono cursor-pointer"
+              className="w-full h-10 appearance-none bg-zinc-50 border border-zinc-200 rounded-md pl-3 pr-8 text-xs font-medium text-zinc-900 focus:bg-white focus:border-zinc-400 focus:outline-none transition-colors font-mono cursor-pointer"
             >
               <option value="all">Dowolny przebieg</option>
               <option value="150000">do 150 000 km</option>
@@ -262,7 +262,7 @@ export function QuickVehicleSearch({ tenant, cars, isCustomDomain }: QuickVehicl
             <select
               value={selectedFuel}
               onChange={(e) => setSelectedFuel(e.target.value)}
-              className="w-full h-10 appearance-none bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md pl-3 pr-8 text-xs font-medium text-zinc-900 dark:text-zinc-100 focus:bg-white dark:focus:bg-zinc-900 focus:border-zinc-400 focus:outline-none transition-colors cursor-pointer"
+              className="w-full h-10 appearance-none bg-zinc-50 border border-zinc-200 rounded-md pl-3 pr-8 text-xs font-medium text-zinc-900 focus:bg-white focus:border-zinc-400 focus:outline-none transition-colors cursor-pointer"
             >
               <option value="all">Wszystkie ({fuels.length})</option>
               {fuels.map((fuel) => (
@@ -277,14 +277,14 @@ export function QuickVehicleSearch({ tenant, cars, isCustomDomain }: QuickVehicl
       </div>
 
       {/* Action CTA */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-zinc-100">
         <span className="text-xs text-zinc-500 order-2 sm:order-1">
           {matchingCars.length > 0 ? (
             <>
-              Znaleziono: <strong className="text-zinc-900 dark:text-zinc-100 font-semibold">{matchingCars.length}</strong> {matchingCars.length === 1 ? "samochód spełniający kryteria" : "samochodów spełniających kryteria"}
+              Znaleziono: <strong className="text-zinc-900 font-semibold">{matchingCars.length}</strong> {matchingCars.length === 1 ? "samochód spełniający kryteria" : "samochodów spełniających kryteria"}
             </>
           ) : (
-            <span className="text-amber-600 dark:text-amber-400 font-medium">
+            <span className="text-amber-600 font-medium">
               Brak aut o podanych kryteriach — zmień filtry
             </span>
           )}

@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : `${baseUrl}${heroImage}`
     : undefined;
   const themeColor =
-    tenant.branding.colors.headerBg || tenant.branding.colors.primary || "#080808";
+    tenant.branding.colors.headerBg || tenant.branding.colors.primary || "#ffffff";
 
   // Helper for generating full social metadata
   const buildMetadata = (

@@ -42,15 +42,15 @@ export function ContactSection({ tenant, config, hideHeader }: ContactSectionPro
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Phone box */}
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-6 flex flex-col justify-between shadow-sm">
+          <div className="bg-white border border-zinc-200 rounded-lg p-6 flex flex-col justify-between shadow-sm">
             <div>
-              <div className="w-12 h-12 rounded-md bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-900 dark:text-zinc-100 mb-5">
+              <div className="w-12 h-12 rounded-md bg-zinc-100 flex items-center justify-center text-zinc-900 mb-5">
                 <Phone className="w-6 h-6" strokeWidth={1.75} />
               </div>
-              <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100 mb-2">
+              <h3 className="text-base font-bold text-zinc-900 mb-2">
                 Telefon bezpośredni
               </h3>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6 leading-relaxed">
+              <p className="text-sm text-zinc-600 mb-6 leading-relaxed">
                 Szybka rozmowa z doradcą i natychmiastowa bezpłatna wycena pojazdu.
               </p>
             </div>
@@ -71,15 +71,15 @@ export function ContactSection({ tenant, config, hideHeader }: ContactSectionPro
           </div>
 
           {/* WhatsApp box */}
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-6 flex flex-col justify-between shadow-sm">
+          <div className="bg-white border border-zinc-200 rounded-lg p-6 flex flex-col justify-between shadow-sm">
             <div>
-              <div className="w-12 h-12 rounded-md bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-5">
+              <div className="w-12 h-12 rounded-md bg-emerald-50 flex items-center justify-center text-emerald-600 mb-5">
                 <MessageCircle className="w-6 h-6" strokeWidth={1.75} />
               </div>
-              <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100 mb-2">
+              <h3 className="text-base font-bold text-zinc-900 mb-2">
                 Wiadomość WhatsApp
               </h3>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6 leading-relaxed">
+              <p className="text-sm text-zinc-600 mb-6 leading-relaxed">
                 Prześlij zdjęcia i krótki opis auta do szybkiej wyceny w kilkadziesiąt sekund.
               </p>
             </div>
@@ -99,18 +99,18 @@ export function ContactSection({ tenant, config, hideHeader }: ContactSectionPro
           </div>
 
           {/* Location box */}
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-6 flex flex-col justify-between shadow-sm">
+          <div className="bg-white border border-zinc-200 rounded-lg p-6 flex flex-col justify-between shadow-sm">
             <div>
-              <div className="w-12 h-12 rounded-md bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-900 dark:text-zinc-100 mb-5">
+              <div className="w-12 h-12 rounded-md bg-zinc-100 flex items-center justify-center text-zinc-900 mb-5">
                 <MapPin className="w-6 h-6" strokeWidth={1.75} />
               </div>
-              <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100 mb-2">
+              <h3 className="text-base font-bold text-zinc-900 mb-2">
                 Adres i siedziba
               </h3>
-              <p className="font-semibold text-sm text-zinc-900 dark:text-zinc-200 mb-1">
+              <p className="font-semibold text-sm text-zinc-900 mb-1">
                 {tenant.businessName}
               </p>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6 leading-relaxed">
+              <p className="text-sm text-zinc-600 mb-6 leading-relaxed">
                 {tenant.location?.address ? `${tenant.location.address}, ` : ""}
                 {tenant.location?.city || "Polska"}
               </p>
@@ -119,7 +119,7 @@ export function ContactSection({ tenant, config, hideHeader }: ContactSectionPro
               href={`https://maps.google.com/?q=${encodeURIComponent(`${tenant.businessName} ${tenant.location?.address || ""} ${tenant.location?.city || ""}`)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full h-11 flex items-center justify-center gap-2 rounded-md border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 font-semibold text-sm transition-colors"
+              className="w-full h-11 flex items-center justify-center gap-2 rounded-md border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-900 font-semibold text-sm transition-colors"
             >
               <ExternalLink className="w-4 h-4 text-zinc-500" />
               <span>Zobacz w Google Maps</span>
@@ -128,7 +128,7 @@ export function ContactSection({ tenant, config, hideHeader }: ContactSectionPro
         </div>
 
         {/* Google Maps Embed */}
-        <div className="mt-10 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 h-80 md:h-96 shadow-sm">
+        <div className="mt-10 rounded-lg overflow-hidden border border-zinc-200 h-80 md:h-96 shadow-sm">
           <iframe
             width="100%"
             height="100%"

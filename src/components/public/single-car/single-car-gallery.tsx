@@ -14,7 +14,7 @@ export function SingleCarGallery({ images, alt }: SingleCarGalleryProps) {
 
   if (!images || images.length === 0) {
     return (
-      <div className="aspect-[16/10] bg-zinc-100 dark:bg-zinc-950 rounded-lg border border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center text-zinc-400 gap-2">
+      <div className="aspect-[16/10] bg-zinc-100 rounded-lg border border-zinc-200 flex flex-col items-center justify-center text-zinc-400 gap-2">
         <CarIcon className="w-10 h-10" strokeWidth={1.5} />
         <span className="text-xs font-medium">Zdjęcia w przygotowaniu</span>
       </div>
@@ -32,7 +32,7 @@ export function SingleCarGallery({ images, alt }: SingleCarGalleryProps) {
   return (
     <div className="space-y-3">
       {/* Main Showcase Image */}
-      <div className="relative aspect-[16/10] bg-zinc-950 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm group">
+      <div className="relative aspect-[16/10] bg-zinc-950 rounded-lg overflow-hidden border border-zinc-200 shadow-sm group">
         <Image
           src={images[activeIndex]}
           alt={`${alt} - zdjęcie ${activeIndex + 1}`}
@@ -84,7 +84,7 @@ export function SingleCarGallery({ images, alt }: SingleCarGalleryProps) {
               className={`relative flex-shrink-0 w-20 h-14 rounded-md overflow-hidden border transition-all ${
                 idx === activeIndex
                   ? "border-emerald-600 ring-1 ring-emerald-600 opacity-100"
-                  : "border-zinc-200 dark:border-zinc-800 opacity-60 hover:opacity-100"
+                  : "border-zinc-200 opacity-60 hover:opacity-100"
               }`}
             >
               <Image

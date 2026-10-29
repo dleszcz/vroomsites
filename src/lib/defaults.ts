@@ -13,8 +13,8 @@ export const DEFAULT_COLORS: DealerBranding["colors"] = {
   accentForeground: "#ffffff",
   surface: "#f8fafc",
   muted: "#64748b",
-  headerBg: "#09090b",
-  footerBg: "#09090b",
+  headerBg: "#ffffff",
+  footerBg: "#f8fafc",
 };
 
 export const DEFAULT_BRANDING: DealerBranding = {
@@ -83,8 +83,8 @@ export function mergeColors(
     accentForeground: isValidHexColor(tenantColors.accentForeground) ? tenantColors.accentForeground : DEFAULT_COLORS.accentForeground,
     surface: isValidHexColor(tenantColors.surface) ? tenantColors.surface : DEFAULT_COLORS.surface,
     muted: isValidHexColor(tenantColors.muted) ? tenantColors.muted : DEFAULT_COLORS.muted,
-    headerBg: isValidHexColor(tenantColors.headerBg) ? tenantColors.headerBg : DEFAULT_COLORS.headerBg,
-    footerBg: isValidHexColor(tenantColors.footerBg) ? tenantColors.footerBg : DEFAULT_COLORS.footerBg,
+    headerBg: isValidHexColor(tenantColors.headerBg) && !["#080808", "#09090b", "#000000", "#18181b"].includes(tenantColors.headerBg.toLowerCase()) ? tenantColors.headerBg : DEFAULT_COLORS.headerBg,
+    footerBg: isValidHexColor(tenantColors.footerBg) && !["#080808", "#09090b", "#000000", "#18181b"].includes(tenantColors.footerBg.toLowerCase()) ? tenantColors.footerBg : DEFAULT_COLORS.footerBg,
   };
 }
 

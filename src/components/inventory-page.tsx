@@ -182,7 +182,7 @@ function InventoryPageContent({ tenant, cars, isCustomDomain }: InventoryPagePro
   const homeHref = getTenantUrl(tenant.slug, "/", tenant.customDomain, isCustomDomain);
 
   return (
-    <div className="bg-zinc-50 dark:bg-zinc-950 min-h-screen text-zinc-900 dark:text-zinc-100 flex flex-col justify-between">
+    <div className="bg-zinc-50 min-h-screen text-zinc-900 flex flex-col justify-between">
       <div>
         {/* Crisp Header */}
         <header className="bg-zinc-50 border-b border-zinc-200 text-zinc-950 py-8 md:py-9">
@@ -258,7 +258,7 @@ function InventoryPageContent({ tenant, cars, isCustomDomain }: InventoryPagePro
 
           {/* Trade-In Banner */}
           {tenant.businessRules?.tradeIn?.enabled && (
-            <div className="p-5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
+            <div className="p-5 rounded-lg bg-white border border-zinc-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
               <div className="space-y-1">
                 <span
                   className="text-[11px] font-bold uppercase tracking-wider"
@@ -266,10 +266,10 @@ function InventoryPageContent({ tenant, cars, isCustomDomain }: InventoryPagePro
                 >
                   Zamiana lub skup
                 </span>
-                <h3 className="text-sm sm:text-base font-bold text-zinc-950 dark:text-zinc-50 font-heading">
+                <h3 className="text-sm sm:text-base font-bold text-zinc-950 font-heading">
                   Chcesz zostawić swoje dotychczasowe auto w rozliczeniu?
                 </h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                <p className="text-xs text-zinc-500">
                   Dokonamy natychmiastowej bezpłatnej wyceny i obniżymy cenę wybranego pojazdu.
                 </p>
               </div>

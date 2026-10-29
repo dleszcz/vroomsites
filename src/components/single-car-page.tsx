@@ -36,7 +36,7 @@ export function SingleCarPage({
   const cleanPhone = phone.replace(/\s+/g, "");
 
   return (
-    <div className="bg-zinc-50 dark:bg-zinc-950 min-h-screen text-zinc-900 dark:text-zinc-100 pb-20 lg:pb-12">
+    <div className="bg-zinc-50 min-h-screen text-zinc-900 pb-20 lg:pb-12">
       {/* Crisp Editorial Header */}
       <SingleCarHeader
         carName={carName}
@@ -77,10 +77,10 @@ export function SingleCarPage({
 
       {/* Mobile Sticky Bottom CTA Bar (< 60px height, unobtrusive, thumb-friendly) */}
       {!car.is_sold && phone && (
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 px-4 py-2.5 flex items-center justify-between shadow-lg">
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-zinc-200 px-4 py-2.5 flex items-center justify-between shadow-lg">
           <div className="min-w-0 pr-2">
             <span className="block text-[10px] text-zinc-400 uppercase tracking-wider font-semibold">Cena brutto</span>
-            <span className="text-base font-bold font-mono tabular-nums text-zinc-900 dark:text-zinc-100">
+            <span className="text-base font-bold font-mono tabular-nums text-zinc-900">
               {car.price ? `${formatPrice(car.price)} PLN` : "Zapytaj o cenę"}
             </span>
           </div>

@@ -56,7 +56,7 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
   const address = tenant?.location?.address || "";
   const logo = tenant?.logoUrl || tenant?.branding?.logoUrl;
 
-  const footerBg = tenant?.branding?.colors?.footerBg || "#080808";
+  const footerBg = tenant?.branding?.colors?.footerBg || "#f8fafc";
   const carBuying = hasCarBuying(tenant);
 
   const getUrl = (path: string) =>
@@ -90,7 +90,7 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
                 }
               />
             ) : (
-              <span style={{ fontWeight: 800, fontSize: "20px", color: "#fff", display: "block", marginBottom: "12px" }}>
+              <span style={{ fontWeight: 800, fontSize: "20px", color: "#09090b", display: "block", marginBottom: "12px" }}>
                 {name}
               </span>
             )}
@@ -172,8 +172,8 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
         <div className="dealer-footer__bottom">
           <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center" }}>
             <span>© {new Date().getFullYear()} {name}</span>
-            <Link href={getUrl("/polityka-prywatnosci")} style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", fontSize: "13px" }}>Polityka prywatności</Link>
-            <Link href={getUrl("/regulamin")} style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", fontSize: "13px" }}>Regulamin</Link>
+            <Link href={getUrl("/polityka-prywatnosci")} style={{ color: "#71717a", textDecoration: "none", fontSize: "13px" }}>Polityka prywatności</Link>
+            <Link href={getUrl("/regulamin")} style={{ color: "#71717a", textDecoration: "none", fontSize: "13px" }}>Regulamin</Link>
           </div>
 
         </div>

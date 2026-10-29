@@ -30,17 +30,16 @@ export function StickyMobileCta({ tenant, isCustomDomain }: StickyMobileCtaProps
   };
 
   return (
-    <div className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-slate-950/95 backdrop-blur-md border-t border-slate-800 px-3 pt-2.5 pb-[calc(10px+env(safe-area-inset-bottom,0px))] shadow-lg">
+    <div className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur-md border-t border-zinc-200 px-3 pt-2.5 pb-[calc(10px+env(safe-area-inset-bottom,0px))] shadow-lg">
       <div className="max-w-md mx-auto grid grid-flow-col auto-cols-fr gap-2">
         {/* Call Button */}
         {phone && (
           <a
             href={`tel:${cleanPhone}`}
-            className="flex items-center justify-center gap-1.5 h-11 px-3 rounded-md bg-slate-900 border border-slate-700/80 text-white text-xs font-semibold hover:bg-slate-800 transition-colors"
-            style={{ color: "#ffffff" }}
+            className="flex items-center justify-center gap-1.5 h-11 px-3 rounded-md bg-zinc-100 border border-zinc-200 text-zinc-900 text-xs font-semibold hover:bg-zinc-200 transition-colors shadow-2xs"
           >
-            <Phone className="w-4 h-4 text-sky-400" strokeWidth={1.75} />
-            <span style={{ color: "#ffffff" }}>Zadzwoń</span>
+            <Phone className="w-4 h-4 text-zinc-700" strokeWidth={1.75} />
+            <span>Zadzwoń</span>
           </a>
         )}
 
@@ -54,11 +53,10 @@ export function StickyMobileCta({ tenant, isCustomDomain }: StickyMobileCtaProps
             )}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-1.5 h-11 px-3 rounded-md bg-emerald-950/70 border border-emerald-600/40 text-emerald-400 text-xs font-semibold hover:bg-emerald-900/50 transition-colors"
-            style={{ color: "#34d399" }}
+            className="flex items-center justify-center gap-1.5 h-11 px-3 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold hover:bg-emerald-100 transition-colors shadow-2xs"
           >
-            <MessageCircle className="w-4 h-4" strokeWidth={1.75} />
-            <span style={{ color: "#34d399" }}>WhatsApp</span>
+            <MessageCircle className="w-4 h-4 text-emerald-600" strokeWidth={1.75} />
+            <span>WhatsApp</span>
           </a>
         )}
 
@@ -66,7 +64,7 @@ export function StickyMobileCta({ tenant, isCustomDomain }: StickyMobileCtaProps
         <a
           href={carBuying ? getTenantUrl(tenant.slug, "/skup-aut", tenant.customDomain, isCustomDomain) : vehiclesHref}
           onClick={handleSellClick}
-          className="flex items-center justify-center gap-1.5 h-11 px-3 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-sm transition-all"
+          className="flex items-center justify-center gap-1.5 h-11 px-3 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-xs transition-all"
           style={{ color: "#ffffff" }}
         >
           <Car className="w-4 h-4 text-white" strokeWidth={1.75} style={{ color: "#ffffff" }} />

@@ -64,17 +64,17 @@ export function ServiceAreasSection({ tenant, config, isCustomDomain }: Props) {
               <Link
                 key={lp.slug}
                 href={getTenantUrl(tenant.slug, `/${lp.slug}`, tenant.customDomain, isCustomDomain)}
-                className="group flex items-center justify-between p-4 rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-zinc-400 dark:hover:border-zinc-700 shadow-sm transition-all"
+                className="group flex items-center justify-between p-4 rounded-md border border-zinc-200 bg-white hover:border-zinc-300 shadow-sm transition-all"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-8 h-8 rounded bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-700 dark:text-zinc-300 shrink-0">
+                  <div className="w-8 h-8 rounded-md bg-zinc-100 flex items-center justify-center text-zinc-700 shrink-0">
                     <MapPin className="w-4 h-4" />
                   </div>
-                  <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+                  <span className="text-sm font-semibold text-zinc-900 truncate">
                     {label}
                   </span>
                 </div>
-                <ArrowRight className="w-4 h-4 text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors shrink-0 ml-2" />
+                <ArrowRight className="w-4 h-4 text-zinc-400 group-hover:text-zinc-900 transition-colors shrink-0 ml-2" />
               </Link>
             );
           })}

@@ -69,7 +69,7 @@ export function ServicesSection({ tenant, isCustomDomain }: Props) {
           <h2 className="vd-heading mb-3">
             {carBuying ? "Usługi dla kierowców i właścicieli aut" : "Nasza oferta i usługi dla kupujących"}
           </h2>
-          <p className="vd-copy text-zinc-700 dark:text-zinc-300">
+          <p className="vd-copy text-zinc-700">
             {carBuying
               ? "Gwarantujemy przejrzyste zasady, profesjonalne podejście oraz szybką realizację każdej transakcji."
               : "Oferujemy sprawdzone pojazdy, transparentne warunki zakupu, fakturę oraz kompleksową pomoc w rejestracji."}
@@ -87,7 +87,7 @@ export function ServicesSection({ tenant, isCustomDomain }: Props) {
             return (
               <div
                 key={`${card.title}-${i}`}
-                className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-6 flex flex-col justify-between shadow-xs hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-md transition-all duration-150"
+                className="group bg-white border border-zinc-200 rounded-lg p-6 flex flex-col justify-between shadow-xs hover:border-zinc-300 hover:shadow-md transition-all duration-150"
               >
                 <div>
                   <div
@@ -99,10 +99,10 @@ export function ServicesSection({ tenant, isCustomDomain }: Props) {
                   >
                     <Icon className="w-5 h-5" strokeWidth={2} />
                   </div>
-                  <h3 className="text-base font-bold text-zinc-950 dark:text-zinc-50 mb-2">
+                  <h3 className="text-base font-bold text-zinc-950 mb-2">
                     {card.title}
                   </h3>
-                  <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6 leading-relaxed">
+                  <p className="text-sm text-zinc-600 mb-6 leading-relaxed">
                     {card.text}
                   </p>
                 </div>
@@ -113,10 +113,10 @@ export function ServicesSection({ tenant, isCustomDomain }: Props) {
                     onClick={() =>
                       trackEvent("service_clicked", { dealer_id: tenant.id, service: card.title })
                     }
-                    className="h-10 w-full flex items-center justify-center gap-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/80 hover:bg-zinc-950 hover:text-white dark:hover:bg-white dark:hover:text-zinc-950 text-zinc-900 dark:text-zinc-100 text-xs font-semibold tracking-wide transition-all duration-150"
+                    className="h-10 w-full flex items-center justify-center gap-1.5 rounded-md border border-zinc-200 bg-zinc-50 hover:bg-zinc-900 hover:text-white text-zinc-900 text-xs font-semibold tracking-wide transition-all duration-150"
                   >
                     <span>{card.label}</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-zinc-100 dark:group-hover:text-zinc-900 group-hover:translate-x-0.5 transition-all" />
+                    <ArrowRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
                   </a>
                 ) : (
                   <Link
@@ -124,10 +124,10 @@ export function ServicesSection({ tenant, isCustomDomain }: Props) {
                     onClick={() =>
                       trackEvent("service_clicked", { dealer_id: tenant.id, service: card.title })
                     }
-                    className="h-10 w-full flex items-center justify-center gap-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/80 hover:bg-zinc-950 hover:text-white dark:hover:bg-white dark:hover:text-zinc-950 text-zinc-900 dark:text-zinc-100 text-xs font-semibold tracking-wide transition-all duration-150"
+                    className="h-10 w-full flex items-center justify-center gap-1.5 rounded-md border border-zinc-200 bg-zinc-50 hover:bg-zinc-900 hover:text-white text-zinc-900 text-xs font-semibold tracking-wide transition-all duration-150"
                   >
                     <span>{card.label}</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-zinc-100 dark:group-hover:text-zinc-900 group-hover:translate-x-0.5 transition-all" />
+                    <ArrowRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
                   </Link>
                 )}
               </div>

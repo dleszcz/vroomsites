@@ -38,8 +38,8 @@ export const WADER_TENANT: Tenant = {
       foreground: "#09090b",
       surface: "#f8fafc",
       muted: "#64748b",
-      headerBg: "#09090b",
-      footerBg: "#09090b",
+      headerBg: "#ffffff",
+      footerBg: "#f8fafc",
     },
   },
   services: [
