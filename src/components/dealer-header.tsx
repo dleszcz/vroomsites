@@ -61,7 +61,7 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
               unoptimized={!isLocalOrKnownRemote}
             />
           ) : (
-            <span style={{ fontWeight: 800, fontSize: "18px", color: "#ffffff" }}>
+            <span style={{ fontWeight: 800, fontSize: "18px", color: "var(--color-header-fg, #ffffff)" }}>
               {tenant.businessName}
             </span>
           )}

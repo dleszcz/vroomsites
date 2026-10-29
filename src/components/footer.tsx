@@ -90,7 +90,7 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
                 }
               />
             ) : (
-              <span style={{ fontWeight: 800, fontSize: "20px", color: "#ffffff", display: "block", marginBottom: "12px" }}>
+              <span style={{ fontWeight: 800, fontSize: "20px", color: "var(--color-footer-fg, #ffffff)", display: "block", marginBottom: "12px" }}>
                 {name}
               </span>
             )}
@@ -172,8 +172,8 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
         <div className="dealer-footer__bottom">
           <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center" }}>
             <span>© {new Date().getFullYear()} {name}</span>
-            <Link href={getUrl("/polityka-prywatnosci")} style={{ color: "#94a3b8", textDecoration: "none", fontSize: "13px" }}>Polityka prywatności</Link>
-            <Link href={getUrl("/regulamin")} style={{ color: "#94a3b8", textDecoration: "none", fontSize: "13px" }}>Regulamin</Link>
+            <Link href={getUrl("/polityka-prywatnosci")} style={{ color: "var(--color-footer-muted, #94a3b8)", textDecoration: "none", fontSize: "13px" }}>Polityka prywatności</Link>
+            <Link href={getUrl("/regulamin")} style={{ color: "var(--color-footer-muted, #94a3b8)", textDecoration: "none", fontSize: "13px" }}>Regulamin</Link>
           </div>
 
         </div>
