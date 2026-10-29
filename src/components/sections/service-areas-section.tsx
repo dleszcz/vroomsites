@@ -2,8 +2,8 @@
 
 import React from "react";
 import Link from "next/link";
-import { MapPin } from "lucide-react";
-import { DealerTenant, SectionConfig } from "@/types/landing";
+import { MapPin, ArrowRight } from "lucide-react";
+import { DealerTenant, SectionConfig, hasCarBuying } from "@/types/landing";
 import { getTenantUrl } from "@/lib/urls";
 
 interface Props {
@@ -13,18 +13,28 @@ interface Props {
 }
 
 export function ServiceAreasSection({ tenant, config, isCustomDomain }: Props) {
+  const isCarBuyingEnabled = hasCarBuying(tenant);
   const primaryCity = tenant.localSeo?.primaryLocation?.city || tenant.location?.city || "";
   const locality = tenant.localSeo?.primaryLocation?.locality;
   const county = tenant.localSeo?.primaryLocation?.county || tenant.location?.county;
 
-  const title =
-    config?.title ||
-    (primaryCity ? `Skup aut w ${primaryCity} i okolicach` : "Obsługiwane okolice i obszar działania");
-  const subtitle =
-    config?.subtitle ||
-    `${tenant.businessName} działa w ${locality ? `${locality}, ` : ""}${primaryCity}${
-      county ? ` (powiat ${county})` : ""
-    } i oferuje darmowy dojazd oraz skup samochodów za gotówkę w okolicznych miejscowościach.`;
+  const defaultSalesTitle = primaryCity
+    ? `Komis samochodowy i sprzedaż aut — ${primaryCity} i okolice`
+    : "Obsługiwane okolice i obszar działania";
+  const defaultBuyingTitle = primaryCity
+    ? `Skup aut w ${primaryCity} i okolicach`
+    : "Obsługiwane okolice i obszar działania";
+
+  const defaultSalesSubtitle = `${tenant.businessName} oferuje sprawdzone samochody używane z pewną historią, gwarancją i kompletem dokumentów dla mieszkańców ${
+    locality ? `${locality}, ` : ""
+  }${primaryCity}${county ? ` (powiat ${county})` : ""} oraz okolicznych miejscowości.`;
+
+  const defaultBuyingSubtitle = `${tenant.businessName} oferuje darmowy dojazd, wycenę na miejscu oraz natychmiastową płatność gotówką w ${
+    locality ? `${locality}, ` : ""
+  }${primaryCity}${county ? ` (powiat ${county})` : ""} i sąsiednich miejscowościach.`;
+
+  const title = config?.title || (isCarBuyingEnabled ? defaultBuyingTitle : defaultSalesTitle);
+  const subtitle = config?.subtitle || (isCarBuyingEnabled ? defaultBuyingSubtitle : defaultSalesSubtitle);
 
   // Get active, indexable local pages that allow local area links
   const activeLocalPages =
@@ -36,78 +46,38 @@ export function ServiceAreasSection({ tenant, config, isCustomDomain }: Props) {
     return null;
   }
 
-  const primaryColor = tenant.branding?.colors?.primary || "#1686E0";
-
   return (
     <section id="service-areas" className="vd-section vd-section--bordered vd-section--soft">
       <div className="vd-container">
-        <div style={{ maxWidth: "720px", margin: "0 auto 36px", textAlign: "center" }}>
-          <span className="vd-eyebrow" style={{ color: primaryColor }}>
-            Lokalny obszar obsługi
-          </span>
-          <h2 className="vd-heading" style={{ marginBottom: "12px" }}>
-            {title}
-          </h2>
-          <p className="vd-copy" style={{ color: "var(--color-text-soft)", fontSize: "16px", lineHeight: 1.6 }}>
-            {subtitle}
-          </p>
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <span className="vd-eyebrow">Obszar działania</span>
+          <h2 className="vd-heading mb-3">{title}</h2>
+          <p className="vd-copy">{subtitle}</p>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "16px",
-            maxWidth: "960px",
-            margin: "0 auto",
-          }}
-        >
-          {activeLocalPages.map((lp) => (
-            <Link
-              key={lp.slug}
-              href={getTenantUrl(tenant.slug, `/${lp.slug}`, tenant.customDomain, isCustomDomain)}
-              style={{
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+          {activeLocalPages.map((lp) => {
+            const isSalesPage = lp.mode === "sales" || !isCarBuyingEnabled;
+            const label = isSalesPage ? `Samochody używane ${lp.city}` : `Skup aut ${lp.city}`;
 
-                padding: "20px",
-                borderRadius: "12px",
-                background: "#fff",
-                border: "1px solid var(--color-border)",
-                display: "flex",
-                alignItems: "center",
-                gap: "14px",
-                textDecoration: "none",
-                color: "var(--color-foreground)",
-                fontWeight: 700,
-                fontSize: "15px",
-                transition: "transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease",
-              }}
-              className="vd-service-area-card"
-            >
-              <div
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "10px",
-                  background: "rgba(22, 134, 224, 0.1)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: primaryColor,
-                  flexShrink: 0,
-                }}
+            return (
+              <Link
+                key={lp.slug}
+                href={getTenantUrl(tenant.slug, `/${lp.slug}`, tenant.customDomain, isCustomDomain)}
+                className="group flex items-center justify-between p-4 rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-zinc-400 dark:hover:border-zinc-700 shadow-sm transition-all"
               >
-                <MapPin size={20} />
-              </div>
-              <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <span style={{ fontSize: "15px", fontWeight: 700, color: "var(--color-foreground)" }}>
-                  Skup aut {lp.city}
-                </span>
-                <span style={{ fontSize: "14px", color: primaryColor, fontWeight: 800 }}>
-                  ➔
-                </span>
-              </div>
-            </Link>
-          ))}
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-8 h-8 rounded bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-700 dark:text-zinc-300 shrink-0">
+                    <MapPin className="w-4 h-4" />
+                  </div>
+                  <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+                    {label}
+                  </span>
+                </div>
+                <ArrowRight className="w-4 h-4 text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors shrink-0 ml-2" />
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Clock3, MapPin, Phone } from "lucide-react";
+import { Clock3, Mail, MapPin, Phone } from "lucide-react";
 import { DealerTenant, hasCarBuying } from "@/types/landing";
 import Link from "next/link";
 import Image from "next/image";
@@ -161,7 +161,7 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
             <h3 className="dealer-footer__heading">Kontakt</h3>
             <div className="dealer-footer__links">
               {phone && <a className="dealer-footer__contact" href={`tel:${phone.replace(/\s/g, "")}`}><Phone size={12} /> {phone}</a>}
-              {email && <a className="dealer-footer__contact" href={`mailto:${email}`}>✉ {email}</a>}
+              {email && <a className="dealer-footer__contact" href={`mailto:${email}`}><Mail size={12} /> {email}</a>}
               {(address || city) && <span className="dealer-footer__contact"><MapPin size={12} /> {address}{address && city ? ", " : ""}{city}</span>}
               <span className="dealer-footer__contact"><Clock3 size={12} /> Pn–Pt: 8:00–20:00</span>
               <span className="dealer-footer__contact">Sob–Nd: 10:00–18:00</span>

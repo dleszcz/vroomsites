@@ -1,13 +1,28 @@
 "use client";
 
 import React, { useState } from "react";
-import { DealerTenant, LocalPageConfig } from "@/types/landing";
+import { DealerTenant, LocalPageConfig, hasCarBuying } from "@/types/landing";
+import { Car } from "@/types/database";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { LocalSeoSchema } from "@/components/local-seo-schema";
-import { CheckCircle2, ChevronDown, MapPin, Phone, ShieldCheck, Truck, Wallet } from "lucide-react";
+import {
+  ArrowRight,
+  CarFront,
+  CheckCircle2,
+  ChevronDown,
+  FileCheck2,
+  Home,
+  MapPin,
+  Phone,
+  ShieldCheck,
+  Sparkles,
+  Truck,
+  Wallet,
+  Wrench,
+} from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { StickyMobileCta } from "@/components/sticky-mobile-cta";
-
+import { CarCard } from "@/components/car-card";
 import { getTenantUrl } from "@/lib/urls";
 
 interface LocalSeoPageProps {
@@ -15,28 +30,33 @@ interface LocalSeoPageProps {
   localPage: LocalPageConfig;
   baseUrl: string;
   isCustomDomain?: boolean;
+  cars?: Car[];
 }
 
 function getCityInflection(city: string) {
   const map: Record<string, { locative: string; genitive: string }> = {
-    "Topólka": { locative: "Topólce", genitive: "Topólki" },
-    "Radziejów": { locative: "Radziejowie", genitive: "Radziejowa" },
-    "Lubraniec": { locative: "Lubrańcu", genitive: "Lubrańca" },
+    Topólka: { locative: "Topólce", genitive: "Topólki" },
+    Radziejów: { locative: "Radziejowie", genitive: "Radziejowa" },
+    Lubraniec: { locative: "Lubrańcu", genitive: "Lubrańca" },
     "Izbica Kujawska": { locative: "Izbicy Kujawskiej", genitive: "Izbicy Kujawskiej" },
     "Brześć Kujawski": { locative: "Brześciu Kujawskim", genitive: "Brześcia Kujawskiego" },
     "Piotrków Kujawski": { locative: "Piotrkowie Kujawskim", genitive: "Piotrkowa Kujawskiego" },
-    "Osięciny": { locative: "Osięcinach", genitive: "Osięcin" },
-    "Włocławek": { locative: "Włocławku", genitive: "Włocławka" },
-    "Kruszwica": { locative: "Kruszwicy", genitive: "Kruszwicy" },
-    "Inowrocław": { locative: "Inowrocławiu", genitive: "Inowrocławia" },
-    "Konin": { locative: "Koninie", genitive: "Konina" },
-    "Lipno": { locative: "Lipnie", genitive: "Lipna" },
-    "Bytoń": { locative: "Bytoniu", genitive: "Bytonia" },
-    "Choceń": { locative: "Choceniu", genitive: "Chocenia" },
-    "Kowal": { locative: "Kowalu", genitive: "Kowala" },
-    "Chodecz": { locative: "Chodczu", genitive: "Chodcza" },
-    "Sompolno": { locative: "Sompolnie", genitive: "Sompolna" },
-    "Babiak": { locative: "Babiaku", genitive: "Babiaka" },
+    Osięciny: { locative: "Osięcinach", genitive: "Osięcin" },
+    Włocławek: { locative: "Włocławku", genitive: "Włocławka" },
+    Kruszwica: { locative: "Kruszwicy", genitive: "Kruszwicy" },
+    Inowrocław: { locative: "Inowrocławiu", genitive: "Inowrocławia" },
+    "Aleksandrów Kujawski": { locative: "Aleksandrowie Kujawskim", genitive: "Aleksandrowa Kujawskiego" },
+    Gniewkowo: { locative: "Gniewkowie", genitive: "Gniewkowa" },
+    Strzelno: { locative: "Strzelnie", genitive: "Strzelna" },
+    "Dąbrowa Biskupia": { locative: "Dąbrowie Biskupiej", genitive: "Dąbrowy Biskupiej" },
+    Konin: { locative: "Koninie", genitive: "Konina" },
+    Lipno: { locative: "Lipnie", genitive: "Lipna" },
+    Bytoń: { locative: "Bytoniu", genitive: "Bytonia" },
+    Choceń: { locative: "Choceniu", genitive: "Chocenia" },
+    Kowal: { locative: "Kowalu", genitive: "Kowala" },
+    Chodecz: { locative: "Chodczu", genitive: "Chodcza" },
+    Sompolno: { locative: "Sompolnie", genitive: "Sompolna" },
+    Babiak: { locative: "Babiaku", genitive: "Babiaka" },
   };
 
   const entry = map[city];
@@ -46,7 +66,7 @@ function getCityInflection(city: string) {
   };
 }
 
-export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) {
+export function LocalSeoPage({ tenant, localPage, baseUrl, isCustomDomain, cars = [] }: LocalSeoPageProps) {
   const cityInfo = getCityInflection(localPage.city);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [leadFormSubmitted, setLeadFormSubmitted] = useState(false);
@@ -55,18 +75,30 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
   const [vehicleDetails, setVehicleDetails] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const carBuying = hasCarBuying(tenant);
+  const isSalesOnly = !carBuying || localPage.mode === "sales";
+
   const phone = tenant.contact.phone || "";
   const cleanPhone = phone.replace(/\s/g, "");
-  const heroImage = tenant.branding.media?.heroImageUrl || "/images/dcar-hero.jpg";
+  const heroImage =
+    localPage.media?.heroImage ||
+    tenant.branding.media?.heroImageUrl ||
+    "/images/default-hero.webp";
   const primaryColor = tenant.branding.colors.primary || "#1686E0";
 
   const canonicalUrl = `${baseUrl}/${localPage.slug}`;
 
   const breadcrumbs = [
-    { label: tenant.businessName, href: getTenantUrl(tenant.slug, "/", tenant.customDomain) },
-    { label: "Skup aut", href: getTenantUrl(tenant.slug, "/skup-aut", tenant.customDomain) },
+    { label: tenant.businessName, href: getTenantUrl(tenant.slug, "/", tenant.customDomain, isCustomDomain) },
+    {
+      label: isSalesOnly ? "Samochody na sprzedaż" : "Skup aut",
+      href: getTenantUrl(tenant.slug, isSalesOnly ? "/samochody" : "/skup-aut", tenant.customDomain, isCustomDomain),
+    },
     { label: localPage.city },
   ];
+
+  const availableCars = cars.filter((c) => !c.is_sold);
+  const displayedCars = availableCars.slice(0, 6);
 
   const handlePhoneClick = () => {
     trackEvent("cta_click", {
@@ -84,7 +116,10 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
     trackEvent("lead_form_started", { localSeoCity: localPage.city });
 
     try {
-      const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
+      const searchParams =
+        typeof window !== "undefined"
+          ? new URLSearchParams(window.location.search)
+          : new URLSearchParams();
       const attribution = {
         utm_source: searchParams.get("utm_source") || null,
         utm_medium: searchParams.get("utm_medium") || null,
@@ -99,24 +134,23 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          dealerId: tenant.id,
-          source: `local_seo_${localPage.slug}`,
-          landingPath: `/${tenant.slug}/${localPage.slug}`,
-          customerName,
-          customerPhone,
+          tenantId: tenant.id,
+          name: customerName,
+          phone: customerPhone,
+          vehicleDetails: isSalesOnly
+            ? `[Zapytanie o zakup w ${localPage.city}]: ${vehicleDetails || "Brak szczegółów"}`
+            : vehicleDetails,
+          source: `local-seo-${localPage.slug}`,
           attribution,
-          localSeoCity: localPage.city,
-          vehicleDetails: { description: vehicleDetails },
         }),
       });
-
 
       if (res.ok) {
         setLeadFormSubmitted(true);
         trackEvent("lead_submitted", { localSeoCity: localPage.city });
       }
     } catch {
-      // Ignore errors for UX
+      // Graceful error handling
     } finally {
       setIsSubmitting(false);
     }
@@ -130,98 +164,155 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
         {/* Breadcrumbs */}
         <Breadcrumbs items={breadcrumbs} />
 
-        {/* Local Hero */}
-        <section className="vd-section vd-section--dark local-seo-hero" style={{ position: "relative", overflow: "hidden" }}>
+        {/* Local Hero Section */}
+        <section className="relative overflow-hidden bg-zinc-950 border-b border-zinc-800">
           {heroImage && (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={heroImage}
-              alt={`Skup aut w ${localPage.city} - ${tenant.businessName}`}
-              style={{
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                opacity: 0.25,
-                pointerEvents: "none",
-              }}
+              alt={
+                isSalesOnly
+                  ? `Samochody używane w ${cityInfo.locative} - ${tenant.businessName}`
+                  : `Skup aut w ${localPage.city} - ${tenant.businessName}`
+              }
+              className="absolute inset-0 w-full h-full object-cover opacity-25 pointer-events-none"
             />
           )}
-          <div className="vd-container" style={{ position: "relative", zIndex: 2, paddingBlock: "48px 64px" }}>
-
-            <span className="vd-eyebrow" style={{ color: primaryColor }}>
-              Szybka wycena & Bezpłatny odbior • {localPage.city}
-            </span>
-            <h1 className="vd-heading" style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#fff", marginBottom: "16px" }}>
-              {(localPage.seo?.h1 || `Skup aut w ${cityInfo.locative} - ${tenant.businessName}`).replace(/—|–/g, "-")}
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight max-w-3xl mb-4 font-heading leading-tight">
+              {isSalesOnly
+                ? (
+                    localPage.seo?.h1 ||
+                    `Sprawdzone samochody osobowe i dostawcze w ${cityInfo.locative}`
+                  ).replace(/—|–/g, "-")
+                : (
+                    localPage.seo?.h1 ||
+                    `Skup aut w ${cityInfo.locative} - ${tenant.businessName}`
+                  ).replace(/—|–/g, "-")}
             </h1>
-            <p className="vd-copy" style={{ color: "rgba(255,255,255,0.85)", fontSize: "18px", maxWidth: "680px", marginBottom: "32px" }}>
-              {(localPage.content?.intro ||
-                `Oferujemy bezpieczny skup aut za gotówkę w ${cityInfo.locative} i okolicach. Bezpłatna wycena, szybki dojazd i umowa na miejscu.`).replace(/—|–/g, "-")}
+
+            <p className="text-base sm:text-lg text-zinc-300 max-w-2xl mb-8 leading-relaxed">
+              {isSalesOnly
+                ? (
+                    localPage.content?.intro ||
+                    `Szukasz pewnego auta z gwarancją i udokumentowaną historią w ${cityInfo.locative}? Poznaj wyselekcjonowaną ofertę samochodów osobowych i dostawczych w ${tenant.businessName}. Zapewniamy pełną transparentność, weryfikację techniczną i pomoc we wszystkich formalnościach.`
+                  ).replace(/—|–/g, "-")
+                : (
+                    localPage.content?.intro ||
+                    `Oferujemy bezpieczny skup aut za gotówkę w ${cityInfo.locative} i okolicach. Bezpłatna wycena, szybki dojazd i umowa na miejscu.`
+                  ).replace(/—|–/g, "-")}
             </p>
-            <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
+
+            <div className="flex flex-wrap items-center gap-3">
               {phone && (
                 <a
                   href={`tel:${cleanPhone}`}
                   onClick={handlePhoneClick}
-                  className="vd-button vd-button--primary"
-                  style={{ background: primaryColor }}
+                  className="vd-button vd-button--primary inline-flex items-center gap-2 text-white font-semibold shadow-sm"
+                  style={{ backgroundColor: primaryColor }}
                 >
-                  <Phone size={16} /> Zadzwoń: {phone}
+                  <Phone size={16} />
+                  <span>Zadzwoń: {phone}</span>
                 </a>
               )}
-              <a href="#local-lead-form" className="vd-button vd-button--outline-dark">
-                Darmowa wycena online ➔
-              </a>
+
+              {isSalesOnly ? (
+                <a
+                  href={getTenantUrl(tenant.slug, "/samochody", tenant.customDomain, isCustomDomain)}
+                  className="vd-button vd-button--outline-dark inline-flex items-center gap-2 text-white border-zinc-700 hover:bg-zinc-900"
+                >
+                  <span>Zobacz pełną ofertę ({availableCars.length})</span>
+                  <ArrowRight size={15} />
+                </a>
+              ) : (
+                <a
+                  href="#local-lead-form"
+                  className="vd-button vd-button--outline-dark inline-flex items-center gap-2 text-white border-zinc-700 hover:bg-zinc-900"
+                >
+                  <span>Darmowa wycena online</span>
+                  <ArrowRight size={15} />
+                </a>
+              )}
             </div>
           </div>
         </section>
 
+        {/* Sales-Specific Section: Samochody na placu dla danej lokalizacji */}
+        {isSalesOnly && displayedCars.length > 0 && (
+          <section className="py-12 sm:py-16 bg-zinc-50 border-b border-zinc-200">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+                <div>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-zinc-950 tracking-tight font-heading">
+                    Dostępne samochody od ręki — {localPage.city}
+                  </h2>
+                  <p className="text-sm sm:text-base text-zinc-600 mt-1">
+                    Wybrane pojazdy z naszego placu gotowe do natychmiastowego odbioru lub dostawy do {cityInfo.genitive}.
+                  </p>
+                </div>
+                <a
+                  href={getTenantUrl(tenant.slug, "/samochody", tenant.customDomain, isCustomDomain)}
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold hover:underline"
+                  style={{ color: primaryColor }}
+                >
+                  <span>Wszystkie ogłoszenia ({availableCars.length})</span>
+                  <ArrowRight size={16} />
+                </a>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {displayedCars.map((car) => (
+                  <CarCard
+                    key={car.id}
+                    car={car}
+                    dealerSlug={tenant.slug}
+                    customDomain={tenant.customDomain}
+                    isCustomDomain={isCustomDomain}
+                  />
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Service Description & Local Coverage */}
-        <section className="vd-section">
-          <div className="vd-container">
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "32px", alignItems: "center" }}>
+        <section className="py-12 sm:py-16 bg-white border-b border-zinc-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
               <div>
-                <span className="vd-eyebrow">Obsługa {localPage.city} i okolic</span>
-                <h2 className="vd-heading" style={{ marginBottom: "16px" }}>
-                  Skupujemy samochody w {cityInfo.locative} za gotówkę
+                <h2 className="text-2xl sm:text-3xl font-bold text-zinc-950 tracking-tight font-heading mb-4">
+                  {isSalesOnly
+                    ? `Pewne auta z gwarancją dla mieszkańców ${cityInfo.genitive}`
+                    : `Skupujemy samochody w ${cityInfo.locative} za gotówkę`}
                 </h2>
-                <p className="vd-copy" style={{ marginBottom: "16px" }}>
-                  {(localPage.content?.serviceDescription ||
-                    `Zapewniamy profesjonalny skup pojazdów od mieszkańców ${cityInfo.locative}. Kupujemy auta osobowe, dostawcze oraz w każdym stanie technicznym.`).replace(/—|–/g, "-")}
+                <p className="text-base text-zinc-600 leading-relaxed mb-6">
+                  {isSalesOnly
+                    ? (
+                        localPage.content?.serviceDescription ||
+                        `Salon ${tenant.businessName} dostarcza mieszkańcom ${cityInfo.genitive} i okolic sprawdzone samochody osobowe, vany oraz pojazdy dostawcze. Każdy egzemplarz przed wystawieniem przechodzi skrupulatną kontrolę mechaniczną, weryfikację grubości powłoki lakierniczej oraz badanie komputerowe.`
+                      ).replace(/—|–/g, "-")
+                    : (
+                        localPage.content?.serviceDescription ||
+                        `Zapewniamy profesjonalny skup pojazdów od mieszkańców ${cityInfo.locative}. Kupujemy auta osobowe, dostawcze oraz w każdym stanie technicznym.`
+                      ).replace(/—|–/g, "-")}
                 </p>
+
                 {localPage.content?.locationNote && (
-                  <div
-                    style={{
-                      marginTop: "24px",
-                      padding: "16px 20px",
-                      borderRadius: "14px",
-                      background: `${primaryColor}0d`,
-                      border: `1px solid ${primaryColor}30`,
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: "14px",
-                    }}
-                  >
+                  <div className="p-4 rounded-lg bg-zinc-50 border border-zinc-200 flex items-start gap-3">
                     <div
-                      style={{
-                        width: "36px",
-                        height: "36px",
-                        borderRadius: "10px",
-                        background: `${primaryColor}1a`,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                      }}
+                      className="w-9 h-9 rounded-md flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: `${primaryColor}15` }}
                     >
                       <MapPin size={18} style={{ color: primaryColor }} />
                     </div>
                     <div>
-                      <span style={{ fontSize: "12px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: primaryColor, display: "block", marginBottom: "4px" }}>
+                      <span
+                        className="text-xs font-bold uppercase tracking-wider block mb-1"
+                        style={{ color: primaryColor }}
+                      >
                         Lokalna obsługa • {localPage.city}
                       </span>
-                      <p style={{ margin: 0, fontSize: "14px", lineHeight: 1.5, color: "var(--color-foreground)", fontWeight: 500 }}>
+                      <p className="text-sm text-zinc-800 font-medium m-0 leading-normal">
                         {localPage.content.locationNote.replace(/—|–/g, "-")}
                       </p>
                     </div>
@@ -230,279 +321,268 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
               </div>
 
               {/* Value Cards Grid */}
-              <div style={{ display: "grid", gap: "16px" }}>
-                {tenant.businessRules?.purchasePriceLimit?.enabled && (
-                  <div
-                    style={{
-                      padding: "20px",
-                      borderRadius: "14px",
-                      background: "#ffffff",
-                      border: "1px solid var(--color-border)",
-                      display: "flex",
-                      gap: "16px",
-                      boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: "44px",
-                        height: "44px",
-                        borderRadius: "12px",
-                        background: `${primaryColor}12`,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                      }}
-                    >
-                      <Wallet size={22} style={{ color: primaryColor }} />
-                    </div>
-                    <div>
-                      <h3 style={{ margin: "0 0 4px", fontSize: "16px", fontWeight: 700 }}>
-                        Skup aut do {tenant.businessRules.purchasePriceLimit.maxAmount.toLocaleString("pl-PL")} {tenant.businessRules.purchasePriceLimit.currency}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {isSalesOnly ? (
+                  <>
+                    <div className="p-5 rounded-lg bg-white border border-zinc-200 shadow-xs space-y-2">
+                      <div
+                        className="w-10 h-10 rounded-md flex items-center justify-center"
+                        style={{ backgroundColor: `${primaryColor}15` }}
+                      >
+                        <ShieldCheck size={20} style={{ color: primaryColor }} />
+                      </div>
+                      <h3 className="text-base font-bold text-zinc-950 font-heading">
+                        Sprawdzony Stan & VIN
                       </h3>
-                      <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-soft)", lineHeight: 1.5 }}>
-                        {(tenant.businessRules.purchasePriceLimit.description || `Skupujemy auta osobowe i budżetowe do ${tenant.businessRules.purchasePriceLimit.maxAmount.toLocaleString("pl-PL")} PLN. Szybka wycena!`).replace(/—|–/g, "-") }
+                      <p className="text-sm text-zinc-600 leading-normal">
+                        Udostępniamy numer VIN, historię serwisową i umożliwiamy sprawdzenie na dowolnej stacji kontroli pojazdów.
                       </p>
                     </div>
-                  </div>
-                )}
 
-                {tenant.businessRules?.tradeIn?.enabled && (
-                  <div
-                    style={{
-                      padding: "20px",
-                      borderRadius: "14px",
-                      background: "#ffffff",
-                      border: "1px solid var(--color-border)",
-                      display: "flex",
-                      gap: "16px",
-                      boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: "44px",
-                        height: "44px",
-                        borderRadius: "12px",
-                        background: `${primaryColor}12`,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                      }}
-                    >
-                      <ShieldCheck size={22} style={{ color: primaryColor }} />
-                    </div>
-                    <div>
-                      <h3 style={{ margin: "0 0 4px", fontSize: "16px", fontWeight: 700 }}>
-                        {tenant.businessRules.tradeIn.title || "Auto w rozliczeniu"}
+                    <div className="p-5 rounded-lg bg-white border border-zinc-200 shadow-xs space-y-2">
+                      <div
+                        className="w-10 h-10 rounded-md flex items-center justify-center"
+                        style={{ backgroundColor: `${primaryColor}15` }}
+                      >
+                        <FileCheck2 size={20} style={{ color: primaryColor }} />
+                      </div>
+                      <h3 className="text-base font-bold text-zinc-950 font-heading">
+                        Komplet Dokumentów
                       </h3>
-                      <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-soft)", lineHeight: 1.5 }}>
-                        {tenant.businessRules.tradeIn.description || "Zostaw swoje obecne auto w rozliczeniu przy zakupie innego pojazdu."}
+                      <p className="text-sm text-zinc-600 leading-normal">
+                        Wystawiamy fakturę (zwolnienie z 2% podatku PCC). Samochody są gotowe do natychmiastowej rejestracji.
                       </p>
                     </div>
-                  </div>
+
+                    <div className="p-5 rounded-lg bg-white border border-zinc-200 shadow-xs space-y-2">
+                      <div
+                        className="w-10 h-10 rounded-md flex items-center justify-center"
+                        style={{ backgroundColor: `${primaryColor}15` }}
+                      >
+                        <Wrench size={20} style={{ color: primaryColor }} />
+                      </div>
+                      <h3 className="text-base font-bold text-zinc-950 font-heading">
+                        Stacja diagnostyczna & Jazda próbna
+                      </h3>
+                      <p className="text-sm text-zinc-600 leading-normal">
+                        Umożliwiamy pełną weryfikację pojazdu na wybranej przez Ciebie stacji kontroli oraz spokojną jazdę próbną.
+                      </p>
+                    </div>
+
+                    <div className="p-5 rounded-lg bg-white border border-zinc-200 shadow-xs space-y-2">
+                      <div
+                        className="w-10 h-10 rounded-md flex items-center justify-center"
+                        style={{ backgroundColor: `${primaryColor}15` }}
+                      >
+                        <Truck size={20} style={{ color: primaryColor }} />
+                      </div>
+                      <h3 className="text-base font-bold text-zinc-950 font-heading">
+                        Dostawa pod dom
+                      </h3>
+                      <p className="text-sm text-zinc-600 leading-normal">
+                        Dowieziemy zakupiony pojazd naszą autolawetą bezpośrednio pod Twój adres w {cityInfo.locative}.
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="p-5 rounded-lg bg-white border border-zinc-200 shadow-xs space-y-2">
+                      <div
+                        className="w-10 h-10 rounded-md flex items-center justify-center"
+                        style={{ backgroundColor: `${primaryColor}15` }}
+                      >
+                        <Wallet size={20} style={{ color: primaryColor }} />
+                      </div>
+                      <h3 className="text-base font-bold text-zinc-950 font-heading">Płatność gotówką od ręki</h3>
+                      <p className="text-sm text-zinc-600 leading-normal">
+                        Pieniądze wypłacamy natychmiast przy podpisaniu umowy: gotówką lub przelewem ekspresowym.
+                      </p>
+                    </div>
+
+                    <div className="p-5 rounded-lg bg-white border border-zinc-200 shadow-xs space-y-2">
+                      <div
+                        className="w-10 h-10 rounded-md flex items-center justify-center"
+                        style={{ backgroundColor: `${primaryColor}15` }}
+                      >
+                        <Truck size={20} style={{ color: primaryColor }} />
+                      </div>
+                      <h3 className="text-base font-bold text-zinc-950 font-heading">Bezpłatny odbiór lawetą</h3>
+                      <p className="text-sm text-zinc-600 leading-normal">
+                        Odbieramy uszkodzone i niesprawne samochody bezpośrednio spod domu w {cityInfo.locative}.
+                      </p>
+                    </div>
+
+                    <div className="p-5 rounded-lg bg-white border border-zinc-200 shadow-xs space-y-2">
+                      <div
+                        className="w-10 h-10 rounded-md flex items-center justify-center"
+                        style={{ backgroundColor: `${primaryColor}15` }}
+                      >
+                        <ShieldCheck size={20} style={{ color: primaryColor }} />
+                      </div>
+                      <h3 className="text-base font-bold text-zinc-950 font-heading">Formalności na miejscu</h3>
+                      <p className="text-sm text-zinc-600 leading-normal">
+                        Przygotowujemy legalną umowę kupna-sprzedaży i komplet dokumentów do wyrejestrowania i ubezpieczyciela.
+                      </p>
+                    </div>
+
+                    <div className="p-5 rounded-lg bg-white border border-zinc-200 shadow-xs space-y-2">
+                      <div
+                        className="w-10 h-10 rounded-md flex items-center justify-center"
+                        style={{ backgroundColor: `${primaryColor}15` }}
+                      >
+                        <Sparkles size={20} style={{ color: primaryColor }} />
+                      </div>
+                      <h3 className="text-base font-bold text-zinc-950 font-heading">Wycena w 15 minut</h3>
+                      <p className="text-sm text-zinc-600 leading-normal">
+                        Rzetelna kalkulacja wartości rynkowej Twojego pojazdu bez zbędnego zbijania ceny.
+                      </p>
+                    </div>
+                  </>
                 )}
-
-                <div
-                  style={{
-                    padding: "20px",
-                    borderRadius: "14px",
-                    background: "#ffffff",
-                    border: "1px solid var(--color-border)",
-                    display: "flex",
-                    gap: "16px",
-                    boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "44px",
-                      height: "44px",
-                      borderRadius: "12px",
-                      background: `${primaryColor}12`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <Wallet size={22} style={{ color: primaryColor }} />
-                  </div>
-                  <div>
-                    <h3 style={{ margin: "0 0 4px", fontSize: "16px", fontWeight: 700 }}>Płatność gotówką od ręki</h3>
-                    <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-soft)", lineHeight: 1.5 }}>
-                      Pieniądze wypłacamy natychmiast przy podpisaniu umowy: gotówką lub przelewem ekspresowym.
-                    </p>
-                  </div>
-                </div>
-
-                <div
-                  style={{
-                    padding: "20px",
-                    borderRadius: "14px",
-                    background: "#ffffff",
-                    border: "1px solid var(--color-border)",
-                    display: "flex",
-                    gap: "16px",
-                    boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "44px",
-                      height: "44px",
-                      borderRadius: "12px",
-                      background: `${primaryColor}12`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <Truck size={22} style={{ color: primaryColor }} />
-                  </div>
-                  <div>
-                    <h3 style={{ margin: "0 0 4px", fontSize: "16px", fontWeight: 700 }}>Bezpłatny transport lawetą</h3>
-                    <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-soft)", lineHeight: 1.5 }}>
-                      Odbieramy uszkodzone i niesprawne samochody bezpośrednio spod domu w {cityInfo.locative}.
-                    </p>
-                  </div>
-                </div>
-
-                <div
-                  style={{
-                    padding: "20px",
-                    borderRadius: "14px",
-                    background: "#ffffff",
-                    border: "1px solid var(--color-border)",
-                    display: "flex",
-                    gap: "16px",
-                    boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "44px",
-                      height: "44px",
-                      borderRadius: "12px",
-                      background: `${primaryColor}12`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <ShieldCheck size={22} style={{ color: primaryColor }} />
-                  </div>
-                  <div>
-                    <h3 style={{ margin: "0 0 4px", fontSize: "16px", fontWeight: 700 }}>Formalności po naszej stronie</h3>
-                    <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-soft)", lineHeight: 1.5 }}>
-                      Przygotowujemy legalną umowę kupna-sprzedaży i przekazujemy komplet dokumentów do wyrejestrowania i OC.
-                    </p>
-                  </div>
-                </div>
               </div>
-
             </div>
           </div>
         </section>
 
         {/* Process Steps */}
-        <section className="vd-section vd-section--soft">
-          <div className="vd-container">
-            <div style={{ textAlign: "center", maxWidth: "600px", margin: "0 auto 40px" }}>
-              <span className="vd-eyebrow">Prosty proces</span>
-              <h2 className="vd-heading">Jak sprzedać auto z {cityInfo.genitive}?</h2>
+        <section className="py-12 sm:py-16 bg-zinc-50 border-b border-zinc-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-10">
+              <h2 className="text-2xl sm:text-3xl font-bold text-zinc-950 tracking-tight font-heading">
+                {isSalesOnly
+                  ? `Jak wygląda zakup auta dla klientów z ${cityInfo.genitive}?`
+                  : `Jak sprzedać auto z ${cityInfo.genitive}?`}
+              </h2>
+              <p className="text-sm sm:text-base text-zinc-600 mt-2">
+                {isSalesOnly
+                  ? "Prosty, przejrzysty i w 100% bezpieczny proces w zaledwie czterech krokach."
+                  : "Bezproblemowy odkup pojazdu w czterech prostych krokach z dojazdem."}
+              </p>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "24px" }}>
-              <div style={{ padding: "24px", borderRadius: "12px", background: "#fff", border: "1px solid var(--color-border)" }}>
-                <div style={{ fontSize: "24px", fontWeight: 800, color: primaryColor, marginBottom: "12px" }}>01</div>
-                <h3 style={{ fontSize: "16px", fontWeight: 700, margin: "0 0 8px" }}>Formularz lub telefon</h3>
-                <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-soft)" }}>
-                  Zadzwoń lub wypełnij krótki formularz wyceny podając podstawowe dane o samochodzie.
-                </p>
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {isSalesOnly ? (
+                <>
+                  <div className="p-6 rounded-lg bg-white border border-zinc-200">
+                    <div className="text-2xl font-black mb-3 font-mono" style={{ color: primaryColor }}>
+                      01
+                    </div>
+                    <h3 className="text-base font-bold text-zinc-950 font-heading mb-2">Wybór i weryfikacja</h3>
+                    <p className="text-sm text-zinc-600 leading-relaxed">
+                      Przeglądasz aktualną ofertę na stronie i kontaktujesz się w sprawie interesującego modelu.
+                    </p>
+                  </div>
 
-              <div style={{ padding: "24px", borderRadius: "12px", background: "#fff", border: "1px solid var(--color-border)" }}>
-                <div style={{ fontSize: "24px", fontWeight: 800, color: primaryColor, marginBottom: "12px" }}>02</div>
-                <h3 style={{ fontSize: "16px", fontWeight: 700, margin: "0 0 8px" }}>Wycena w 15 minut</h3>
-                <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-soft)" }}>
-                  Przedstawiamy uczciwą i rzetelną wycenę rynkową Twojego pojazdu.
-                </p>
-              </div>
+                  <div className="p-6 rounded-lg bg-white border border-zinc-200">
+                    <div className="text-2xl font-black mb-3 font-mono" style={{ color: primaryColor }}>
+                      02
+                    </div>
+                    <h3 className="text-base font-bold text-zinc-950 font-heading mb-2">Oględziny & Jazda</h3>
+                    <p className="text-sm text-zinc-600 leading-relaxed">
+                      Zapraszamy na jazdę próbną oraz sprawdzenie samochodu na wybranej stacji diagnostycznej.
+                    </p>
+                  </div>
 
-              <div style={{ padding: "24px", borderRadius: "12px", background: "#fff", border: "1px solid var(--color-border)" }}>
-                <div style={{ fontSize: "24px", fontWeight: 800, color: primaryColor, marginBottom: "12px" }}>03</div>
-                <h3 style={{ fontSize: "16px", fontWeight: 700, margin: "0 0 8px" }}>Odbiór z {localPage.city}</h3>
-                <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-soft)" }}>
-                  Przyjeżdżamy we wskazane miejsce w {localPage.city} i załatwiamy formalności na miejscu.
-                </p>
-              </div>
+                  <div className="p-6 rounded-lg bg-white border border-zinc-200">
+                    <div className="text-2xl font-black mb-3 font-mono" style={{ color: primaryColor }}>
+                      03
+                    </div>
+                    <h3 className="text-base font-bold text-zinc-950 font-heading mb-2">Płatność i faktura</h3>
+                    <p className="text-sm text-zinc-600 leading-relaxed">
+                      Wybierasz dogodną formę: tradycyjny przelew bankowy lub gotówka. Otrzymujesz komplet dokumentów i fakturę VAT-marża.
+                    </p>
+                  </div>
 
-              <div style={{ padding: "24px", borderRadius: "12px", background: "#fff", border: "1px solid var(--color-border)" }}>
-                <div style={{ fontSize: "24px", fontWeight: 800, color: primaryColor, marginBottom: "12px" }}>04</div>
-                <h3 style={{ fontSize: "16px", fontWeight: 700, margin: "0 0 8px" }}>Wypłata gotówki</h3>
-                <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-soft)" }}>
-                  Otrzymujesz pieniądze od ręki i dokumenty potwierdzające sprzedaż.
-                </p>
-              </div>
+                  <div className="p-6 rounded-lg bg-white border border-zinc-200">
+                    <div className="text-2xl font-black mb-3 font-mono" style={{ color: primaryColor }}>
+                      04
+                    </div>
+                    <h3 className="text-base font-bold text-zinc-950 font-heading mb-2">Odbiór lub dostawa</h3>
+                    <p className="text-sm text-zinc-600 leading-relaxed">
+                      Odbierasz kluczyki z kompletem dokumentów lub zamawiasz bezpieczny dowóz pod dom w {cityInfo.locative}.
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="p-6 rounded-lg bg-white border border-zinc-200">
+                    <div className="text-2xl font-black mb-3 font-mono" style={{ color: primaryColor }}>
+                      01
+                    </div>
+                    <h3 className="text-base font-bold text-zinc-950 font-heading mb-2">Formularz lub telefon</h3>
+                    <p className="text-sm text-zinc-600 leading-relaxed">
+                      Zadzwoń lub wypełnij krótki formularz wyceny podając podstawowe dane o samochodzie.
+                    </p>
+                  </div>
+
+                  <div className="p-6 rounded-lg bg-white border border-zinc-200">
+                    <div className="text-2xl font-black mb-3 font-mono" style={{ color: primaryColor }}>
+                      02
+                    </div>
+                    <h3 className="text-base font-bold text-zinc-950 font-heading mb-2">Wycena w 15 minut</h3>
+                    <p className="text-sm text-zinc-600 leading-relaxed">
+                      Przedstawiamy uczciwą i rzetelną wycenę rynkową Twojego pojazdu.
+                    </p>
+                  </div>
+
+                  <div className="p-6 rounded-lg bg-white border border-zinc-200">
+                    <div className="text-2xl font-black mb-3 font-mono" style={{ color: primaryColor }}>
+                      03
+                    </div>
+                    <h3 className="text-base font-bold text-zinc-950 font-heading mb-2">Odbiór z {localPage.city}</h3>
+                    <p className="text-sm text-zinc-600 leading-relaxed">
+                      Przyjeżdżamy we wskazane miejsce w {localPage.city} i załatwiamy formalności na miejscu.
+                    </p>
+                  </div>
+
+                  <div className="p-6 rounded-lg bg-white border border-zinc-200">
+                    <div className="text-2xl font-black mb-3 font-mono" style={{ color: primaryColor }}>
+                      04
+                    </div>
+                    <h3 className="text-base font-bold text-zinc-950 font-heading mb-2">Wypłata gotówki</h3>
+                    <p className="text-sm text-zinc-600 leading-relaxed">
+                      Otrzymujesz pieniądze od ręki i dokumenty potwierdzające sprzedaż.
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </section>
 
-        {/* Local FAQ */}
+        {/* Local FAQ Section */}
         {localPage.content?.faq && localPage.content.faq.length > 0 && (
-          <section className="vd-section">
-            <div className="vd-container" style={{ maxWidth: "800px" }}>
-              <div style={{ textAlign: "center", marginBottom: "36px" }}>
-                <span className="vd-eyebrow">Pytania i odpowiedzi</span>
-                <h2 className="vd-heading">Pytania dotyczące skupu aut w {localPage.city}</h2>
+          <section className="py-12 sm:py-16 bg-white border-b border-zinc-200">
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center mb-10">
+                <h2 className="text-2xl sm:text-3xl font-bold text-zinc-950 tracking-tight font-heading">
+                  {isSalesOnly
+                    ? `Pytania o zakup samochodu w okolicach ${cityInfo.genitive}`
+                    : `Pytania dotyczące skupu aut w ${localPage.city}`}
+                </h2>
               </div>
 
-              <div style={{ display: "grid", gap: "12px" }}>
+              <div className="space-y-3">
                 {localPage.content.faq.map((item, idx) => {
                   const isOpen = openFaq === idx;
                   return (
-                    <div
-                      key={idx}
-                      style={{
-                        borderRadius: "10px",
-                        border: "1px solid var(--color-border)",
-                        overflow: "hidden",
-                        background: "#fff",
-                      }}
-                    >
+                    <div key={idx} className="rounded-lg border border-zinc-200 overflow-hidden bg-white">
                       <button
                         onClick={() => setOpenFaq(isOpen ? null : idx)}
-                        style={{
-                          width: "100%",
-                          padding: "18px 20px",
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          background: "none",
-                          border: "none",
-                          textAlign: "left",
-                          cursor: "pointer",
-                          fontWeight: 700,
-                          fontSize: "15px",
-                        }}
+                        className="w-full p-4 sm:p-5 flex justify-between items-center text-left font-bold text-sm sm:text-base text-zinc-950 hover:bg-zinc-50 transition-colors cursor-pointer"
                       >
                         <span>{item.q.replace(/—|–/g, "-")}</span>
                         <ChevronDown
                           size={18}
+                          className="shrink-0 transition-transform duration-200"
                           style={{
                             transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-                            transition: "transform 0.2s ease",
                             color: primaryColor,
                           }}
                         />
                       </button>
                       {isOpen && (
-                        <div style={{ padding: "0 20px 18px", color: "var(--color-text-soft)", fontSize: "14px", lineHeight: 1.6 }}>
+                        <div className="px-5 pb-5 text-sm text-zinc-600 leading-relaxed border-t border-zinc-100 pt-3">
                           {item.a.replace(/—|–/g, "-")}
                         </div>
                       )}
@@ -514,67 +594,54 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
           </section>
         )}
 
-        {/* Lead Form Section */}
-        <section id="local-lead-form" className="vd-section vd-section--bordered vd-section--soft">
-          <div className="vd-container" style={{ maxWidth: "640px" }}>
-            <div style={{ textAlign: "center", marginBottom: "32px" }}>
-              <span className="vd-eyebrow">Darmowa wycena</span>
-              <h2 className="vd-heading">Sprzedaj auto w {localPage.city}</h2>
-              <p className="vd-copy" style={{ marginTop: "8px" }}>
-                Wypełnij formularz — skontaktujemy się z Tobą w ciągu 15 minut z propozycją cenową.
+        {/* Lead Form / Inquiry Section */}
+        <section id="local-lead-form" className="py-12 sm:py-16 bg-zinc-50 border-b border-zinc-200">
+          <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl sm:text-3xl font-bold text-zinc-950 tracking-tight font-heading">
+                {isSalesOnly
+                  ? `Szukasz samochodu w ${cityInfo.locative}?`
+                  : `Sprzedaj auto w ${localPage.city}`}
+              </h2>
+              <p className="text-sm sm:text-base text-zinc-600 mt-2">
+                {isSalesOnly
+                  ? "Zostaw numer telefonu lub napisz, jakiego pojazdu szukasz. Skontaktujemy się z dopasowaną propozycją."
+                  : "Wypełnij formularz — skontaktujemy się z Tobą w ciągu 15 minut z propozycją cenową."}
               </p>
             </div>
 
             {leadFormSubmitted ? (
               <div
-                style={{
-                  padding: "32px",
-                  borderRadius: "16px",
-                  background: "#fff",
-                  border: `2px solid ${primaryColor}`,
-                  textAlign: "center",
-                }}
+                className="p-8 rounded-lg bg-white border-2 text-center"
+                style={{ borderColor: primaryColor }}
               >
-                <CheckCircle2 size={48} style={{ color: "#22c55e", margin: "0 auto 16px" }} />
-                <h3 style={{ fontSize: "20px", fontWeight: 800, margin: "0 0 8px" }}>Dziękujemy za zgłoszenie!</h3>
-                <p style={{ margin: 0, color: "var(--color-text-soft)" }}>
-                  Nasz konsultant skontaktuje się z Tobą telefonicznie wkrótce.
+                <CheckCircle2 size={44} className="text-emerald-500 mx-auto mb-3" />
+                <h3 className="text-xl font-bold text-zinc-950 font-heading mb-2">Dziękujemy za kontakt!</h3>
+                <p className="text-sm text-zinc-600 m-0">
+                  Nasz doradca skontaktuje się z Tobą telefonicznie w najbliższym czasie.
                 </p>
               </div>
             ) : (
               <form
                 onSubmit={handleLeadSubmit}
-                style={{
-                  padding: "32px",
-                  borderRadius: "16px",
-                  background: "#fff",
-                  border: "1px solid var(--color-border)",
-                  display: "grid",
-                  gap: "16px",
-                }}
+                className="p-6 sm:p-8 rounded-lg bg-white border border-zinc-200 shadow-sm space-y-4"
               >
                 <div>
-                  <label style={{ display: "block", fontSize: "13px", fontWeight: 700, marginBottom: "6px" }}>
-                    Imię i nazwisko / Nazwa
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
+                    Imię / Nazwisko
                   </label>
                   <input
                     type="text"
                     placeholder="np. Jan Kowalski"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "12px 14px",
-                      borderRadius: "8px",
-                      border: "1px solid var(--color-border)",
-                      fontSize: "14px",
-                    }}
+                    className="w-full px-3.5 py-2.5 rounded-md border border-zinc-200 text-sm text-zinc-950 focus:outline-none focus:ring-1 focus:ring-zinc-900"
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: "block", fontSize: "13px", fontWeight: 700, marginBottom: "6px" }}>
-                    Numer telefonu <span style={{ color: "#e11d48" }}>*</span>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
+                    Numer telefonu <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="tel"
@@ -582,52 +649,47 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
                     placeholder="np. 500 000 000"
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "12px 14px",
-                      borderRadius: "8px",
-                      border: "1px solid var(--color-border)",
-                      fontSize: "14px",
-                    }}
+                    className="w-full px-3.5 py-2.5 rounded-md border border-zinc-200 text-sm text-zinc-950 focus:outline-none focus:ring-1 focus:ring-zinc-900"
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: "block", fontSize: "13px", fontWeight: 700, marginBottom: "6px" }}>
-                    Informacje o samochodzie
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
+                    {isSalesOnly
+                      ? "Jakiego auta poszukujesz? (marka, budżet, rocznik)"
+                      : "Informacje o samochodzie"}
                   </label>
                   <textarea
                     rows={3}
-                    placeholder={`Marka, model, rok produkcji, opis stanu technicznego (np. Volkswagen Golf 2018 z ${localPage.city})`}
+                    placeholder={
+                      isSalesOnly
+                        ? `np. Szukam SUV-a lub kombi do 45 tys. zł z okolic ${cityInfo.genitive}`
+                        : `Marka, model, rok produkcji, stan techniczny (np. Golf 2018 z ${localPage.city})`
+                    }
                     value={vehicleDetails}
                     onChange={(e) => setVehicleDetails(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "12px 14px",
-                      borderRadius: "8px",
-                      border: "1px solid var(--color-border)",
-                      fontSize: "14px",
-                      resize: "vertical",
-                    }}
+                    className="w-full px-3.5 py-2.5 rounded-md border border-zinc-200 text-sm text-zinc-950 focus:outline-none focus:ring-1 focus:ring-zinc-900 resize-y"
                   />
                 </div>
 
-                <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", marginTop: "4px" }}>
+                <div className="flex items-start gap-2 pt-1">
                   <input
                     type="checkbox"
                     id="localRodoConsent"
                     required
                     defaultChecked
-                    style={{ marginTop: "3px", width: "16px", height: "16px", accentColor: primaryColor, cursor: "pointer" }}
+                    className="mt-0.5 rounded border-zinc-300 cursor-pointer"
+                    style={{ accentColor: primaryColor }}
                   />
-                  <label htmlFor="localRodoConsent" style={{ fontSize: "12px", color: "var(--color-text-soft)", lineHeight: 1.5, cursor: "pointer" }}>
-                    Wyrażam zgodę na kontakt w celu wyceny oraz akceptuję{" "}
-                    <a href={`/${tenant.slug}/polityka-prywatnosci`} target="_blank" rel="noopener noreferrer" style={{ color: primaryColor, textDecoration: "underline" }}>
+                  <label htmlFor="localRodoConsent" className="text-xs text-zinc-500 leading-normal cursor-pointer">
+                    Wyrażam zgodę na kontakt w sprawie oferty oraz akceptuję{" "}
+                    <a
+                      href={`/${tenant.slug}/polityka-prywatnosci`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline font-medium hover:text-zinc-950"
+                    >
                       Politykę Prywatności
-                    </a>{" "}
-                    i{" "}
-                    <a href={`/${tenant.slug}/regulamin`} target="_blank" rel="noopener noreferrer" style={{ color: primaryColor, textDecoration: "underline" }}>
-                      Regulamin
                     </a>.
                   </label>
                 </div>
@@ -635,21 +697,18 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="vd-button vd-button--primary vd-button--block"
-                  style={{ background: primaryColor, marginTop: "8px", minHeight: "48px" }}
+                  className="w-full min-h-[44px] rounded-md font-semibold text-sm text-white flex items-center justify-center gap-2 cursor-pointer transition-opacity hover:opacity-95 disabled:opacity-50"
+                  style={{ backgroundColor: primaryColor }}
                 >
-                  {isSubmitting ? "Wysyłanie..." : "Wyślij zgłoszenie do wyceny ➔"}
+                  <span>{isSubmitting ? "Wysyłanie..." : isSalesOnly ? "Zapytaj o samochód" : "Wyślij zgłoszenie do wyceny"}</span>
+                  {!isSubmitting && <ArrowRight size={16} />}
                 </button>
-
-                <p style={{ margin: 0, textAlign: "center", fontSize: "12px", color: "var(--color-text-faint)" }}>
-                  Gwarantujemy bezpłatną wycenę bez żadnych zobowiązań.
-                </p>
               </form>
             )}
           </div>
         </section>
 
-        {/* Related Local Locations Internal Linking Section */}
+        {/* Related Local Locations Internal Linking */}
         {(() => {
           const otherLocalPages = (tenant.localSeo?.localPages || []).filter(
             (lp) => lp.enabled && lp.indexable && lp.slug !== localPage.slug
@@ -657,87 +716,49 @@ export function LocalSeoPage({ tenant, localPage, baseUrl }: LocalSeoPageProps) 
           if (otherLocalPages.length === 0) return null;
 
           return (
-            <section className="vd-section" style={{ background: "var(--color-background)", borderTop: "1px solid var(--color-border)" }}>
-              <div className="vd-container">
-                <div style={{ maxWidth: "720px", margin: "0 auto 28px", textAlign: "center" }}>
-                  <span className="vd-eyebrow" style={{ color: primaryColor }}>
-                    Obsługiwane okolice
-                  </span>
-                  <h3 className="vd-heading vd-heading--small" style={{ marginBottom: "8px" }}>
-                    Skup aut w sąsiednich miejscowościach
-                  </h3>
-                  <p className="vd-copy" style={{ fontSize: "14px" }}>
-                    Sprawdź naszą ofertę skupu samochodów za gotówkę w okolicach {localPage.city}:
-                  </p>
-                </div>
+            <section className="py-10 bg-white border-b border-zinc-200">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-400 mb-4">
+                  {isSalesOnly
+                    ? `Sprawdzone samochody w innych miejscowościach okolic ${cityInfo.genitive}`
+                    : `Skup aut w sąsiednich miejscowościach`}
+                </h3>
 
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    gap: "12px",
-                    flexWrap: "wrap",
-                    maxWidth: "800px",
-                    margin: "0 auto",
-                  }}
-                >
+                <div className="flex flex-wrap justify-center gap-2 max-w-3xl mx-auto">
                   <a
-                    href={getTenantUrl(tenant.slug, "/", tenant.customDomain)}
-                    style={{
-                      padding: "8px 16px",
-                      borderRadius: "8px",
-                      background: "var(--color-surface)",
-                      color: "var(--color-foreground)",
-                      fontSize: "14px",
-                      fontWeight: 600,
-                      textDecoration: "none",
-                      border: "1px solid var(--color-border)",
-                    }}
+                    href={getTenantUrl(tenant.slug, "/", tenant.customDomain, isCustomDomain)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-zinc-50 border border-zinc-200 text-xs font-medium text-zinc-700 hover:bg-zinc-100 transition-colors"
                   >
-                    🏠 Strona główna {tenant.businessName}
+                    <Home size={13} className="text-zinc-400" />
+                    <span>Strona główna</span>
                   </a>
+
                   {otherLocalPages.map((other) => (
                     <a
                       key={other.slug}
-                      href={getTenantUrl(tenant.slug, `/${other.slug}`, tenant.customDomain)}
-                      style={{
-                        padding: "8px 16px",
-                        borderRadius: "8px",
-                        background: "var(--color-surface)",
-                        color: "var(--color-foreground)",
-                        fontSize: "14px",
-                        fontWeight: 600,
-                        textDecoration: "none",
-                        border: "1px solid var(--color-border)",
-                      }}
+                      href={getTenantUrl(tenant.slug, `/${other.slug}`, tenant.customDomain, isCustomDomain)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-zinc-50 border border-zinc-200 text-xs font-medium text-zinc-700 hover:bg-zinc-100 transition-colors"
                     >
-                      📍 Skup aut {other.city}
+                      <MapPin size={13} className="text-zinc-400" />
+                      <span>{isSalesOnly ? `Auta ${other.city}` : `Skup aut ${other.city}`}</span>
                     </a>
                   ))}
-                  <a
-                    href={getTenantUrl(tenant.slug, "/#vehicles", tenant.customDomain)}
-                    style={{
-                      padding: "8px 16px",
-                      borderRadius: "8px",
-                      background: "var(--color-surface)",
-                      color: "var(--color-foreground)",
-                      fontSize: "14px",
-                      fontWeight: 600,
-                      textDecoration: "none",
-                      border: "1px solid var(--color-border)",
-                    }}
-                  >
-                    🚗 Samochody na sprzedaż
-                  </a>
 
+                  <a
+                    href={getTenantUrl(tenant.slug, "/samochody", tenant.customDomain, isCustomDomain)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-zinc-50 border border-zinc-200 text-xs font-medium text-zinc-700 hover:bg-zinc-100 transition-colors"
+                  >
+                    <CarFront size={13} className="text-zinc-400" />
+                    <span>Pełna oferta aut</span>
+                  </a>
                 </div>
               </div>
             </section>
           );
         })()}
+
         <StickyMobileCta tenant={tenant} />
       </div>
     </>
   );
 }
-

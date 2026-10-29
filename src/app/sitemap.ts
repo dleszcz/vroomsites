@@ -8,7 +8,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const reqHeaders = await headers();
   const host = reqHeaders.get("host")?.split(":")[0].toLowerCase().replace(/^www\./, "");
 
-  // ── CASE 1: Custom Domain Sitemap (e.g. d-car.com.pl) ──
+  // ── CASE 1: Custom Domain Sitemap (e.g. dealer.pl) ──
   if (host && !host.includes("localhost") && !host.includes("vroomdealer.pl") && !host.includes("vercel.app")) {
     const tenant = await resolveTenant({ domain: host });
     if (tenant) {

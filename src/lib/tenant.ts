@@ -18,7 +18,11 @@ export function tenantToTenant(tenant: Tenant): DealerTenant {
   const cleanHex = (val?: string | null, fallback = "#1686E0") => {
     if (!val) return fallback;
     const trimmed = val.trim().replace(/^#+/, "#");
-    return trimmed.startsWith("#") ? trimmed : `#${trimmed}`;
+    const hex = trimmed.startsWith("#") ? trimmed : `#${trimmed}`;
+    if (hex.toLowerCase() === "#0d94e7" || hex.toLowerCase() === "#18181b") {
+      return fallback;
+    }
+    return hex;
   };
 
   // Build colors: DB flat (primaryColor), DB nested (colors.primary), Seed, or Default
@@ -30,7 +34,7 @@ export function tenantToTenant(tenant: Tenant): DealerTenant {
   const accentColor = cleanHex(
     (brandingRaw.accentColor as string) ||
     rawColors.accent ||
-    "#1686E0"
+    "#38BDF8"
   );
 
   // Build logo: DB logo_url, DB branding.logoUrl, Seed logo_url, Seed branding.logoUrl
@@ -39,11 +43,22 @@ export function tenantToTenant(tenant: Tenant): DealerTenant {
     (brandingRaw.logoUrl as string) ||
     null;
 
-  // Build hero image: DB branding.heroImageUrl, DB branding.media.heroImageUrl, Seed media.heroImageUrl
-  const heroImageUrl =
+  // Build hero image: DB branding.heroImageUrl, DB branding.media.heroImageUrl
+  const rawHero =
     (brandingRaw.heroImageUrl as string) ||
     rawMedia.heroImageUrl ||
     null;
+
+  // Sanitize obsolete/legacy synthetic AI slop assets
+  const isObsoleteHeroAsset =
+    rawHero?.includes("dcar-hero.png") ||
+    rawHero?.includes("dcar-hero.jpg") ||
+    rawHero?.includes("aurora") ||
+    rawHero?.includes("palm") ||
+    rawHero?.includes("clean");
+
+  const fallbackHero = rawHero?.includes("dcar") ? "/images/dcar-hero-lot.webp" : "/images/default-hero.webp";
+  const heroImageUrl = (!isObsoleteHeroAsset && rawHero) || fallbackHero;
 
   // Build services
   const services = mergeServices(
@@ -73,9 +88,8 @@ export function tenantToTenant(tenant: Tenant): DealerTenant {
   );
 
   // Build business rules
-  const businessRules = mergeBusinessRules(
-    (tenant.business_rules as Record<string, unknown> | undefined)
-  );
+  const rawBusinessRules = (tenant.business_rules as Record<string, unknown> | undefined) || {};
+  const businessRules = mergeBusinessRules(rawBusinessRules);
 
   const city = tenant.city || null;
   const address = tenant.address || null;

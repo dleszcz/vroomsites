@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Check } from "lucide-react";
 import { DealerTenant, SectionConfig } from "@/types/landing";
 import { MultiStepLeadForm } from "./multi-step-lead-form";
 
@@ -10,80 +11,41 @@ interface LeadFormSectionProps {
 }
 
 export function LeadFormSection({ tenant, config }: LeadFormSectionProps) {
-  const title = config?.title || "Bezpłatna wycena samochodu";
-  const sectionTitle = title;
-  const primaryColor = tenant.branding?.colors?.primary || "#1686E0";
-  const accentColor = tenant.branding?.colors?.accent || primaryColor;
+  const sectionTitle = config?.title || "Bezpłatna wycena samochodu";
+  const primaryColor = tenant.branding.colors.primary || "var(--color-primary, #0d94e7)";
 
   return (
-    <section id="lead-form" style={{ width: "100%", padding: "5rem 0", background: "#0a0f1d" }}>
-      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem" }}>
-        <div style={{ textAlign: "center", maxWidth: "680px", margin: "0 auto 3rem" }}>
+    <section id="lead-form" className="w-full py-16 md:py-20 bg-zinc-50 dark:bg-zinc-900 border-t border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100">
+      <div className="vd-container">
+        <div className="text-center max-w-2xl mx-auto mb-10">
           <span
-            style={{
-              display: "inline-block",
-              color: accentColor,
-              fontSize: "0.85rem",
-              fontWeight: 800,
-              letterSpacing: "0.08em",
-              marginBottom: "0.75rem",
-              textTransform: "uppercase",
-            }}
+            className="text-xs font-bold tracking-widest uppercase mb-2 block"
+            style={{ color: primaryColor }}
           >
-            SZYBKA WYCENA SKUPU
+            Szybka wycena online
           </span>
 
-          <h2
-            style={{
-              fontSize: "clamp(2rem, 4vw, 2.75rem)",
-              fontWeight: 800,
-              color: "#ffffff",
-              marginBottom: "1rem",
-              lineHeight: 1.15,
-            }}
-          >
+          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-950 dark:text-zinc-50 mb-3 font-heading">
             {sectionTitle}
           </h2>
 
-          <p
-            style={{
-              fontSize: "1.1rem",
-              color: "var(--color-text-soft, rgba(255,255,255,0.7))",
-              lineHeight: 1.6,
-              margin: 0,
-            }}
-          >
-            Wypełnij krótki formularz wyceny w 4 krokach. Przyjedziemy po Twoje auto i zapłacimy gotówką od ręki!
+          <p className="text-zinc-600 dark:text-zinc-400 text-sm md:text-base leading-relaxed">
+            Wypełnij krótki formularz wyceny w kilku prostych krokach. Otrzymasz natychmiastowy kontakt i bezpłatną kalkulację.
           </p>
 
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              justifyContent: "center",
-              gap: "8px",
-              marginTop: "1.25rem",
-            }}
-          >
+          <div className="flex flex-wrap justify-center gap-2 mt-5">
             {[
               "Skup aut w każdym stanie",
-              "Sprawne & Uszkodzone",
+              "Sprawne i uszkodzone",
               "Powypadkowe",
-              "Bez OC / Przeglądu",
+              "Bez OC i przeglądu",
             ].map((badge, idx) => (
               <span
                 key={idx}
-                style={{
-                  padding: "4px 12px",
-                  borderRadius: "999px",
-                  background: "rgba(22, 134, 224, 0.15)",
-                  border: "1px solid rgba(22, 134, 224, 0.35)",
-                  color: "#ffffff",
-                  fontSize: "0.8rem",
-                  fontWeight: 600,
-                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-medium shadow-2xs"
               >
-                ✓ {badge}
+                <Check className="w-3.5 h-3.5" style={{ color: primaryColor }} />
+                <span>{badge}</span>
               </span>
             ))}
           </div>
@@ -94,4 +56,3 @@ export function LeadFormSection({ tenant, config }: LeadFormSectionProps) {
     </section>
   );
 }
-

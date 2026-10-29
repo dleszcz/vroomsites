@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Phone, MessageCircle, MapPin, ExternalLink } from "lucide-react";
 import { DealerTenant, SectionConfig } from "@/types/landing";
 import { trackEvent } from "@/lib/analytics";
 
@@ -22,60 +23,64 @@ export function ContactSection({ tenant, config, hideHeader }: ContactSectionPro
   const facebookUrl = tenant.contact.facebook;
 
   return (
-    <section id="contact" style={{ padding: hideHeader ? "1rem 1.5rem 4rem" : "4rem 1.5rem", background: "var(--color-surface)", borderTop: hideHeader ? "none" : "1px solid var(--color-border)" }}>
-      <div style={{ maxWidth: "var(--max-width)", margin: "0 auto" }}>
+    <section
+      id="contact"
+      className={`vd-section ${hideHeader ? "pt-6 pb-16" : "vd-section--bordered vd-section--soft"}`}
+    >
+      <div className="vd-container">
         {!hideHeader && (
-          <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-            <h2 style={{ fontSize: "2rem", fontWeight: 700, color: "var(--color-foreground)", marginBottom: "0.5rem" }}>
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="vd-eyebrow">Dane kontaktowe</span>
+            <h2 className="vd-heading mb-3">
               {config?.title || `Skontaktuj się z ${tenant.businessName}`}
             </h2>
-            <p style={{ color: "var(--color-text-secondary)", fontSize: "1.05rem" }}>
-              Jesteśmy do Twojej dyspozycji 7 dni w tygodniu. Zadzwoń lub napisz.
+            <p className="vd-copy">
+              Jesteśmy do Twojej dyspozycji 7 dni w tygodniu. Zadzwoń, napisz lub odwiedź nas osobiście.
             </p>
           </div>
         )}
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "2rem" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Phone box */}
-          <div style={{ background: "var(--color-background)", border: "1px solid var(--color-border)", borderRadius: "16px", padding: "1.5rem", textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-6 flex flex-col justify-between shadow-sm">
             <div>
-              <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>📞</div>
-              <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--color-foreground)", marginBottom: "0.5rem" }}>
-                Telefon Bezpośredni
+              <div className="w-12 h-12 rounded-md bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-900 dark:text-zinc-100 mb-5">
+                <Phone className="w-6 h-6" strokeWidth={1.75} />
+              </div>
+              <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100 mb-2">
+                Telefon bezpośredni
               </h3>
-              <p style={{ color: "var(--color-text-secondary)", fontSize: "0.9rem", marginBottom: "1.25rem" }}>
-                Szybka rozmowa z doradcą i natychmiastowa darmowa wycena.
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6 leading-relaxed">
+                Szybka rozmowa z doradcą i natychmiastowa bezpłatna wycena pojazdu.
               </p>
             </div>
             {phone && (
               <a
                 href={telUrl}
                 onClick={() => trackEvent("phone_clicked", { source: "contact_section" })}
+                className="w-full h-11 flex items-center justify-center gap-2 rounded-md font-semibold text-sm transition-opacity shadow-xs"
                 style={{
-                  display: "block",
-                  padding: "0.75rem 1rem",
-                  borderRadius: "8px",
-                  background: "var(--color-primary)",
-                  color: "var(--color-primary-fg)",
-                  fontWeight: 600,
-                  fontSize: "0.95rem",
-                  marginTop: "auto"
+                  background: tenant.branding?.colors?.primary || "var(--color-primary, #0d94e7)",
+                  color: "#ffffff",
                 }}
               >
-                {phone}
+                <Phone className="w-4 h-4 text-white" style={{ color: "#ffffff" }} />
+                <span style={{ color: "#ffffff" }}>{phone}</span>
               </a>
             )}
           </div>
 
           {/* WhatsApp box */}
-          <div style={{ background: "var(--color-background)", border: "1px solid var(--color-border)", borderRadius: "16px", padding: "1.5rem", textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-6 flex flex-col justify-between shadow-sm">
             <div>
-              <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>💬</div>
-              <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--color-foreground)", marginBottom: "0.5rem" }}>
+              <div className="w-12 h-12 rounded-md bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-5">
+                <MessageCircle className="w-6 h-6" strokeWidth={1.75} />
+              </div>
+              <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100 mb-2">
                 Wiadomość WhatsApp
               </h3>
-              <p style={{ color: "var(--color-text-secondary)", fontSize: "0.9rem", marginBottom: "1.25rem" }}>
-                Wyślij zdjęcia samochodu i opis do wyceny w kilkadziesiąt sekund.
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6 leading-relaxed">
+                Prześlij zdjęcia i krótki opis auta do szybkiej wyceny w kilkadziesiąt sekund.
               </p>
             </div>
             {whatsappUrl && (
@@ -84,101 +89,55 @@ export function ContactSection({ tenant, config, hideHeader }: ContactSectionPro
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackEvent("whatsapp_clicked", { source: "contact_section" })}
-                style={{
-                  display: "block",
-                  padding: "0.75rem 1rem",
-                  borderRadius: "8px",
-                  background: "#25d366",
-                  color: "#ffffff",
-                  fontWeight: 600,
-                  fontSize: "0.95rem",
-                  marginTop: "auto"
-                }}
+                className="w-full h-11 flex items-center justify-center gap-2 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm transition-colors"
+                style={{ color: "#ffffff" }}
               >
-                Napisz na WhatsApp
+                <MessageCircle className="w-4 h-4 text-white" style={{ color: "#ffffff" }} />
+                <span style={{ color: "#ffffff" }}>Napisz na WhatsApp</span>
               </a>
             )}
           </div>
 
-            {/* Location box */}
-            <div style={{ background: "var(--color-background)", border: "1px solid var(--color-border)", borderRadius: "16px", padding: "1.5rem", textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-              <div>
-                <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>📍</div>
-                <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--color-foreground)", marginBottom: "0.5rem" }}>
-                  Adres i Siedziba
-                </h3>
-                <p style={{ color: "var(--color-foreground)", fontWeight: 600, fontSize: "0.95rem", marginBottom: "0.25rem" }}>
-                  {tenant.businessName}
-                </p>
-                <p style={{ color: "var(--color-text-secondary)", fontSize: "0.9rem" }}>
-                  {tenant.location?.address ? `${tenant.location.address}, ` : ""}
-                  {tenant.location?.city || ""}
-                </p>
+          {/* Location box */}
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-6 flex flex-col justify-between shadow-sm">
+            <div>
+              <div className="w-12 h-12 rounded-md bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-900 dark:text-zinc-100 mb-5">
+                <MapPin className="w-6 h-6" strokeWidth={1.75} />
               </div>
-              <a
-                href="https://share.google/aKnuq2In5iH3D87Ni"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: "block",
-                  padding: "0.75rem 1rem",
-                  borderRadius: "8px",
-                  background: "#4285F4",
-                  color: "#ffffff",
-                  fontWeight: 600,
-                  fontSize: "0.95rem",
-                  marginTop: "1.25rem",
-                }}
-              >
-                Sprawdź w Google
-              </a>
+              <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100 mb-2">
+                Adres i siedziba
+              </h3>
+              <p className="font-semibold text-sm text-zinc-900 dark:text-zinc-200 mb-1">
+                {tenant.businessName}
+              </p>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6 leading-relaxed">
+                {tenant.location?.address ? `${tenant.location.address}, ` : ""}
+                {tenant.location?.city || "Polska"}
+              </p>
             </div>
-
-            {/* Facebook box */}
-            {facebookUrl && (
-              <div style={{ background: "var(--color-background)", border: "1px solid var(--color-border)", borderRadius: "16px", padding: "1.5rem", textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                <div>
-                  <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>📘</div>
-                  <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--color-foreground)", marginBottom: "0.5rem" }}>
-                    Nasz Facebook
-                  </h3>
-                  <p style={{ color: "var(--color-text-secondary)", fontSize: "0.9rem", marginBottom: "1.25rem" }}>
-                    Odwiedź nas na Facebooku, by być na bieżąco.
-                  </p>
-                </div>
-                <a
-                  href={facebookUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => trackEvent("facebook_clicked", { source: "contact_section" })}
-                  style={{
-                    display: "block",
-                    padding: "0.75rem 1rem",
-                    borderRadius: "8px",
-                    background: "#1877F2",
-                    color: "#ffffff",
-                    fontWeight: 600,
-                    fontSize: "0.95rem",
-                    marginTop: "1.25rem",
-                  }}
-                >
-                  Odwiedź profil
-                </a>
-              </div>
-            )}
+            <a
+              href={`https://maps.google.com/?q=${encodeURIComponent(`${tenant.businessName} ${tenant.location?.address || ""} ${tenant.location?.city || ""}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full h-11 flex items-center justify-center gap-2 rounded-md border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 font-semibold text-sm transition-colors"
+            >
+              <ExternalLink className="w-4 h-4 text-zinc-500" />
+              <span>Zobacz w Google Maps</span>
+            </a>
           </div>
+        </div>
 
         {/* Google Maps Embed */}
-        <div style={{ marginTop: "3rem", borderRadius: "16px", overflow: "hidden", border: "1px solid var(--color-border)", height: "400px" }}>
+        <div className="mt-10 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 h-80 md:h-96 shadow-sm">
           <iframe
             width="100%"
             height="100%"
-            style={{ border: 0 }}
+            className="border-0 w-full h-full"
             loading="lazy"
             allowFullScreen
             referrerPolicy="no-referrer-when-downgrade"
             src={`https://maps.google.com/maps?q=${encodeURIComponent(`${tenant.businessName} ${tenant.location?.address || ""} ${tenant.location?.city || ""}`)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
-          ></iframe>
+          />
         </div>
       </div>
     </section>

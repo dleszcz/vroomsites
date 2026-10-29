@@ -26,6 +26,8 @@ export interface Tenant {
   opening_hours?: Record<string, unknown>;
   is_super_admin?: boolean;
   has_active_site?: boolean;
+  autoplac_feed_token?: string | null;
+  autoplac_enabled?: boolean;
   created_at: string;
 }
 
@@ -47,5 +49,10 @@ export interface Car {
   images: string[];
   is_sold: boolean;
   is_featured: boolean;
+  vin?: string | null;
+  first_registration_date?: string | null;
+  export_to_autoplac?: boolean;
+  autoplac_status?: 'draft' | 'ready' | 'synced' | 'error';
+  autoplac_error_message?: string | null;
   created_at: string;
 }

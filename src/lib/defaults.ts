@@ -8,13 +8,13 @@ export const DEFAULT_COLORS: DealerBranding["colors"] = {
   primary: "#1686E0",
   primaryForeground: "#ffffff",
   background: "#ffffff",
-  foreground: "#090B0B",
+  foreground: "#09090b",
   accent: "#1686E0",
   accentForeground: "#ffffff",
-  surface: "#F1F3F5",
-  muted: "#E2E8F0",
-  headerBg: "#080808",
-  footerBg: "#080808",
+  surface: "#f8fafc",
+  muted: "#64748b",
+  headerBg: "#09090b",
+  footerBg: "#09090b",
 };
 
 export const DEFAULT_BRANDING: DealerBranding = {
@@ -41,12 +41,12 @@ export const DEFAULT_SERVICES: DealerService[] = [
 
 export const DEFAULT_SECTIONS: SectionConfig[] = [
   { id: "sec-hero", type: "hero", enabled: true, title: "Znajdź swoje wymarzone auto" },
+  { id: "sec-vehicles", type: "vehicles", enabled: true, title: "Aktualna oferta samochodów" },
   { id: "sec-value-props", type: "trust", enabled: true, title: "Dlaczego warto nam zaufać" },
   { id: "sec-process", type: "process", enabled: true, title: "Jak to działa?" },
   { id: "sec-services", type: "services", enabled: true, title: "Nasza oferta" },
-  { id: "sec-trust", type: "reviews", enabled: true, title: "Dlaczego warto nam zaufać?" },
-  { id: "sec-vehicles", type: "vehicles", enabled: true, title: "Aktualna oferta samochodów" },
   { id: "sec-about", type: "about", enabled: true, title: "O nas" },
+  { id: "sec-trust", type: "reviews", enabled: true, title: "Dlaczego warto nam zaufać?" },
   { id: "sec-lead-form", type: "lead_form", enabled: true, title: "Darmowa Wycena" },
   { id: "sec-contact", type: "contact", enabled: true, title: "Kontakt" },
 ];
@@ -147,16 +147,21 @@ export function mergePageConfig(
     }
   }
 
+  const isCarBuyingDisabled =
+    (tenantConfig?.features as Record<string, unknown> | undefined)?.carBuying === false;
+
   // Merge defaults with overrides based on section ID
   const mergedSections = DEFAULT_SECTIONS.map((defaultSec) => {
     const override = overridesMap.get(defaultSec.id);
     if (override) {
       const merged = { ...defaultSec, ...override };
-      // Force lead_form to be enabled to fix legacy DB state
       if (merged.type === "lead_form") {
-        merged.enabled = true;
+        merged.enabled = !isCarBuyingDisabled && override.enabled !== false;
       }
       return merged;
+    }
+    if (defaultSec.type === "lead_form" && isCarBuyingDisabled) {
+      return { ...defaultSec, enabled: false };
     }
     return defaultSec;
   });
@@ -202,6 +207,7 @@ export function mergeBusinessRules(
 
   const tradeInRaw = tenantRules.tradeIn as Record<string, unknown> | undefined;
   const priceLimitRaw = tenantRules.purchasePriceLimit as Record<string, unknown> | undefined;
+  const maxPriceFlat = typeof tenantRules.maxPurchasePrice === "number" ? tenantRules.maxPurchasePrice : undefined;
 
   return {
     tradeIn: tradeInRaw && typeof tradeInRaw.enabled === "boolean" ? {
@@ -214,6 +220,11 @@ export function mergeBusinessRules(
       maxAmount: priceLimitRaw.maxAmount,
       currency: typeof priceLimitRaw.currency === "string" ? priceLimitRaw.currency : "PLN",
       description: typeof priceLimitRaw.description === "string" ? priceLimitRaw.description : undefined,
+    } : maxPriceFlat ? {
+      enabled: true,
+      maxAmount: maxPriceFlat,
+      currency: "PLN",
+      description: typeof tenantRules.guaranteeText === "string" ? tenantRules.guaranteeText : undefined,
     } : undefined,
   };
 }

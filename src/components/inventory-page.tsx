@@ -1,13 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { Search, Filter, RefreshCw, ChevronDown } from "lucide-react";
+import { useSearchParams, usePathname } from "next/navigation";
+import { ArrowRight } from "lucide-react";
 import { DealerTenant } from "@/types/landing";
 import { Car } from "@/types/database";
 import { CarCard } from "@/components/car-card";
-import { Breadcrumbs } from "@/components/breadcrumbs";
 import { getTenantUrl } from "@/lib/urls";
+import {
+  InventoryFilterBar,
+  InventoryEmptyState,
+  InventorySkeleton,
+  type StatusFilter,
+  type SortOption,
+} from "./public/inventory";
 
 interface InventoryPageProps {
   tenant: DealerTenant;
@@ -15,249 +22,277 @@ interface InventoryPageProps {
   isCustomDomain?: boolean;
 }
 
-export function InventoryPage({ tenant, cars, isCustomDomain }: InventoryPageProps) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedFuel, setSelectedFuel] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<"newest" | "price_asc" | "price_desc">("newest");
-  const [statusFilter, setStatusFilter] = useState<"available" | "sold" | "all">("available");
+function InventoryPageContent({ tenant, cars, isCustomDomain }: InventoryPageProps) {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
 
-  const primaryColor = tenant.branding?.colors?.primary || "#1686E0";
+  // Initialize from URL params
+  const [selectedMake, setSelectedMake] = useState<string>(searchParams.get("make") || "all");
+  const [selectedModel, setSelectedModel] = useState<string>(searchParams.get("model") || "all");
+  const [selectedMaxPrice, setSelectedMaxPrice] = useState<string>(searchParams.get("maxPrice") || "all");
+  const [selectedMinYear, setSelectedMinYear] = useState<string>(searchParams.get("minYear") || "all");
+  const [selectedMaxMileage, setSelectedMaxMileage] = useState<string>(searchParams.get("maxMileage") || "all");
+  const [selectedFuel, setSelectedFuel] = useState<string>(searchParams.get("fuel") || "all");
+  const [searchQuery, setSearchQuery] = useState<string>(searchParams.get("q") || "");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>((searchParams.get("status") as StatusFilter) || "available");
+  const [sortBy, setSortBy] = useState<SortOption>((searchParams.get("sort") as SortOption) || "newest");
 
-  const availableCount = cars.filter((c) => !c.is_sold).length;
-  const soldCount = cars.filter((c) => c.is_sold).length;
+  const primaryColor = tenant.branding?.colors?.primary || "#0d94e7";
 
-  // Filter cars based on search, fuel type, and sold status
-  const filteredCars = cars.filter((car) => {
-    const matchesSearch =
-      searchQuery === "" ||
-      `${car.make} ${car.model} ${car.year ?? ""}`.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFuel = selectedFuel === "all" || car.fuel_type?.toLowerCase() === selectedFuel.toLowerCase();
-    const matchesStatus =
-      statusFilter === "all" ||
-      (statusFilter === "available" && !car.is_sold) ||
-      (statusFilter === "sold" && car.is_sold);
-    return matchesSearch && matchesFuel && matchesStatus;
-  });
+  // Dynamic Options derived from cars
+  const makes = useMemo(() => {
+    const set = new Set<string>();
+    cars.forEach((car) => {
+      if (car.make) set.add(car.make.trim());
+    });
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [cars]);
 
-  // Sort cars
-  const sortedCars = [...filteredCars].sort((a, b) => {
-    if (sortBy === "price_asc") return (a.price || 0) - (b.price || 0);
-    if (sortBy === "price_desc") return (b.price || 0) - (a.price || 0);
-    return new Date(b.created_at || "").getTime() - new Date(a.created_at || "").getTime();
-  });
+  const models = useMemo(() => {
+    const set = new Set<string>();
+    cars.forEach((car) => {
+      if (selectedMake === "all" || car.make?.toLowerCase() === selectedMake.toLowerCase()) {
+        if (car.model) {
+          const baseModel = car.model.trim().split(" ")[0];
+          set.add(baseModel);
+        }
+      }
+    });
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [cars, selectedMake]);
 
-  const tradeInHref = getTenantUrl(tenant.slug, "/skup-aut", tenant.customDomain);
+  const fuels = useMemo(() => {
+    const set = new Set<string>();
+    cars.forEach((car) => {
+      if (car.fuel_type) set.add(car.fuel_type.trim());
+    });
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [cars]);
+
+  // Synchronize URL query params
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedMake !== "all") params.set("make", selectedMake);
+    if (selectedModel !== "all") params.set("model", selectedModel);
+    if (selectedMaxPrice !== "all") params.set("maxPrice", selectedMaxPrice);
+    if (selectedMinYear !== "all") params.set("minYear", selectedMinYear);
+    if (selectedMaxMileage !== "all") params.set("maxMileage", selectedMaxMileage);
+    if (selectedFuel !== "all") params.set("fuel", selectedFuel);
+    if (searchQuery.trim()) params.set("q", searchQuery.trim());
+    if (statusFilter !== "available") params.set("status", statusFilter);
+    if (sortBy !== "newest") params.set("sort", sortBy);
+
+    const query = params.toString();
+    const newUrl = query ? `${pathname}?${query}` : pathname;
+    window.history.replaceState(null, "", newUrl);
+  }, [
+    selectedMake,
+    selectedModel,
+    selectedMaxPrice,
+    selectedMinYear,
+    selectedMaxMileage,
+    selectedFuel,
+    searchQuery,
+    statusFilter,
+    sortBy,
+    pathname,
+  ]);
+
+  const counts = useMemo(
+    () => ({
+      available: cars.filter((c) => !c.is_sold).length,
+      sold: cars.filter((c) => c.is_sold).length,
+      all: cars.length,
+      filtered: 0,
+    }),
+    [cars]
+  );
+
+  const filteredCars = useMemo(() => {
+    return cars
+      .filter((car) => {
+        const matchStatus =
+          statusFilter === "all" ||
+          (statusFilter === "available" && !car.is_sold) ||
+          (statusFilter === "sold" && car.is_sold);
+
+        const matchMake = selectedMake === "all" || car.make?.toLowerCase() === selectedMake.toLowerCase();
+        const matchModel = selectedModel === "all" || car.model?.toLowerCase().includes(selectedModel.toLowerCase());
+        const matchMaxPrice = selectedMaxPrice === "all" || (car.price || 0) <= Number(selectedMaxPrice);
+        const matchMinYear = selectedMinYear === "all" || (car.year || 0) >= Number(selectedMinYear);
+        const matchMaxMileage = selectedMaxMileage === "all" || (car.mileage || 0) <= Number(selectedMaxMileage);
+        const matchFuel = selectedFuel === "all" || car.fuel_type?.toLowerCase() === selectedFuel.toLowerCase();
+
+        const q = searchQuery.toLowerCase().trim();
+        const matchSearch =
+          !q || `${car.make} ${car.model} ${car.year ?? ""} ${car.vin ?? ""}`.toLowerCase().includes(q);
+
+        return (
+          matchStatus &&
+          matchMake &&
+          matchModel &&
+          matchMaxPrice &&
+          matchMinYear &&
+          matchMaxMileage &&
+          matchFuel &&
+          matchSearch
+        );
+      })
+      .sort((a, b) => {
+        if (sortBy === "price_asc") return (a.price || 0) - (b.price || 0);
+        if (sortBy === "price_desc") return (b.price || 0) - (a.price || 0);
+        return new Date(b.created_at || "").getTime() - new Date(a.created_at || "").getTime();
+      });
+  }, [
+    cars,
+    statusFilter,
+    selectedMake,
+    selectedModel,
+    selectedMaxPrice,
+    selectedMinYear,
+    selectedMaxMileage,
+    selectedFuel,
+    searchQuery,
+    sortBy,
+  ]);
+
+  const hasActiveFilters =
+    selectedMake !== "all" ||
+    selectedModel !== "all" ||
+    selectedMaxPrice !== "all" ||
+    selectedMinYear !== "all" ||
+    selectedMaxMileage !== "all" ||
+    selectedFuel !== "all" ||
+    searchQuery.trim() !== "" ||
+    statusFilter !== "available";
+
+  const handleResetFilters = () => {
+    setSelectedMake("all");
+    setSelectedModel("all");
+    setSelectedMaxPrice("all");
+    setSelectedMinYear("all");
+    setSelectedMaxMileage("all");
+    setSelectedFuel("all");
+    setSearchQuery("");
+    setStatusFilter("available");
+    setSortBy("newest");
+  };
+
+  const tradeInHref = getTenantUrl(tenant.slug, "/skup-aut", tenant.customDomain, isCustomDomain);
+  const homeHref = getTenantUrl(tenant.slug, "/", tenant.customDomain, isCustomDomain);
 
   return (
-    <div style={{ background: "#f8fafc", minHeight: "100vh" }}>
-      {/* Hero Header Banner */}
-      <section
-        style={{
-          background: "linear-gradient(135deg, #0f172a 0%, #020617 100%)",
-          color: "#fff",
-          paddingBlock: "28px 36px",
-          borderBottom: "1px solid rgba(255,255,255,0.1)",
-        }}
-      >
-        <div className="vd-container">
-          <Breadcrumbs
-            variant="dark"
-            items={[
-              { label: tenant.businessName, href: `/${tenant.slug}` },
-              { label: "Samochody na sprzedaż" },
-            ]}
-          />
-          <div style={{ marginTop: "16px" }}>
-            <span className="vd-eyebrow" style={{ color: primaryColor, display: "block", marginBottom: "6px" }}>
-              Oferta samochodów używanych
+    <div className="bg-zinc-50 dark:bg-zinc-950 min-h-screen text-zinc-900 dark:text-zinc-100 flex flex-col justify-between">
+      <div>
+        {/* Crisp Header */}
+        <header className="bg-zinc-50 border-b border-zinc-200 text-zinc-950 py-8 md:py-9">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-1.5">
+            <span
+              className="text-[11px] font-bold uppercase tracking-wider block"
+              style={{ color: primaryColor }}
+            >
+              Sprawdzona oferta komisowa
             </span>
-            <h1 className="vd-heading" style={{ fontSize: "clamp(24px, 3.5vw, 36px)", color: "#fff", marginBottom: "10px", lineHeight: 1.2 }}>
-              Samochody na sprzedaż - {tenant.businessName}
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-heading text-zinc-950">
+              Samochody na sprzedaż — {tenant.businessName}
             </h1>
-            <p className="vd-copy" style={{ color: "rgba(255,255,255,0.8)", fontSize: "15px", maxWidth: "680px", margin: 0 }}>
-              Sprawdź naszą pełną ofertę samochodów z gwarancją. Oferujemy autentyczne przebiegi, badania techniczne i możliwość zakupu w rozliczeniu.
+            <p className="text-xs sm:text-sm text-zinc-600 max-w-2xl leading-relaxed">
+              Przejrzyj zweryfikowane pojazdy z gwarancją autentyczności przebiegu, badaniem technicznym i możliwością
+              zakupu w rozliczeniu.
             </p>
           </div>
-        </div>
-      </section>
+        </header>
 
-      {/* Catalog & Filter Section */}
-      <section style={{ padding: "32px 0 60px" }}>
-        <div className="vd-container">
-          {/* Controls Bar */}
-          <div className="inventory-filter-bar">
-            {/* Search Input */}
-            <div className="inventory-filter-bar__search" style={{ height: "44px" }}>
-              <Search
-                size={18}
-                style={{
-                  position: "absolute",
-                  left: "14px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  color: "#64748b",
-                  pointerEvents: "none",
-                }}
-              />
-              <input
-                type="text"
-                placeholder="Szukaj marki lub modelu (np. BMW, Audi)..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
+        {/* Main Content */}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 space-y-6">
+          <InventoryFilterBar
+            statusFilter={statusFilter}
+            onStatusChange={setStatusFilter}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            selectedMake={selectedMake}
+            onMakeChange={(make) => {
+              setSelectedMake(make);
+              setSelectedModel("all");
+            }}
+            selectedModel={selectedModel}
+            onModelChange={setSelectedModel}
+            selectedMaxPrice={selectedMaxPrice}
+            onMaxPriceChange={setSelectedMaxPrice}
+            selectedMinYear={selectedMinYear}
+            onMinYearChange={setSelectedMinYear}
+            selectedMaxMileage={selectedMaxMileage}
+            onMaxMileageChange={setSelectedMaxMileage}
+            selectedFuel={selectedFuel}
+            onFuelChange={setSelectedFuel}
+            sortBy={sortBy}
+            onSortChange={setSortBy}
+            onResetFilters={handleResetFilters}
+            hasActiveFilters={hasActiveFilters}
+            makes={makes}
+            models={models}
+            fuels={fuels}
+            counts={{ ...counts, filtered: filteredCars.length }}
+            primaryColor={primaryColor}
+          />
 
-            {/* Fuel Filter & Sort Selects */}
-            <div className="inventory-filter-bar__selects">
-              <div className="inventory-filter-bar__select-wrap">
-                <select
-                  value={selectedFuel}
-                  onChange={(e) => setSelectedFuel(e.target.value)}
-                >
-                  <option value="all">Wszystkie napędy</option>
-                  <option value="diesel">Diesel</option>
-                  <option value="benzyna">Benzyna</option>
-                  <option value="hybryda">Hybryda</option>
-                  <option value="elektryczny">Elektryczny</option>
-                </select>
-                <ChevronDown size={16} style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "#64748b" }} />
-              </div>
-
-              <div className="inventory-filter-bar__select-wrap">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as "newest" | "price_asc" | "price_desc")}
-                >
-                  <option value="newest">Najnowsze ogłoszenia</option>
-                  <option value="price_asc">Cena: od najniższej</option>
-                  <option value="price_desc">Cena: od najwyższej</option>
-                </select>
-                <ChevronDown size={16} style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "#64748b" }} />
-              </div>
-            </div>
-          </div>
-
-          {/* Status Filter Tabs */}
-          <div style={{ display: "flex", gap: "8px", marginBottom: "20px", flexWrap: "wrap", alignItems: "center" }}>
-            {([
-              { key: "available" as const, label: `🟢 Dostępne (${availableCount})` },
-              ...(soldCount > 0 ? [{ key: "sold" as const, label: `🔴 Sprzedane (${soldCount})` }] : []),
-              { key: "all" as const, label: `Wszystkie (${cars.length})` },
-            ]).map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setStatusFilter(tab.key)}
-                style={{
-                  padding: "7px 16px",
-                  borderRadius: "10px",
-                  border: statusFilter === tab.key ? `2px solid ${primaryColor}` : "1.5px solid #cbd5e1",
-                  background: statusFilter === tab.key ? `${primaryColor}10` : "#ffffff",
-                  color: statusFilter === tab.key ? primaryColor : "#64748b",
-                  fontSize: "13px",
-                  fontWeight: statusFilter === tab.key ? 700 : 500,
-                  cursor: "pointer",
-                  transition: "all 0.15s ease",
-                }}
-              >
-                {tab.label}
-              </button>
-            ))}
-
-            <span style={{ marginLeft: "auto", fontSize: "13px", color: "var(--color-text-soft)" }}>
-              {statusFilter === "available" && availableCount > 0 && "Wszystkie auta sprawdzone technicznie"}
-              {statusFilter === "sold" && soldCount > 0 && "Historia sprzedanych pojazdów"}
-            </span>
-          </div>
-
-          {/* Cars Grid */}
-          {sortedCars.length > 0 ? (
-            <div className="vehicles__grid">
-              {sortedCars.map((car) => (
-                <CarCard key={car.id} car={car} dealerSlug={tenant.slug} customDomain={tenant.customDomain} />
+          {filteredCars.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {filteredCars.map((car) => (
+                <CarCard
+                  key={car.id}
+                  car={car}
+                  dealerSlug={tenant.slug}
+                  customDomain={tenant.customDomain}
+                  isCustomDomain={isCustomDomain}
+                />
               ))}
             </div>
           ) : (
-            <div
-              style={{
-                padding: "60px 20px",
-                textAlign: "center",
-                background: "#ffffff",
-                borderRadius: "16px",
-                border: "1px solid var(--color-border)",
-              }}
-            >
-              <h3 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "8px" }}>
-                Brak wyników wyszukiwania
-              </h3>
-              <p style={{ fontSize: "14px", color: "var(--color-text-soft)", marginBottom: "20px" }}>
-                Nie znaleźliśmy samochodów spełniających podane kryteria filtracji.
-              </p>
-              <button
-                onClick={() => {
-                  setSearchQuery("");
-                  setSelectedFuel("all");
-                }}
-                className="vd-button vd-button--primary"
-                style={{ background: primaryColor }}
-              >
-                Zresetuj filtry
-              </button>
-            </div>
+            <InventoryEmptyState
+              onResetFilters={handleResetFilters}
+              tradeInHref={tradeInHref}
+              isTradeInEnabled={Boolean(tenant.businessRules?.tradeIn?.enabled)}
+            />
           )}
 
           {/* Trade-In Banner */}
           {tenant.businessRules?.tradeIn?.enabled && (
-            <div
-              style={{
-                marginTop: "48px",
-                padding: "24px 28px",
-                borderRadius: "16px",
-                background: `linear-gradient(135deg, ${primaryColor}0d 0%, ${primaryColor}1a 100%)`,
-                border: `1px solid ${primaryColor}30`,
-                display: "flex",
-                flexWrap: "wrap",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: "20px",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                <div
-                  style={{
-                    width: "44px",
-                    height: "44px",
-                    borderRadius: "12px",
-                    background: `${primaryColor}20`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: primaryColor,
-                    flexShrink: 0,
-                  }}
+            <div className="p-5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
+              <div className="space-y-1">
+                <span
+                  className="text-[11px] font-bold uppercase tracking-wider"
+                  style={{ color: primaryColor }}
                 >
-                  <RefreshCw size={22} />
-                </div>
-                <div>
-                  <h3 style={{ margin: "0 0 4px", fontSize: "17px", fontWeight: 700 }}>
-                    {tenant.businessRules.tradeIn.title || "Chcesz kupić auto? Zostaw swoje w rozliczeniu!"}
-                  </h3>
-                  <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-soft)", maxWidth: "560px" }}>
-                    {tenant.businessRules.tradeIn.description ||
-                      "Wyceń swój obecny samochód bezpłatnie w 15 minut i pomniejsz koszt zakupu nowego pojazdu."}
-                  </p>
-                </div>
+                  Zamiana lub skup
+                </span>
+                <h3 className="text-sm sm:text-base font-bold text-zinc-950 dark:text-zinc-50 font-heading">
+                  Chcesz zostawić swoje dotychczasowe auto w rozliczeniu?
+                </h3>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                  Dokonamy natychmiastowej bezpłatnej wyceny i obniżymy cenę wybranego pojazdu.
+                </p>
               </div>
-              <a
+              <Link
                 href={tradeInHref}
-                className="vd-button vd-button--primary"
-                style={{ background: primaryColor, textDecoration: "none" }}
+                className="px-4 py-2 text-white text-xs font-semibold rounded-md inline-flex items-center gap-2 hover:opacity-95 transition-all whitespace-nowrap shadow-xs"
+                style={{ backgroundColor: primaryColor }}
               >
-                Wyceń swoje auto w rozliczeniu ➔
-              </a>
+                <span>Wyceń swoje auto</span>
+                <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.75} />
+              </Link>
             </div>
           )}
-        </div>
-      </section>
+        </main>
+      </div>
     </div>
+  );
+}
+
+export function InventoryPage(props: InventoryPageProps) {
+  return (
+    <Suspense fallback={<InventorySkeleton />}>
+      <InventoryPageContent {...props} />
+    </Suspense>
   );
 }

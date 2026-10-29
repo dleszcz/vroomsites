@@ -49,13 +49,13 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
   return (
     <header className="dealer-header" style={{ background: headerBg }}>
       <div className="dealer-header__inner">
-        <a href={getUrl("/")} aria-label={tenant.businessName}>
+        <a href={getUrl("/")} aria-label={tenant.businessName} className="dealer-header__brand">
           {logo ? (
             <Image
               className="dealer-header__logo"
               src={logo}
               alt={tenant.businessName}
-              width={145}
+              width={180}
               height={62}
               priority
               unoptimized={!isLocalOrKnownRemote}
@@ -76,7 +76,11 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
         </nav>
 
         <div className="dealer-header__actions">
-          <a className="vd-button vd-button--primary dealer-header__cta" href={ctaHref}>
+          <a
+            style={{ color: "#09090b" }}
+            className="h-9 px-4 rounded-md bg-white hover:bg-zinc-100 font-heading font-bold text-xs uppercase tracking-wider inline-flex items-center justify-center transition-colors shadow-sm"
+            href={ctaHref}
+          >
             {ctaLabel}
           </a>
           {phone && (
@@ -98,11 +102,16 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
       {open && (
         <div className="dealer-header__mobile-menu">
           {links.map(([label, href]) => (
-            <Link key={href} href={href} onClick={() => setOpen(false)}>
+            <Link key={href} href={href} onClick={() => setOpen(false)} className="font-heading">
               {label}
             </Link>
           ))}
-          <a className="vd-button vd-button--primary" href={ctaHref} onClick={() => setOpen(false)}>
+          <a
+            style={{ color: "#09090b" }}
+            className="h-10 px-4 rounded-md bg-white hover:bg-zinc-100 font-heading font-bold text-xs uppercase tracking-wider flex items-center justify-center transition-colors"
+            href={ctaHref}
+            onClick={() => setOpen(false)}
+          >
             {ctaLabel}
           </a>
         </div>

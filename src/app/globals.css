@@ -1,40 +1,77 @@
 @import "tailwindcss";
 
-:root {
-  --color-primary: #1686E0;
-  --color-primary-fg: #ffffff;
-  --color-background: #ffffff;
-  --color-foreground: #0B0B0D;
-  --color-dark: #080808;
-  --color-accent: #1686E0;
-  --color-accent-fg: #ffffff;
-  --color-surface: #F1F3F5;
-  --color-muted: #6B7280;
-  --color-header-bg: #080808;
-  --color-footer-bg: #080808;
-  --color-border: #E5E7EB;
-  --color-border-strong: #D1D5DB;
-  --color-white: #fff;
-  --color-text-soft: #64748B;
-  --color-text-faint: #94A3B8;
-  --max-width: 1280px;
-  --page-pad: 48px;
-  --section-pad: 84px;
-  --section-pad-lg: 96px;
-  --radius-card: 12px;
-  --radius-button: 9px;
-  --radius-pill: 999px;
-  --shadow-card: 0 2px 12px rgba(15, 23, 42, 0.035);
-  --shadow-button: 0 7px 18px rgba(22, 134, 224, 0.22);
-  --font-sans: var(--font-geist-sans), Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+@theme {
+  --font-sans: var(--font-geist-sans), Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: var(--font-heading), var(--font-geist-sans), Inter, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
 }
 
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
-body { margin: 0; font-family: var(--font-sans); color: var(--color-foreground); background: var(--color-background); line-height: 1.55; }
-a { color: inherit; text-decoration: none; }
-button, input, textarea { font: inherit; }
-img { max-width: 100%; }
+:root {
+  --color-primary: #18181b;
+  --color-primary-fg: #ffffff;
+  --color-background: #ffffff;
+  --color-foreground: #09090b;
+  --color-dark: #09090b;
+  --color-accent: #2563eb;
+  --color-accent-fg: #ffffff;
+  --color-surface: #f8fafc;
+  --color-muted: #64748b;
+  --color-header-bg: #09090b;
+  --color-footer-bg: #09090b;
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
+  --color-white: #fff;
+  --color-text-soft: #475569;
+  --color-text-faint: #64748b;
+  --max-width: 1280px;
+  --page-pad: 48px;
+  --section-pad: 72px;
+  --section-pad-lg: 88px;
+  --radius-card: 8px;
+  --radius-button: 6px;
+  --radius-pill: 999px;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-button: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --font-sans: var(--font-geist-sans), Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: var(--font-heading), var(--font-geist-sans), Inter, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+}
+
+@layer base {
+  * { box-sizing: border-box; }
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    color: var(--color-foreground);
+    background: var(--color-background);
+    line-height: 1.55;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  button, input, textarea {
+    font: inherit;
+  }
+  img {
+    max-width: 100%;
+  }
+
+  h1, h2, h3, h4, h5, h6, .vd-heading, .dealer-hero__title {
+    font-family: var(--font-heading);
+    letter-spacing: -0.03em;
+  }
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
 
 .dealer-layout { min-height: 100vh; overflow-x: clip; background: var(--color-background); }
 .dealer-main { min-height: 1px; }
@@ -45,49 +82,73 @@ img { max-width: 100%; }
 .vd-section--bordered { border-top: 1px solid var(--color-border); }
 .vd-section--soft { background: var(--color-surface); }
 .vd-section--dark { background: var(--color-dark); color: #fff; }
-.vd-eyebrow { display: block; margin-bottom: 8px; color: var(--color-primary); font-size: 12px; line-height: 1.2; font-weight: 800; letter-spacing: .075em; text-transform: uppercase; }
-.vd-heading { margin: 0; color: var(--color-foreground); font-size: 34px; line-height: 1.12; letter-spacing: -.035em; font-weight: 800; }
-.vd-heading--small { font-size: 28px; }
-.vd-copy { margin: 0; color: var(--color-text-soft); font-size: 16px; line-height: 1.65; }
+.vd-eyebrow { display: block; margin-bottom: 8px; color: var(--color-accent); font-size: 11px; line-height: 1.2; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.vd-heading { margin: 0; color: var(--color-foreground); font-size: 32px; line-height: 1.15; letter-spacing: -.03em; font-weight: 800; }
+.vd-heading--small { font-size: 26px; }
+.vd-copy { margin: 0; color: var(--color-text-soft); font-size: 15px; line-height: 1.6; }
 
-.vd-button { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 18px; border: 1px solid transparent; border-radius: var(--radius-button); font-size: 12px; line-height: 1; font-weight: 800; letter-spacing: .035em; text-transform: uppercase; transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, border-color .18s ease; cursor: pointer; }
-.vd-button:hover { transform: translateY(-1px); }
-.vd-button--primary { background: var(--color-primary); color: var(--color-primary-fg); box-shadow: var(--shadow-button); }
-.vd-button--outline { background: transparent; color: var(--color-foreground); border-color: var(--color-primary); }
-.vd-button--outline-dark { background: transparent; color: #fff; border-color: rgba(255,255,255,.58); }
-.vd-button--ghost { background: transparent; color: var(--color-primary); padding-inline: 0; }
+.vd-button { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 16px; border: 1px solid transparent; border-radius: var(--radius-button); font-size: 13px; line-height: 1; font-weight: 600; letter-spacing: -.01em; transition: background-color .15s ease, border-color .15s ease, color .15s ease; cursor: pointer; text-decoration: none; }
+.vd-button:hover { transform: none; text-decoration: none; }
+.vd-button--primary { background: var(--color-primary); color: #ffffff !important; border-color: transparent; }
+.vd-button--primary * { color: #ffffff !important; }
+.vd-button--primary:hover { background: #27272a; color: #ffffff !important; }
+.vd-button--outline { background: #ffffff; color: var(--color-foreground); border-color: var(--color-border); }
+.vd-button--outline:hover { border-color: var(--color-border-strong); background: var(--color-surface); }
+.vd-button--outline-dark { background: rgba(255, 255, 255, 0.08) !important; color: #ffffff !important; border-color: rgba(255, 255, 255, 0.35) !important; }
+.vd-button--outline-dark * { color: #ffffff !important; }
+.vd-button--outline-dark:hover { background: rgba(255, 255, 255, 0.16) !important; border-color: rgba(255, 255, 255, 0.5) !important; color: #ffffff !important; }
+.vd-button--ghost { background: transparent; color: var(--color-foreground); padding-inline: 0; }
 .vd-button--block { width: 100%; }
+
+/* Strict Anti-Slop: guaranteed contrast for dark / solid action buttons */
+a.bg-zinc-950, button.bg-zinc-950,
+a.bg-zinc-900, button.bg-zinc-900,
+a.bg-black, button.bg-black,
+a.bg-slate-900, button.bg-slate-900,
+a.bg-slate-950, button.bg-slate-950,
+a.bg-emerald-600, button.bg-emerald-600,
+a.bg-emerald-700, button.bg-emerald-700 {
+  color: #ffffff !important;
+}
+a.bg-zinc-950 *, button.bg-zinc-950 *,
+a.bg-zinc-900 *, button.bg-zinc-900 *,
+a.bg-black *, button.bg-black *,
+a.bg-slate-900 *, button.bg-slate-900 *,
+a.bg-slate-950 *, button.bg-slate-950 *,
+a.bg-emerald-600 *, button.bg-emerald-600 *,
+a.bg-emerald-700 *, button.bg-emerald-700 * {
+  color: #ffffff !important;
+}
 
 /* Header */
 .dealer-header { position: sticky; top: 0; z-index: 100; background: var(--color-header-bg); color: #fff; border-bottom: 1px solid rgba(255,255,255,.1); }
-.dealer-header__inner { width: min(100% - (var(--page-pad) * 2), var(--max-width)); min-height: 76px; margin-inline: auto; display: grid; grid-template-columns: 190px 1fr auto; align-items: center; gap: 28px; }
-.dealer-header__logo { display: block; width: 145px; max-height: 62px; height: auto; object-fit: contain; object-position: left center; }
+.dealer-header__inner { width: min(100% - (var(--page-pad) * 2), var(--max-width)); min-height: 76px; margin-inline: auto; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 28px; }
+.dealer-header__brand { display: flex; align-items: center; min-width: 140px; }
+.dealer-header__logo { display: block; height: 52px; max-height: 56px; width: auto; max-width: 200px; object-fit: contain; object-position: left center; }
 .dealer-header__nav { display: flex; justify-content: center; align-items: center; gap: 28px; }
-.dealer-header__nav a { color: rgba(255,255,255,.94); font-size: 14px; font-weight: 600; white-space: nowrap; transition: color .18s ease; }
+.dealer-header__nav a { color: rgba(255,255,255,.94); font-family: var(--font-heading); font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; transition: color .18s ease; }
 .dealer-header__nav a:hover { color: var(--color-primary); }
 .dealer-header__actions { display: flex; align-items: center; gap: 16px; }
-.dealer-header__phone { display: inline-flex; align-items: center; gap: 7px; color: #fff; font-size: 14px; font-weight: 700; white-space: nowrap; }
-.dealer-header__phone svg { color: rgba(255,255,255,.85); }
-.dealer-header__cta { min-height: 44px; padding-inline: 20px; font-size: 12px; }
+.dealer-header__phone { display: inline-flex; align-items: center; gap: 7px; color: #fff; font-family: var(--font-heading); font-size: 13.5px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; }
+.dealer-header__phone svg { color: rgba(255,255,255,.75); }
+.dealer-header__cta { min-height: 38px; padding-inline: 16px; font-size: 13px; font-weight: 700; background: #ffffff !important; color: #09090b !important; border-radius: 6px !important; border: 1px solid rgba(255,255,255,0.2) !important; transition: background-color 0.15s ease !important; }
+.dealer-header__cta:hover { background: #f4f4f5 !important; color: #000000 !important; }
 .dealer-header__toggle { display: none; border: 0; background: transparent; color: #fff; padding: 8px; }
 
 /* Hero */
-.dealer-hero { position: relative; min-height: 455px; background: #080808; color: #fff; overflow: hidden; }
+.dealer-hero { position: relative; min-height: 380px; background: #0f172a; color: #fff; overflow: hidden; }
 .dealer-hero__media { position: absolute; inset: 0; background-size: cover; background-position: center; }
 .dealer-hero__image { object-fit: cover; object-position: center; }
-.dealer-hero__media::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(90deg, rgba(8,8,8,.98) 0%, rgba(8,8,8,.92) 35%, rgba(8,8,8,.5) 55%, rgba(8,8,8,.08) 75%); }
-.dealer-hero__content { position: relative; z-index: 2; min-height: 455px; display: flex; align-items: center; }
-.dealer-hero__copy { width: min(100%, 620px); padding-block: 64px; }
-.dealer-hero__eyebrow { margin-bottom: 18px; color: var(--color-primary); font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
-.dealer-hero__title { margin: 0 0 14px; max-width: 580px; color: #fff; font-size: clamp(42px, 5.2vw, 64px); line-height: 1.05; letter-spacing: -.04em; font-weight: 800; }
-.dealer-hero__description { margin: 0 0 28px; max-width: 540px; color: rgba(255,255,255,.88); font-size: 18px; line-height: 1.6; }
-.dealer-hero__actions { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; }
-.dealer-hero__button { min-width: 160px; min-height: 54px; padding: 10px 24px; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 800; }
-.dealer-hero__button small { font-size: 11px; font-weight: 600; letter-spacing: 0; text-transform: none; opacity: .9; }
-.dealer-hero__benefits { display: flex; flex-wrap: wrap; gap: 18px 24px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.15); }
-.dealer-hero__benefit { display: inline-flex; align-items: center; gap: 8px; color: rgba(255,255,255,.92); font-size: 13px; font-weight: 700; white-space: nowrap; }
-.dealer-hero__benefit svg { color: var(--color-accent, var(--color-primary)); }
-.dealer-hero__accent { position: absolute; z-index: 1; top: -10%; bottom: -10%; left: 43%; width: 56px; transform: skewX(-12deg); background: var(--color-accent, var(--color-primary)); opacity: .92; }
+.dealer-hero__media::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(90deg, rgba(15,23,42,0.72) 0%, rgba(15,23,42,0.48) 36%, rgba(15,23,42,0.15) 65%, transparent 85%); }
+.dealer-hero__content { position: relative; z-index: 2; min-height: 380px; display: flex; align-items: center; }
+.dealer-hero__copy { width: min(100%, 940px); padding-block: 20px 10px; }
+.dealer-hero__title { margin: 0 0 10px; max-width: 900px; color: #fff; font-size: clamp(28px, 3.4vw, 44px); line-height: 1.15; letter-spacing: -.03em; font-weight: 800; }
+.dealer-hero__description { margin: 0 0 16px; max-width: 720px; color: rgba(255,255,255,.90); font-size: 15px; line-height: 1.45; }
+.dealer-hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
+.dealer-hero__button { min-height: 44px; padding: 0 22px; border-radius: 6px; font-size: 14px; font-weight: 700; letter-spacing: -0.01em; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all .15s ease; }
+.dealer-hero__benefits { display: flex; flex-wrap: wrap; gap: 12px 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.12); }
+.dealer-hero__benefit { display: inline-flex; align-items: center; gap: 8px; color: rgba(255,255,255,.92); font-size: 13px; font-weight: 600; white-space: nowrap; }
+.dealer-hero__benefit svg { color: var(--color-primary, #0d94e7); }
 
 /* Value props */
 .value-props__layout { display: grid; grid-template-columns: 270px 1fr; gap: 46px; align-items: start; }
@@ -234,7 +295,7 @@ img { max-width: 100%; }
   .dealer-hero__copy { width: 100%; padding-block: 52px; }
   .dealer-hero__media { background-position: 63% center; }
   .dealer-hero__image { object-position: 63% center; }
-  .dealer-hero__media::after { background: linear-gradient(90deg, rgba(4,11,18,.97) 0%, rgba(4,11,18,.88) 45%, rgba(4,11,18,.38) 100%); }
+  .dealer-hero__media::after { background: linear-gradient(180deg, rgba(15,23,42,0.70) 0%, rgba(15,23,42,0.40) 45%, rgba(15,23,42,0.12) 100%); }
   .dealer-hero__accent { left: 58%; width: 42px; }
   .value-props__layout, .process__layout, .trust__layout, .validation__layout, .validation__content { grid-template-columns: 1fr; }
   .value-props__items { grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--color-border); }
@@ -255,12 +316,12 @@ img { max-width: 100%; }
 @media (max-width: 560px) {
   :root { --page-pad: 20px; --section-pad: 58px; }
   .dealer-header__inner { min-height: 64px; }
-  .dealer-header__logo { width: 118px; max-height: 50px; }
+  .dealer-header__logo { height: 44px; max-height: 48px; width: auto; max-width: 150px; }
   .dealer-header__cta { display: none; }
-  .dealer-header__phone { font-size: 10px; }
-  .dealer-hero, .dealer-hero__content { min-height: 620px; }
-  .dealer-hero__copy { padding-block: 44px 40px; }
-  .dealer-hero__title { font-size: 42px; }
+  .dealer-header__phone { font-size: 11px; }
+  .dealer-hero, .dealer-hero__content { min-height: 480px; }
+  .dealer-hero__copy { padding-block: 20px 14px; }
+  .dealer-hero__title { font-size: clamp(26px, 6.5vw, 34px); line-height: 1.18; }
   .dealer-hero__actions { flex-direction: column; align-items: stretch; }
   .dealer-hero__button { width: 100%; }
   .dealer-hero__benefits { gap: 12px 18px; }

@@ -7,8 +7,8 @@ import { headers } from "next/headers";
 async function getBasePath() {
   const headersList = await headers();
   const isCustomDomain = headersList.get("x-is-custom-domain") === "true";
-  const tenantSlug = headersList.get("x-tenant-slug") || "d-car";
-  return isCustomDomain ? "" : `/${tenantSlug}`;
+  const tenantSlug = headersList.get("x-tenant-slug") || "";
+  return isCustomDomain || !tenantSlug ? "" : `/${tenantSlug}`;
 }
 
 export async function signOut() {
@@ -216,6 +216,12 @@ export async function updateTenant(formData: FormData) {
   const googleSheetsWebhook = formData.get("google_sheets_webhook_url");
   if (googleSheetsWebhook !== null) updates.google_sheets_webhook_url = googleSheetsWebhook;
 
+  // Autoplac Feature Toggle
+  const autoplacEnabled = formData.get("autoplac_enabled");
+  if (autoplacEnabled !== null) {
+    updates.autoplac_enabled = autoplacEnabled === "true" || autoplacEnabled === "on";
+  }
+
   // Contact & Address
   const contactPhone = formData.get("contact_phone");
   if (contactPhone !== null) updates.contact_phone = contactPhone;
@@ -242,6 +248,7 @@ export async function updateTenant(formData: FormData) {
   const primaryColor = formData.get("branding_primary_color");
   const accentColor = formData.get("branding_accent_color");
   const logoUrl = formData.get("branding_logo_url");
+  const heroImageUrl = formData.get("branding_hero_image_url") as string | null;
   const heroTitle = formData.get("branding_hero_title");
   const heroSubtitle = formData.get("branding_hero_subtitle");
 
@@ -251,6 +258,9 @@ export async function updateTenant(formData: FormData) {
     return trimmed.startsWith("#") ? trimmed : `#${trimmed}`;
   };
 
+  const currentMedia = (currentBranding.media as Record<string, unknown>) || {};
+  const resolvedHeroImage = heroImageUrl || (currentBranding.heroImageUrl as string) || (currentMedia.heroImageUrl as string) || null;
+
   updates.branding = {
     ...currentBranding,
     primaryColor: cleanColor(primaryColor, (currentBranding.primaryColor as string) || "#10b981"),
@@ -258,6 +268,11 @@ export async function updateTenant(formData: FormData) {
     logoUrl: logoUrl || currentBranding.logoUrl || null,
     heroTitle: heroTitle || currentBranding.heroTitle || null,
     heroSubtitle: heroSubtitle || currentBranding.heroSubtitle || null,
+    heroImageUrl: resolvedHeroImage,
+    media: {
+      ...currentMedia,
+      heroImageUrl: resolvedHeroImage,
+    },
   };
 
   // Analytics JSONB
@@ -301,12 +316,53 @@ export async function updateTenant(formData: FormData) {
     metaDescription: metaDescription || null,
   };
 
-  const { error } = await supabase
+  // Local SEO JSONB (Towns & Pages) with Safe Deep-Merge
+  const localPagesJson = formData.get("local_pages_json") as string | null;
+  if (localPagesJson) {
+    try {
+      const parsedPages = JSON.parse(localPagesJson);
+      if (Array.isArray(parsedPages)) {
+        const currentLocalSeo = (queryTenant.local_seo as Record<string, unknown>) || {};
+        const existingPages = (currentLocalSeo.localPages || currentLocalSeo.local_pages || []) as Record<string, unknown>[];
+
+        const mergedPages = parsedPages.map((newPage: Record<string, unknown>) => {
+          const existing = existingPages.find(
+            (p) => p.slug === newPage.slug || (typeof p.city === "string" && p.city.toLowerCase() === (newPage.city as string)?.toLowerCase())
+          );
+          return existing ? { ...existing, ...newPage } : newPage;
+        });
+
+        updates.local_seo = {
+          ...currentLocalSeo,
+          localPages: mergedPages,
+        };
+      }
+    } catch (e) {
+      console.error("[updateTenant] Błąd parsowania local_pages_json:", e);
+    }
+  }
+
+  let { error } = await supabase
     .from("tenants")
     .update(updates)
     .eq("id", queryTenant.id);
 
+  if (error && error.message?.includes("autoplac_enabled")) {
+    console.warn("[updateTenant] autoplac_enabled column does not exist yet in tenants table. Retrying update without it.");
+    delete updates.autoplac_enabled;
+    const retry = await supabase
+      .from("tenants")
+      .update(updates)
+      .eq("id", queryTenant.id);
+    error = retry.error;
+  }
+
   if (error) {
+    if (error.message?.includes("profiles")) {
+      throw new Error(
+        "Błąd schematu bazy danych: w Supabase brakuje widoku 'profiles' powiązanego ze starymi politykami RLS. Uruchom plik fix_tenants_and_autoplac_migration.sql w SQL Editorze Supabase."
+      );
+    }
     throw new Error(`Błąd zapisu: ${error.message}`);
   }
 
@@ -407,8 +463,9 @@ export async function toggleCarSoldStatus(carId: string, isSold: boolean, tenant
     revalidatePath(`/${tenantSlug}/samochody`);
 
     return { success: true };
-  } catch (err: any) {
-    return { success: false, error: err.message || "Wystąpił nieoczekiwany błąd" };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Wystąpił nieoczekiwany błąd";
+    return { success: false, error: message };
   }
 }
 
@@ -439,12 +496,15 @@ export async function toggleCarFeaturedStatus(carId: string, isFeatured: boolean
     revalidatePath(`/${tenantSlug}/samochody`);
 
     return { success: true };
-  } catch (err: any) {
-    return { success: false, error: err.message || "Wystąpił nieoczekiwany błąd" };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Wystąpił nieoczekiwany błąd";
+    return { success: false, error: message };
   }
 }
 
-export async function createCar(carData: any, tenantSlug: string) {
+import type { CarFormValues } from "@/components/admin/cars/types";
+
+export async function createCar(carData: CarFormValues, tenantSlug: string) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -453,6 +513,7 @@ export async function createCar(carData: any, tenantSlug: string) {
     const tenant = await getTenantBySlug(tenantSlug);
     if (!tenant) return { success: false, error: "Nie znaleziono komisu" };
 
+    const cleanVin = carData.vin ? carData.vin.trim().toUpperCase() : null;
     const slug = `${carData.make}-${carData.model}-${carData.year || ''}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Math.random().toString(36).substring(2, 6);
 
     const { error } = await supabase.from("cars").insert({
@@ -463,6 +524,8 @@ export async function createCar(carData: any, tenantSlug: string) {
       year: carData.year ? parseInt(String(carData.year)) : null,
       price: carData.price ? parseFloat(String(carData.price)) : null,
       mileage: carData.mileage ? parseInt(String(carData.mileage)) : null,
+      vin: cleanVin,
+      export_to_autoplac: carData.export_to_autoplac ?? true,
       fuel_type: carData.fuel_type || null,
       engine_capacity: carData.engine_capacity || null,
       transmission: carData.transmission || null,
@@ -483,16 +546,19 @@ export async function createCar(carData: any, tenantSlug: string) {
     revalidatePath(`/${tenantSlug}/samochody`);
 
     return { success: true };
-  } catch (err: any) {
-    return { success: false, error: err.message || "Wystąpił nieoczekiwany błąd" };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Wystąpił nieoczekiwany błąd";
+    return { success: false, error: message };
   }
 }
 
-export async function updateCar(carId: string, carData: any, tenantSlug: string) {
+export async function updateCar(carId: string, carData: CarFormValues, tenantSlug: string) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { success: false, error: "Nie jesteś zalogowany" };
+
+    const cleanVin = carData.vin ? carData.vin.trim().toUpperCase() : null;
 
     const { error } = await supabase.from("cars").update({
       make: carData.make,
@@ -500,6 +566,8 @@ export async function updateCar(carId: string, carData: any, tenantSlug: string)
       year: carData.year ? parseInt(String(carData.year)) : null,
       price: carData.price ? parseFloat(String(carData.price)) : null,
       mileage: carData.mileage ? parseInt(String(carData.mileage)) : null,
+      vin: cleanVin,
+      export_to_autoplac: carData.export_to_autoplac ?? true,
       fuel_type: carData.fuel_type || null,
       engine_capacity: carData.engine_capacity || null,
       transmission: carData.transmission || null,
@@ -518,8 +586,9 @@ export async function updateCar(carId: string, carData: any, tenantSlug: string)
     revalidatePath(`/${tenantSlug}/samochody`);
 
     return { success: true };
-  } catch (err: any) {
-    return { success: false, error: err.message || "Wystąpił nieoczekiwany błąd" };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Wystąpił nieoczekiwany błąd";
+    return { success: false, error: message };
   }
 }
 
@@ -541,8 +610,45 @@ export async function deleteCar(carId: string, tenantSlug: string) {
     revalidatePath(`/${tenantSlug}/samochody`);
 
     return { success: true };
-  } catch (err: any) {
-    return { success: false, error: err.message || "Wystąpił nieoczekiwany błąd" };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Wystąpił nieoczekiwany błąd";
+    return { success: false, error: message };
+  }
+}
+
+export async function syncAutoplacAction(dealerSlug: string, autoplacSlugOrUrl?: string) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: "Nie jesteś zalogowany" };
+
+    const tenant = await getTenantBySlug(dealerSlug);
+    if (!tenant) return { success: false, error: "Nie znaleziono salonu" };
+
+    const target = autoplacSlugOrUrl?.trim() || dealerSlug;
+
+    const { AutoplacImporter } = await import("@/features/autoplac");
+    const result = await AutoplacImporter.syncDealerVehiclesToDatabase(target, tenant.id);
+
+    if (result.error) {
+      return { success: false, error: result.error, count: 0 };
+    }
+
+    const { revalidatePath } = await import("next/cache");
+    revalidatePath(`/${dealerSlug}/admin/cars`);
+    revalidatePath(`/${dealerSlug}/admin/settings`);
+    revalidatePath(`/${dealerSlug}`);
+    revalidatePath(`/${dealerSlug}/samochody`);
+
+    return {
+      success: true,
+      count: result.importedCount,
+    };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Błąd synchronizacji z Autoplac.pl";
+    return { success: false, error: message, count: 0 };
   }
 }
 

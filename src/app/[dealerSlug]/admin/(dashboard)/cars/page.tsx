@@ -1,8 +1,10 @@
 import { getAdminBasePath } from "@/lib/admin-utils";
 import { getCurrentTenant, getAdminCars, getTenantBySlug } from "@/app/[dealerSlug]/admin/actions";
-import { CarsManager } from "@/components/admin/cars-manager";
+import { CarsManagerContainer } from "@/components/admin/cars";
+import { AutoplacFeedBanner } from "@/components/admin/autoplac-feed-banner";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
+import { ExternalLink } from "lucide-react";
 
 type Props = {
   params: Promise<{ dealerSlug: string }>;
@@ -20,23 +22,14 @@ export default async function AdminCarsPage({ params }: Props) {
   const isSuperAdmin = Boolean(tenant.is_super_admin);
   const tenantSlug = isSuperAdmin && dealerSlug !== "superadmin" ? dealerSlug : tenant.slug;
 
-  // Don't render if superadmin and no tenant selected
   if (isSuperAdmin && dealerSlug === "superadmin") {
     return (
-      <div style={{ padding: 0 }}>
-        <h1 style={{ color: "#f1f5f9", fontSize: "24px", fontWeight: "800", marginBottom: "12px" }}>
+      <div className="space-y-4">
+        <h1 className="text-xl font-bold text-slate-100 tracking-tight">
           Oferta Samochodów
         </h1>
-        <div
-          style={{
-            background: "rgba(30, 41, 59, 0.5)",
-            border: "1px solid rgba(148, 163, 184, 0.15)",
-            borderRadius: "16px",
-            padding: "40px",
-            textAlign: "center",
-          }}
-        >
-          <p style={{ color: "#94a3b8", fontSize: "15px" }}>
+        <div className="p-10 bg-slate-900/50 border border-slate-800 rounded-2xl text-center">
+          <p className="text-sm text-slate-400">
             Wybierz komis z listy w lewym menu, aby zarządzać jego ofertą samochodów.
           </p>
         </div>
@@ -50,43 +43,47 @@ export default async function AdminCarsPage({ params }: Props) {
   const isLocalhost = host.includes("localhost");
   const protocol = isLocalhost ? "http" : "https";
   const origin = `${protocol}://${host}`;
-  const siteUrl = !isLocalhost && targetTenant.custom_domain 
-    ? `https://${targetTenant.custom_domain}` 
+  const siteUrl = !isLocalhost && targetTenant.custom_domain
+    ? `https://${targetTenant.custom_domain}`
     : `${origin}/${targetTenant.slug}`;
 
   const cars = await getAdminCars(tenantSlug);
+  const feedIdentifier = targetTenant.slug || targetTenant.autoplac_feed_token || targetTenant.id;
+  const feedUrl = `${origin}/api/integrations/autoplac/${feedIdentifier}/feed.xml`;
 
   return (
-      <div style={{ padding: 0 }}>
-      <div style={{ marginBottom: "28px" }}>
-        <h1 style={{ color: "#f1f5f9", fontSize: "24px", fontWeight: "800", marginBottom: "8px" }}>
-          Oferta Samochodów
-        </h1>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-bold text-slate-100 tracking-tight">
+            Zarządzanie Flotą Samochodów
+          </h1>
+          <p className="text-xs text-slate-400 mt-1">
+            Zarządzaj ofertą pojazdów, cenami, parametrami technicznymi i synchronizacją z portalami.
+          </p>
+        </div>
+
         <a
           href={`${siteUrl}/samochody`}
           target="_blank"
           rel="noreferrer"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "6px",
-            color: "#60a5fa",
-            fontSize: "13px",
-            fontWeight: "500",
-            textDecoration: "underline",
-            textUnderlineOffset: "3px",
-          }}
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 hover:underline underline-offset-4 transition-colors"
         >
-          <svg style={{ width: "14px", height: "14px" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
+          <ExternalLink className="w-3.5 h-3.5" strokeWidth={1.75} />
           Podgląd oferty na stronie komisu
         </a>
       </div>
 
-      <CarsManager cars={cars} tenantSlug={tenantSlug} tenantName={tenantSlug} siteUrl={siteUrl} />
+      {targetTenant.autoplac_enabled && (
+        <AutoplacFeedBanner feedUrl={feedUrl} />
+      )}
+
+      <CarsManagerContainer
+        initialCars={cars}
+        tenantSlug={tenantSlug}
+        tenantName={targetTenant.business_name || tenantSlug}
+        siteUrl={siteUrl}
+      />
     </div>
   );
 }

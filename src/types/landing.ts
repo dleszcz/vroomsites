@@ -124,6 +124,7 @@ export interface LocalPageConfig {
   enabled: boolean;
   indexable: boolean;
   priority: number;
+  mode?: "buying" | "sales";
   showInLocalAreaLinks?: boolean;
   showInFooter?: boolean;
   relatedLocations?: string[];

@@ -31,7 +31,7 @@ export function ValuePropsSection({ tenant, config }: Props) {
       <div className="vd-container value-props__layout">
         <div className="value-props__intro">
           <span className="vd-eyebrow">Dlaczego {tenant.businessName}?</span>
-          <h2 className="vd-heading value-props__title">{carBuying ? "Skup i sprzedaż samochodów na jasnych zasadach" : "Sprzedaż samochodów na jasnych zasadach"}</h2>
+          <h2 className="vd-heading value-props__title">{carBuying ? "Skup samochodów na jasnych zasadach" : "Sprzedaż samochodów na jasnych zasadach"}</h2>
         </div>
         <div className="value-props__items">
           {items.slice(0, 5).map((item, i) => {

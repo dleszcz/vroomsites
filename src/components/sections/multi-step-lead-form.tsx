@@ -291,84 +291,49 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
   return (
     <div
       id="lead-form"
-      style={{
-        maxWidth: "680px",
-        margin: "0 auto",
-        background: "rgba(10, 15, 29, 0.88)",
-        backdropFilter: "blur(20px)",
-        borderRadius: "24px",
-        border: "1px solid rgba(255, 255, 255, 0.12)",
-        boxShadow: "0 20px 50px rgba(0, 0, 0, 0.5)",
-        padding: "28px",
-        position: "relative",
-        overflow: "visible",
-      }}
+      className="max-w-2xl mx-auto bg-white border border-zinc-200 rounded-lg shadow-sm p-6 sm:p-8 relative overflow-visible"
     >
       {/* SUCCESS SCREEN */}
       {submitted ? (
-        <div style={{ textAlign: "center", padding: "40px 10px" }}>
-          <div
-            style={{
-              width: "72px",
-              height: "72px",
-              borderRadius: "50%",
-              background: "rgba(16, 185, 129, 0.15)",
-              color: "#10b981",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              margin: "0 auto 20px",
-              border: "2px solid #10b981",
-            }}
-          >
-            <CheckCircle2 size={40} />
+        <div className="text-center py-10 px-4">
+          <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-5 border-2 border-emerald-500">
+            <CheckCircle2 size={36} />
           </div>
 
-          <h3 style={{ fontSize: "26px", fontWeight: 800, color: "#ffffff", marginBottom: "10px" }}>
+          <h3 className="text-2xl font-extrabold text-zinc-950 mb-2 font-heading">
             Zgłoszenie zostało odebrane!
           </h3>
 
-          <p style={{ fontSize: "16px", color: "rgba(255,255,255,0.8)", lineHeight: 1.6, maxWidth: "480px", margin: "0 auto 24px" }}>
+          <p className="text-sm md:text-base text-zinc-600 leading-relaxed max-w-md mx-auto mb-6">
             Nasz doradca analizuje podane dane. Skontaktujemy się telefonicznie w najkrótszym możliwym czasie z bezpłatną wyceną.
           </p>
 
-          <div
-            style={{
-              background: "rgba(255, 255, 255, 0.05)",
-              borderRadius: "16px",
-              padding: "16px",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "10px",
-              color: primaryColor,
-              fontSize: "14px",
-              fontWeight: 700,
-            }}
-          >
-            <Clock size={18} />
+          <div className="bg-zinc-50 border border-zinc-200 rounded-md p-3.5 inline-flex items-center gap-2 text-zinc-700 text-xs md:text-sm font-semibold">
+            <Clock size={16} style={{ color: primaryColor }} />
             <span>Godziny obsługi: Pn–Pt 8:00–20:00, Sob–Nd 10:00–18:00</span>
           </div>
         </div>
       ) : (
         <>
           {/* PROGRESS BAR */}
-          <div style={{ marginBottom: "28px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-              <span style={{ fontSize: "12px", fontWeight: 800, color: accentColor, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                KROK {step} Z {totalSteps}
+          <div className="mb-7">
+            <div className="flex justify-between items-center mb-2">
+              <span
+                className="text-xs font-bold uppercase tracking-wider"
+                style={{ color: primaryColor }}
+              >
+                Krok {step} z {totalSteps}
               </span>
-              <span style={{ fontSize: "13px", fontWeight: 700, color: "#ffffff" }}>
-                {progressPercent}% UKOŃCZONE
+              <span className="text-xs font-bold text-zinc-600">
+                {progressPercent}% ukończone
               </span>
             </div>
-            <div style={{ width: "100%", height: "8px", background: "rgba(255, 255, 255, 0.1)", borderRadius: "999px", overflow: "hidden" }}>
+            <div className="w-full h-2 bg-zinc-100 border border-zinc-200/80 rounded-full overflow-hidden">
               <div
+                className="h-full rounded-full transition-all duration-300"
                 style={{
                   width: `${progressPercent}%`,
-                  height: "100%",
-                  background: accentColor,
-                  borderRadius: "999px",
-                  transition: "width 0.4s ease",
+                  background: primaryColor,
                 }}
               />
             </div>
@@ -387,23 +352,23 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
             {/* STEP 1: DANE PODSTAWOWE */}
             {step === 1 && (
               <div>
-                <h3 style={{ fontSize: "22px", fontWeight: 800, color: "#ffffff", marginBottom: "6px" }}>
-                  1. Dane Podstawowe Pojazdu
+                <h3 className="text-xl md:text-2xl font-extrabold text-zinc-950 mb-1 font-heading">
+                  1. Dane podstawowe pojazdu
                 </h3>
-                <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.7)", marginBottom: "20px" }}>
+                <p className="text-xs md:text-sm text-zinc-600 mb-5 leading-relaxed">
                   Wybierz lub wpisz markę, model oraz rok produkcji samochodu.
                 </p>
 
-                <div style={{ display: "grid", gap: "16px" }}>
+                <div className="grid gap-4">
                   {/* BRAND AUTOCOMPLETE */}
-                  <div ref={brandRef} style={{ position: "relative" }}>
-                    <label style={{ display: "block", fontSize: "14px", fontWeight: 700, color: "#ffffff", marginBottom: "6px" }}>
-                      Marka pojazdu <span style={{ color: "#ef4444" }}>*</span>
+                  <div ref={brandRef} className="relative">
+                    <label className="block text-xs font-bold text-zinc-800 uppercase tracking-wider mb-1.5">
+                      Marka pojazdu <span className="text-red-500">*</span>
                     </label>
-                    <div style={{ position: "relative" }}>
+                    <div className="relative">
                       <input
                         type="text"
-                        placeholder="Wpisz lub wybierz markę (np. Volkswagen, Audi, BMW)"
+                        placeholder="Wpisz lub wybierz markę (np. Volkswagen, Opel, BMW)"
                         {...register("brand", {
                           onChange: () => {
                             triggerFormStart();
@@ -411,48 +376,18 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
                           },
                         })}
                         onFocus={() => setShowBrandDropdown(true)}
-                        style={{
-                          width: "100%",
-                          minHeight: "52px",
-                          padding: "0 40px 0 16px",
-                          borderRadius: "12px",
-                          background: "rgba(255, 255, 255, 0.08)",
-                          border: errors.brand ? "1px solid #ef4444" : "1px solid rgba(255, 255, 255, 0.2)",
-                          color: "#ffffff",
-                          fontSize: "16px",
-                          outline: "none",
-                        }}
+                        className={`w-full min-h-[46px] px-3.5 pr-10 rounded-md bg-zinc-50 border ${
+                          errors.brand ? "border-red-500 focus:border-red-500" : "border-zinc-200 focus:border-zinc-400"
+                        } text-zinc-950 placeholder:text-zinc-400 text-sm focus:bg-white focus:ring-1 focus:ring-zinc-400 outline-none transition-colors`}
                       />
                       <ChevronDown
                         size={18}
-                        style={{
-                          position: "absolute",
-                          right: "14px",
-                          top: "50%",
-                          transform: "translateY(-50%)",
-                          color: "rgba(255,255,255,0.5)",
-                          pointerEvents: "none",
-                        }}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none"
                       />
                     </div>
 
                     {showBrandDropdown && filteredMakes.length > 0 && (
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: "100%",
-                          left: 0,
-                          right: 0,
-                          zIndex: 99,
-                          marginTop: "4px",
-                          maxHeight: "220px",
-                          overflowY: "auto",
-                          background: "#0d1322",
-                          border: "1px solid rgba(255, 255, 255, 0.2)",
-                          borderRadius: "12px",
-                          boxShadow: "0 10px 30px rgba(0,0,0,0.6)",
-                        }}
-                      >
+                      <div className="absolute top-full left-0 right-0 z-50 mt-1 max-h-56 overflow-y-auto bg-white border border-zinc-200 rounded-md shadow-lg">
                         {filteredMakes.map((make) => (
                           <div
                             key={make}
@@ -461,36 +396,26 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
                               setShowBrandDropdown(false);
                               triggerFormStart();
                             }}
-                            style={{
-                              padding: "12px 16px",
-                              fontSize: "15px",
-                              fontWeight: 600,
-                              color: "#ffffff",
-                              cursor: "pointer",
-                              borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
-                              transition: "background 0.15s ease",
-                            }}
-                            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)")}
-                            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                            className="px-4 py-2.5 text-sm font-medium text-zinc-800 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-b-0 transition-colors"
                           >
                             {make}
                           </div>
                         ))}
                       </div>
                     )}
-                    {errors.brand && <p style={{ color: "#ef4444", fontSize: "12px", marginTop: "4px" }}>{errors.brand.message}</p>}
+                    {errors.brand && <p className="text-red-500 text-xs mt-1">{errors.brand.message}</p>}
                   </div>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "16px" }}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* MODEL AUTOCOMPLETE */}
-                    <div ref={modelRef} style={{ position: "relative" }}>
-                      <label style={{ display: "block", fontSize: "14px", fontWeight: 700, color: "#ffffff", marginBottom: "6px" }}>
+                    <div ref={modelRef} className="relative">
+                      <label className="block text-xs font-bold text-zinc-800 uppercase tracking-wider mb-1.5">
                         Model pojazdu
                       </label>
-                      <div style={{ position: "relative" }}>
+                      <div className="relative">
                         <input
                           type="text"
-                          placeholder={selectedBrand ? `Wpisz model ${selectedBrand}` : "np. Passat, A4, Golf"}
+                          placeholder={selectedBrand ? `Wpisz model ${selectedBrand}` : "np. Astra, Passat, 206"}
                           {...register("model", {
                             onChange: () => {
                               triggerFormStart();
@@ -498,48 +423,16 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
                             },
                           })}
                           onFocus={() => setShowModelDropdown(true)}
-                          style={{
-                            width: "100%",
-                            minHeight: "52px",
-                            padding: "0 40px 0 16px",
-                            borderRadius: "12px",
-                            background: "rgba(255, 255, 255, 0.08)",
-                            border: "1px solid rgba(255, 255, 255, 0.2)",
-                            color: "#ffffff",
-                            fontSize: "16px",
-                            outline: "none",
-                          }}
+                          className="w-full min-h-[46px] px-3.5 pr-10 rounded-md bg-zinc-50 border border-zinc-200 text-zinc-950 placeholder:text-zinc-400 text-sm focus:bg-white focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 outline-none transition-colors"
                         />
                         <ChevronDown
                           size={18}
-                          style={{
-                            position: "absolute",
-                            right: "14px",
-                            top: "50%",
-                            transform: "translateY(-50%)",
-                            color: "rgba(255,255,255,0.5)",
-                            pointerEvents: "none",
-                          }}
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none"
                         />
                       </div>
 
                       {showModelDropdown && filteredModels.length > 0 && (
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: "100%",
-                            left: 0,
-                            right: 0,
-                            zIndex: 99,
-                            marginTop: "4px",
-                            maxHeight: "220px",
-                            overflowY: "auto",
-                            background: "#0d1322",
-                            border: "1px solid rgba(255, 255, 255, 0.2)",
-                            borderRadius: "12px",
-                            boxShadow: "0 10px 30px rgba(0,0,0,0.6)",
-                          }}
-                        >
+                        <div className="absolute top-full left-0 right-0 z-50 mt-1 max-h-56 overflow-y-auto bg-white border border-zinc-200 rounded-md shadow-lg">
                           {filteredModels.map((mod) => (
                             <div
                               key={mod}
@@ -548,17 +441,7 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
                                 setShowModelDropdown(false);
                                 triggerFormStart();
                               }}
-                              style={{
-                                padding: "12px 16px",
-                                fontSize: "15px",
-                                fontWeight: 600,
-                                color: "#ffffff",
-                                cursor: "pointer",
-                                borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
-                                transition: "background 0.15s ease",
-                              }}
-                              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)")}
-                              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                              className="px-4 py-2.5 text-sm font-medium text-zinc-800 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-b-0 transition-colors"
                             >
                               {mod}
                             </div>
@@ -568,22 +451,12 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
                     </div>
 
                     <div>
-                      <label style={{ display: "block", fontSize: "14px", fontWeight: 700, color: "#ffffff", marginBottom: "6px" }}>
+                      <label className="block text-xs font-bold text-zinc-800 uppercase tracking-wider mb-1.5">
                         Rok produkcji
                       </label>
                       <select
                         {...register("year")}
-                        style={{
-                          width: "100%",
-                          minHeight: "52px",
-                          padding: "0 16px",
-                          borderRadius: "12px",
-                          background: "rgba(10, 15, 29, 0.9)",
-                          border: "1px solid rgba(255, 255, 255, 0.2)",
-                          color: "#ffffff",
-                          fontSize: "16px",
-                          outline: "none",
-                        }}
+                        className="w-full min-h-[46px] px-3.5 rounded-md bg-zinc-50 border border-zinc-200 text-zinc-950 text-sm focus:bg-white focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 outline-none transition-colors"
                       >
                         {Array.from({ length: 32 }, (_, i) => 2026 - i).map((y) => (
                           <option key={y} value={String(y)}>
@@ -600,77 +473,47 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
             {/* STEP 2: STAN I CENA */}
             {step === 2 && (
               <div>
-                <h3 style={{ fontSize: "22px", fontWeight: 800, color: "#ffffff", marginBottom: "6px" }}>
-                  2. Stan Techniczny i Oczekiwania
+                <h3 className="text-xl md:text-2xl font-extrabold text-zinc-950 mb-1 font-heading">
+                  2. Stan techniczny i oczekiwania
                 </h3>
-                <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.7)", marginBottom: "20px" }}>
+                <p className="text-xs md:text-sm text-zinc-600 mb-5 leading-relaxed">
                   Skupujemy auta w każdym stanie: sprawne, uszkodzone, powypadkowe i do kasacji.
                 </p>
 
-                <div style={{ display: "grid", gap: "16px" }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                <div className="grid gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label style={{ display: "block", fontSize: "14px", fontWeight: 700, color: "#ffffff", marginBottom: "6px" }}>
+                      <label className="block text-xs font-bold text-zinc-800 uppercase tracking-wider mb-1.5">
                         Przebieg (km)
                       </label>
                       <input
                         type="text"
-                        placeholder="np. 185000"
+                        placeholder="np. 185 000"
                         {...register("mileage")}
-                        style={{
-                          width: "100%",
-                          minHeight: "52px",
-                          padding: "0 16px",
-                          borderRadius: "12px",
-                          background: "rgba(255, 255, 255, 0.08)",
-                          border: "1px solid rgba(255, 255, 255, 0.2)",
-                          color: "#ffffff",
-                          fontSize: "16px",
-                          outline: "none",
-                        }}
+                        className="w-full min-h-[46px] px-3.5 rounded-md bg-zinc-50 border border-zinc-200 text-zinc-950 placeholder:text-zinc-400 text-sm focus:bg-white focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 outline-none transition-colors"
                       />
                     </div>
 
                     <div>
-                      <label style={{ display: "block", fontSize: "14px", fontWeight: 700, color: "#ffffff", marginBottom: "6px" }}>
+                      <label className="block text-xs font-bold text-zinc-800 uppercase tracking-wider mb-1.5">
                         Oczekiwana kwota (PLN)
                       </label>
                       <input
                         type="text"
-                        placeholder="np. 25000"
+                        placeholder="np. 8 500"
                         {...register("expectedPrice")}
-                        style={{
-                          width: "100%",
-                          minHeight: "52px",
-                          padding: "0 16px",
-                          borderRadius: "12px",
-                          background: "rgba(255, 255, 255, 0.08)",
-                          border: "1px solid rgba(255, 255, 255, 0.2)",
-                          color: "#ffffff",
-                          fontSize: "16px",
-                          outline: "none",
-                        }}
+                        className="w-full min-h-[46px] px-3.5 rounded-md bg-zinc-50 border border-zinc-200 text-zinc-950 placeholder:text-zinc-400 text-sm focus:bg-white focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 outline-none transition-colors"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label style={{ display: "block", fontSize: "14px", fontWeight: 700, color: "#ffffff", marginBottom: "6px" }}>
+                    <label className="block text-xs font-bold text-zinc-800 uppercase tracking-wider mb-1.5">
                       Stan pojazdu
                     </label>
                     <select
                       {...register("condition")}
-                      style={{
-                        width: "100%",
-                        minHeight: "52px",
-                        padding: "0 16px",
-                        borderRadius: "12px",
-                        background: "rgba(10, 15, 29, 0.9)",
-                        border: "1px solid rgba(255, 255, 255, 0.2)",
-                        color: "#ffffff",
-                        fontSize: "16px",
-                        outline: "none",
-                      }}
+                      className="w-full min-h-[46px] px-3.5 rounded-md bg-zinc-50 border border-zinc-200 text-zinc-950 text-sm focus:bg-white focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 outline-none transition-colors"
                     >
                       <option value="sprawny">Sprawny / Używany</option>
                       <option value="uszkodzony">Uszkodzony mechanicznie</option>
@@ -686,58 +529,42 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
             {/* STEP 3: DANE KONTAKTOWE */}
             {step === 3 && (
               <div>
-                <h3 style={{ fontSize: "22px", fontWeight: 800, color: "#ffffff", marginBottom: "6px" }}>
-                  3. Dane Kontaktowe i Lokalizacja
+                <h3 className="text-xl md:text-2xl font-extrabold text-zinc-950 mb-1 font-heading">
+                  3. Dane kontaktowe i lokalizacja
                 </h3>
-                <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.7)", marginBottom: "20px" }}>
-                  Na ten numer oddzwonimy z natychmiastową wyceną.
+                <p className="text-xs md:text-sm text-zinc-600 mb-5 leading-relaxed">
+                  Na ten numer oddzwonimy z natychmiastową, bezpłatną wyceną.
                 </p>
 
-                <div style={{ display: "grid", gap: "16px" }}>
+                <div className="grid gap-4">
                   <div>
-                    <label style={{ display: "block", fontSize: "14px", fontWeight: 700, color: "#ffffff", marginBottom: "6px" }}>
-                      Numer telefonu <span style={{ color: "#ef4444" }}>*</span>
+                    <label className="block text-xs font-bold text-zinc-800 uppercase tracking-wider mb-1.5">
+                      Numer telefonu <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="tel"
                       placeholder="np. 530 826 501"
                       {...register("customerPhone")}
-                      style={{
-                        width: "100%",
-                        minHeight: "52px",
-                        padding: "0 16px",
-                        borderRadius: "12px",
-                        background: "rgba(255, 255, 255, 0.08)",
-                        border: errors.customerPhone ? "1px solid #ef4444" : "1px solid rgba(255, 255, 255, 0.2)",
-                        color: "#ffffff",
-                        fontSize: "16px",
-                        outline: "none",
-                      }}
+                      className={`w-full min-h-[46px] px-3.5 rounded-md bg-zinc-50 border ${
+                        errors.customerPhone ? "border-red-500 focus:border-red-500" : "border-zinc-200 focus:border-zinc-400"
+                      } text-zinc-950 placeholder:text-zinc-400 text-sm focus:bg-white focus:ring-1 focus:ring-zinc-400 outline-none transition-colors`}
                     />
-                    {errors.customerPhone && <p style={{ color: "#ef4444", fontSize: "12px", marginTop: "4px" }}>{errors.customerPhone.message}</p>}
+                    {errors.customerPhone && <p className="text-red-500 text-xs mt-1">{errors.customerPhone.message}</p>}
                   </div>
 
                   <div>
-                    <label style={{ display: "block", fontSize: "14px", fontWeight: 700, color: "#ffffff", marginBottom: "6px" }}>
-                      Miejscowość / Miasto <span style={{ color: "#ef4444" }}>*</span>
+                    <label className="block text-xs font-bold text-zinc-800 uppercase tracking-wider mb-1.5">
+                      Miejscowość / Miasto <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       placeholder="np. Topólka, Radziejów, Włocławek"
                       {...register("city")}
-                      style={{
-                        width: "100%",
-                        minHeight: "52px",
-                        padding: "0 16px",
-                        borderRadius: "12px",
-                        background: "rgba(255, 255, 255, 0.08)",
-                        border: errors.city ? "1px solid #ef4444" : "1px solid rgba(255, 255, 255, 0.2)",
-                        color: "#ffffff",
-                        fontSize: "16px",
-                        outline: "none",
-                      }}
+                      className={`w-full min-h-[46px] px-3.5 rounded-md bg-zinc-50 border ${
+                        errors.city ? "border-red-500 focus:border-red-500" : "border-zinc-200 focus:border-zinc-400"
+                      } text-zinc-950 placeholder:text-zinc-400 text-sm focus:bg-white focus:ring-1 focus:ring-zinc-400 outline-none transition-colors`}
                     />
-                    {errors.city && <p style={{ color: "#ef4444", fontSize: "12px", marginTop: "4px" }}>{errors.city.message}</p>}
+                    {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city.message}</p>}
                   </div>
                 </div>
               </div>
@@ -746,38 +573,28 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
             {/* STEP 4: ZDJĘCIA (WYMAGANE) */}
             {step === 4 && (
               <div>
-                <h3 style={{ fontSize: "22px", fontWeight: 800, color: "#ffffff", marginBottom: "6px" }}>
-                  4. Dodaj Zdjęcia Pojazdu (Wymagane) <span style={{ color: "#ef4444" }}>*</span>
+                <h3 className="text-xl md:text-2xl font-extrabold text-zinc-950 mb-1 font-heading">
+                  4. Dodaj zdjęcia pojazdu <span className="text-red-500">*</span>
                 </h3>
-                <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.7)", marginBottom: "20px" }}>
+                <p className="text-xs md:text-sm text-zinc-600 mb-5 leading-relaxed">
                   Dodaj przynajmniej 1 zdjęcie pojazdu (np. z zewnątrz lub wnętrze). Zdjęcia są niezbędne do przygotowania rzetelnej oferty odkupu. (Max 4 zdjęcia).
                 </p>
 
-                <div
-                  style={{
-                    border: "2px dashed rgba(255, 255, 255, 0.25)",
-                    borderRadius: "16px",
-                    padding: "24px",
-                    textAlign: "center",
-                    background: "rgba(255, 255, 255, 0.03)",
-                    cursor: "pointer",
-                    marginBottom: "20px",
-                  }}
-                >
+                <div className="border-2 border-dashed border-zinc-300 rounded-lg p-6 text-center bg-zinc-50/70 hover:bg-zinc-50 hover:border-zinc-400 transition-colors cursor-pointer mb-5">
                   <input
                     type="file"
                     accept="image/*"
                     multiple
                     onChange={handlePhotoUpload}
-                    style={{ display: "none" }}
+                    className="hidden"
                     id="photo-upload-input"
                   />
-                  <label htmlFor="photo-upload-input" style={{ cursor: "pointer", display: "block" }}>
-                    <Upload size={32} style={{ color: primaryColor, marginBottom: "8px" }} />
-                    <div style={{ fontSize: "15px", fontWeight: 700, color: "#ffffff" }}>
+                  <label htmlFor="photo-upload-input" className="cursor-pointer block">
+                    <Upload size={32} className="mx-auto mb-2" style={{ color: primaryColor }} />
+                    <div className="text-sm font-bold text-zinc-900">
                       Kliknij lub przeciągnij zdjęcia
                     </div>
-                    <div style={{ fontSize: "13px", color: "rgba(255,255,255,0.5)", marginTop: "4px" }}>
+                    <div className="text-xs text-zinc-500 mt-1">
                       PNG, JPG, WEBP do 4 plików
                     </div>
                   </label>
@@ -785,28 +602,14 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
 
                 {/* Photo Previews */}
                 {photoPreviews.length > 0 && (
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px", marginBottom: "20px" }}>
+                  <div className="grid grid-cols-4 gap-2.5 mb-5">
                     {photoPreviews.map((src, i) => (
-                      <div key={i} style={{ position: "relative", borderRadius: "10px", overflow: "hidden", aspectRatio: "1" }}>
-                        <img src={src} alt={`Zdjęcie ${i + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <div key={i} className="relative rounded-md overflow-hidden aspect-square border border-zinc-200 bg-zinc-100">
+                        <img src={src} alt={`Zdjęcie ${i + 1}`} className="w-full h-full object-cover" />
                         <button
                           type="button"
                           onClick={() => removePhoto(i)}
-                          style={{
-                            position: "absolute",
-                            top: "4px",
-                            right: "4px",
-                            background: "rgba(0,0,0,0.7)",
-                            border: "none",
-                            borderRadius: "50%",
-                            color: "#fff",
-                            width: "22px",
-                            height: "22px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            cursor: "pointer",
-                          }}
+                          className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-zinc-900/80 hover:bg-zinc-900 text-white flex items-center justify-center transition-colors cursor-pointer"
                         >
                           <X size={12} />
                         </button>
@@ -818,33 +621,21 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
             )}
 
             {errorMsg && (
-              <div style={{ background: "rgba(239, 68, 68, 0.15)", border: "1px solid #ef4444", borderRadius: "12px", padding: "12px", color: "#fca5a5", fontSize: "14px", marginTop: "16px" }}>
+              <div className="bg-red-50 border border-red-200 rounded-md p-3 text-red-700 text-xs font-medium mt-4">
                 {errorMsg}
               </div>
             )}
 
             {/* ACTION BUTTONS */}
-            <div style={{ display: "flex", gap: "12px", marginTop: "28px" }}>
+            <div className="flex items-center gap-3 mt-7 pt-5 border-t border-zinc-100">
               {step > 1 && (
                 <button
                   type="button"
                   onClick={prevStep}
-                  style={{
-                    minHeight: "52px",
-                    padding: "0 20px",
-                    borderRadius: "14px",
-                    background: "rgba(255, 255, 255, 0.1)",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                    color: "#ffffff",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                  }}
+                  className="h-11 px-5 rounded-md bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 text-zinc-800 font-semibold text-sm transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
-                  <ArrowLeft size={18} />
-                  Cofnij
+                  <ArrowLeft size={16} />
+                  <span>Cofnij</span>
                 </button>
               )}
 
@@ -852,51 +643,27 @@ export function MultiStepLeadForm({ tenant, localCity }: MultiStepLeadFormProps)
                 <button
                   type="button"
                   onClick={nextStep}
+                  className="flex-1 h-11 px-5 rounded-md text-white font-bold text-sm shadow-xs transition-opacity flex items-center justify-center gap-1.5 cursor-pointer"
                   style={{
-                    flex: 1,
-                    minHeight: "52px",
-                    borderRadius: "14px",
-                    background: accentColor,
+                    background: primaryColor,
                     color: "#ffffff",
-                    fontWeight: 800,
-                    fontSize: "16px",
-                    border: "none",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "8px",
-                    boxShadow: `0 8px 20px ${accentColor}55`,
                   }}
                 >
-                  <span>Dalej</span>
-                  <ArrowRight size={18} />
+                  <span style={{ color: "#ffffff" }}>Dalej</span>
+                  <ArrowRight size={16} className="text-white" style={{ color: "#ffffff" }} />
                 </button>
               ) : (
                 <button
                   type="button"
                   onClick={handleSubmit(onSubmit)}
                   disabled={loading}
-                  style={{
-                    flex: 1,
-                    minHeight: "54px",
-                    borderRadius: "14px",
-                    background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-                    color: "#ffffff",
-                    fontWeight: 800,
-                    fontSize: "17px",
-                    border: "none",
-                    cursor: loading ? "wait" : "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "8px",
-                    boxShadow: "0 8px 25px rgba(16, 185, 129, 0.4)",
-                    opacity: loading ? 0.7 : 1,
-                  }}
+                  className="flex-1 h-11 px-5 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-wait"
+                  style={{ color: "#ffffff" }}
                 >
-                  <ShieldCheck size={20} />
-                  <span>{loading ? "Wysyłanie wyceny..." : "Zamów bezpłatną wycenę"}</span>
+                  <ShieldCheck size={18} className="text-white" style={{ color: "#ffffff" }} />
+                  <span style={{ color: "#ffffff" }}>
+                    {loading ? "Wysyłanie wyceny..." : "Zamów bezpłatną wycenę"}
+                  </span>
                 </button>
               )}
             </div>

@@ -5,10 +5,17 @@ import { getCars } from "@/lib/data";
 import { CarCard } from "@/components/car-card";
 import { getTenantUrl } from "@/lib/urls";
 
-interface Props { tenant: DealerTenant; config?: SectionConfig; isCustomDomain?: boolean; }
+import { Car } from "@/types/database";
 
-export async function VehiclesSection({ tenant, isCustomDomain }: Props) {
-  const allCars = (await getCars(tenant.id)).filter(car => !car.is_sold);
+interface Props {
+  tenant: DealerTenant;
+  config?: SectionConfig;
+  cars?: Car[];
+  isCustomDomain?: boolean;
+}
+
+export async function VehiclesSection({ tenant, cars, isCustomDomain }: Props) {
+  const allCars = cars ? cars.filter(car => !car.is_sold) : (await getCars(tenant.id)).filter(car => !car.is_sold);
   if (!allCars.length) return null;
 
   const displayLimit = 5;

@@ -8,19 +8,19 @@ interface Props { tenant: DealerTenant; config?: SectionConfig; }
 const defaultTestimonials = [
   {
     quote: "Szybka wycena, uczciwa oferta i wszystko gotowe od ręki. Polecam każdemu, kto chce sprzedać auto bez zbędnych formalności.",
-    author: "Pan Marek (Poznań / Topólka)",
+    author: "Pan Marek",
   },
   {
-    quote: "Przyjechali pod dom w Radziejowie, wycenili auto na miejscu i od razu wypłacili gotówkę. Bardzo profesjonalne podejście!",
-    author: "Tomasz W. (Radziejów)",
+    quote: "Przyjechali pod wskazany adres, wycenili auto na miejscu i od razu wypłacili gotówkę. Bardzo profesjonalne podejście!",
+    author: "Tomasz W.",
   },
   {
     quote: "Transakcja w 20 minut, umowa gotowa od ręki, auto zabrane lawetą. Zero stwarzania problemów z rocznikiem i przebiegiem.",
-    author: "Krzysztof K. (Włocławek)",
+    author: "Krzysztof K.",
   },
   {
-    quote: "Sprzedałem kilkuletnie auto w rozliczeniu. Wszystko uczciwie i zgodnie z ustaleniami telefonicznymi. Szczerze polecam D-CAR!",
-    author: "Piotr R. (Lubraniec)",
+    quote: "Sprzedałem auto w rozliczeniu. Wszystko uczciwie i zgodnie z ustaleniami telefonicznymi. Szczerze polecam!",
+    author: "Piotr R.",
   },
 ];
 

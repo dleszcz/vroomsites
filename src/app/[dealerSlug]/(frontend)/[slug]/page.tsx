@@ -103,16 +103,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // 1. Check if slug matches a Local SEO page
   const localPage = tenant.localSeo?.localPages?.find((lp) => lp.slug === slug);
   if (localPage) {
-    if (!localPage.enabled) {
-      return { title: "Not Found", robots: { index: false, follow: false } };
-    }
-
+    const isSalesOnly = tenant.features?.carBuying === false || localPage.mode === "sales";
     const title = (
-      localPage.seo?.title || `Skup aut ${localPage.city} | ${tenant.businessName}`
+      localPage.seo?.title ||
+      (isSalesOnly
+        ? `Samochody używane ${localPage.city} | Komis ${tenant.businessName}`
+        : `Skup aut ${localPage.city} | ${tenant.businessName}`)
     ).replace(/—|–/g, "-");
     const description = (
       localPage.seo?.metaDescription ||
-      `Skup samochodów za gotówkę w ${localPage.city}. Bezpłatna wycena online, szybki dojazd i natychmiastowa płatność.`
+      (isSalesOnly
+        ? `Szukasz pewnego auta w ${localPage.city}? Sprawdź ofertę sprawdzonych samochodów używanych z gwarancją i pewną historią w salonie ${tenant.businessName}.`
+        : `Skup samochodów za gotówkę w ${localPage.city}. Bezpłatna wycena online, szybki dojazd i natychmiastowa płatność.`)
     ).replace(/—|–/g, "-");
 
     return buildMetadata(title, description, undefined, localPage.indexable);
@@ -120,6 +122,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   // 2. Service subpages: /skup-aut, /samochody, /kontakt, /o-nas
   if (slug === "skup-aut") {
+    if (tenant.features?.carBuying === false) {
+      return { title: "Nie znaleziono", robots: { index: false, follow: false } };
+    }
     const title = `Skup aut za gotówkę | ${tenant.businessName}`;
     const description = `Profesjonalny i bezpieczny skup aut w ${
       tenant.location?.city || "Twojej okolicy"
@@ -218,7 +223,8 @@ export default async function DynamicSlugPage({ params }: Props) {
     if (!localPage.enabled) {
       notFound();
     }
-    return <LocalSeoPage tenant={tenant} localPage={localPage} baseUrl={baseUrl} isCustomDomain={isCustomDomain} />;
+    const cars = await getCars(tenant.id);
+    return <LocalSeoPage tenant={tenant} localPage={localPage} baseUrl={baseUrl} isCustomDomain={isCustomDomain} cars={cars} />;
   }
 
   // 2. Subpages handling

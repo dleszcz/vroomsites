@@ -15,11 +15,25 @@ export const getTenant = unstable_cache(
         .eq("slug", slug)
         .single();
 
-      if (error || !data) {
-        return null;
+      if (!error && data) {
+        return data;
       }
-      return data;
+
+      // Dev-only fallback to avoid 404 when remote DB lacks local test tenants
+      if (process.env.NODE_ENV === "development") {
+        const { getDevSeedTenant } = await import("@/lib/dev-seed-helper");
+        const devTenant = getDevSeedTenant(slug);
+        if (devTenant) {
+          return devTenant;
+        }
+      }
+
+      return null;
     } catch {
+      if (process.env.NODE_ENV === "development") {
+        const { getDevSeedTenant } = await import("@/lib/dev-seed-helper");
+        return getDevSeedTenant(slug);
+      }
       return null;
     }
   },
@@ -35,18 +49,32 @@ export const getCars = unstable_cache(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
       );
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("cars")
         .select("*")
         .eq("tenant_id", tenantId)
         .order("is_featured", { ascending: false })
         .order("created_at", { ascending: false });
 
-      if (!data) {
-        return [];
+      if (!error && data && data.length > 0) {
+        return data;
       }
-      return data;
+
+      // Dev-only fallback to avoid empty state when testing newly seeded tenants
+      if (process.env.NODE_ENV === "development") {
+        const { getDevSeedCars } = await import("@/lib/dev-seed-helper");
+        const devCars = getDevSeedCars(tenantId);
+        if (devCars.length > 0) {
+          return devCars;
+        }
+      }
+
+      return data || [];
     } catch {
+      if (process.env.NODE_ENV === "development") {
+        const { getDevSeedCars } = await import("@/lib/dev-seed-helper");
+        return getDevSeedCars(tenantId);
+      }
       return [];
     }
   },
@@ -62,22 +90,30 @@ export const getCar = unstable_cache(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
       );
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("cars")
         .select("*")
         .eq("slug", carSlug)
         .single();
 
-      if (!data) {
-        return null;
+      if (!error && data) {
+        return data;
       }
-      return data;
+
+      if (process.env.NODE_ENV === "development") {
+        const { getAllDevSeedCars } = await import("@/lib/dev-seed-helper");
+        const devCars = getAllDevSeedCars();
+        const match = devCars.find((c) => c.slug === carSlug || c.id === carSlug);
+        if (match) return match;
+      }
+
+      return null;
     } catch {
       return null;
     }
   },
   ['car-by-slug'],
-  { revalidate: 60, tags: ['cars'] }
+  { revalidate: process.env.NODE_ENV === 'development' ? 1 : 60, tags: ['cars'] }
 );
 
 export const getAllTenants = unstable_cache(
@@ -88,18 +124,29 @@ export const getAllTenants = unstable_cache(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
       );
-      const { data, error } = await supabase.from("tenants").select("*");
+      const { data, error } = await supabase
+        .from("tenants")
+        .select("*");
 
-      if (error || !data) {
-        return [];
+      const tenants = (!error && data) ? data : [];
+
+      if (process.env.NODE_ENV === "development") {
+        const { getAllDevSeedTenants } = await import("@/lib/dev-seed-helper");
+        const devTenants = getAllDevSeedTenants();
+        for (const dt of devTenants) {
+          if (!tenants.some((t) => t.slug === dt.slug)) {
+            tenants.push(dt);
+          }
+        }
       }
-      return data;
+
+      return tenants;
     } catch {
       return [];
     }
   },
   ['all-tenants'],
-  { revalidate: 3600, tags: ['tenants'] }
+  { revalidate: process.env.NODE_ENV === 'development' ? 1 : 3600, tags: ['tenants'] }
 );
 
 export const getAllCars = unstable_cache(
@@ -110,19 +157,23 @@ export const getAllCars = unstable_cache(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
       );
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("cars")
         .select("*")
         .eq("is_sold", false);
 
-      if (!data) {
-        return [];
+      const cars = (!error && data) ? data : [];
+
+      if (process.env.NODE_ENV === "development" && cars.length === 0) {
+        const { getAllDevSeedCars } = await import("@/lib/dev-seed-helper");
+        cars.push(...getAllDevSeedCars());
       }
-      return data;
+
+      return cars;
     } catch {
       return [];
     }
   },
   ['all-unsold-cars'],
-  { revalidate: 60, tags: ['cars'] }
+  { revalidate: process.env.NODE_ENV === 'development' ? 1 : 60, tags: ['cars'] }
 );

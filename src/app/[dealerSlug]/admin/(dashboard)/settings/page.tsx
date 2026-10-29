@@ -1,7 +1,7 @@
+import { redirect } from "next/navigation";
 import { getAdminBasePath } from "@/lib/admin-utils";
 import { getCurrentTenant, getTenantBySlug } from "@/app/[dealerSlug]/admin/actions";
-import { redirect } from "next/navigation";
-import { SettingsForm } from "@/components/admin/settings-form";
+import { SettingsContainer } from "@/components/admin/settings";
 
 export const metadata = {
   title: "Ustawienia Komisu | Panel Admina",
@@ -29,17 +29,18 @@ export default async function AdminSettingsPage({
   }
 
   return (
-    <div>
-      <div style={headerStyles.wrapper}>
-        <h1 style={headerStyles.title}>
+    <div className="space-y-6 max-w-5xl">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-100">
           Ustawienia komisu
         </h1>
-        <p style={headerStyles.subtitle}>
-          Kompleksowa konfiguracja wizytówki, brandingu, kontaktów, integracji i SEO
+        <p className="text-sm text-slate-400 mt-1">
+          Kompleksowa konfiguracja wizytówki, brandingu, kontaktów, integracji zewnętrznych i SEO
         </p>
       </div>
 
-      <SettingsForm
+      <SettingsContainer
+        dealerSlug={dealerSlug}
         targetSlug={isSuperAdmin && targetTenant.slug !== currentTenant.slug ? targetTenant.slug : undefined}
         tenant={{
           business_name: targetTenant.business_name ?? null,
@@ -55,35 +56,17 @@ export default async function AdminSettingsPage({
           county: targetTenant.county ?? null,
           region: targetTenant.region ?? null,
           pixel_id: targetTenant.pixel_id ?? null,
+          autoplac_enabled: targetTenant.autoplac_enabled ?? false,
+          slug: targetTenant.slug ?? null,
           branding: (targetTenant.branding as Record<string, unknown>) ?? null,
           analytics: (targetTenant.analytics as Record<string, unknown>) ?? null,
           opening_hours: (targetTenant.opening_hours as Record<string, unknown>) ?? null,
           business_rules: (targetTenant.business_rules as Record<string, unknown>) ?? null,
           seo: (targetTenant.seo as Record<string, unknown>) ?? null,
+          local_seo: (targetTenant.local_seo as Record<string, unknown>) ?? null,
+          page_config: (targetTenant.page_config as Record<string, unknown>) ?? null,
         }}
       />
     </div>
   );
 }
-
-const headerStyles: Record<string, React.CSSProperties> = {
-  wrapper: {
-    marginBottom: "24px",
-  },
-  title: {
-    color: "#f1f5f9",
-    fontSize: "24px",
-    fontWeight: "800",
-    margin: "0 0 4px",
-  },
-  tenantTag: {
-    color: "#10b981",
-    fontSize: "18px",
-    fontWeight: "600",
-  },
-  subtitle: {
-    color: "#64748b",
-    fontSize: "14px",
-    margin: "0",
-  },
-};

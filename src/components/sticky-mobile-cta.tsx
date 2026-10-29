@@ -1,9 +1,7 @@
 "use client";
 
-import React from "react";
 import { Phone, MessageCircle, Car } from "lucide-react";
 import { DealerTenant, hasCarBuying } from "@/types/landing";
-
 import { getTenantUrl } from "@/lib/urls";
 
 interface StickyMobileCtaProps {
@@ -13,11 +11,9 @@ interface StickyMobileCtaProps {
 
 export function StickyMobileCta({ tenant, isCustomDomain }: StickyMobileCtaProps) {
   const phone = tenant.contact.phone || "";
+  const cleanPhone = phone.replace(/\s+/g, "");
   const rawWhatsapp = tenant.contact.whatsapp || "";
   const cleanWhatsapp = rawWhatsapp.replace(/\D/g, "");
-  const colCount = 1 + (phone ? 1 : 0) + (cleanWhatsapp ? 1 : 0);
-  const gridTemplateColumns = colCount === 3 ? "1fr 1fr 1.2fr" : colCount === 2 ? "1fr 1.2fr" : "1fr";
-  const primaryColor = tenant.branding?.colors?.primary || "#1686E0";
 
   const carBuying = hasCarBuying(tenant);
   const vehiclesHref = getTenantUrl(tenant.slug, "/samochody", tenant.customDomain, isCustomDomain);
@@ -34,101 +30,47 @@ export function StickyMobileCta({ tenant, isCustomDomain }: StickyMobileCtaProps
   };
 
   return (
-    <div
-      className="vd-sticky-mobile-cta"
-      style={{
-        position: "fixed",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: 999,
-        background: "rgba(10, 15, 29, 0.94)",
-        backdropFilter: "blur(16px)",
-        borderTop: "1px solid rgba(255, 255, 255, 0.12)",
-        padding: "10px 12px calc(10px + env(safe-area-inset-bottom, 0px))",
-        boxShadow: "0 -8px 24px rgba(0, 0, 0, 0.4)",
-      }}
-    >
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns,
-          gap: "8px",
-          maxWidth: "480px",
-          margin: "0 auto",
-        }}
-      >
+    <div className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-slate-950/95 backdrop-blur-md border-t border-slate-800 px-3 pt-2.5 pb-[calc(10px+env(safe-area-inset-bottom,0px))] shadow-lg">
+      <div className="max-w-md mx-auto grid grid-flow-col auto-cols-fr gap-2">
         {/* Call Button */}
         {phone && (
           <a
-            href={`tel:${phone.replace(/\s+/g, "")}`}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "6px",
-              height: "48px",
-              borderRadius: "10px",
-              background: "rgba(255, 255, 255, 0.08)",
-              border: "1px solid rgba(255, 255, 255, 0.15)",
-              color: "#ffffff",
-              fontSize: "13px",
-              fontWeight: 700,
-              textDecoration: "none",
-            }}
+            href={`tel:${cleanPhone}`}
+            className="flex items-center justify-center gap-1.5 h-11 px-3 rounded-md bg-slate-900 border border-slate-700/80 text-white text-xs font-semibold hover:bg-slate-800 transition-colors"
+            style={{ color: "#ffffff" }}
           >
-            <Phone size={16} style={{ color: "#38bdf8" }} />
-            Zadzwoń
+            <Phone className="w-4 h-4 text-sky-400" strokeWidth={1.75} />
+            <span style={{ color: "#ffffff" }}>Zadzwoń</span>
           </a>
         )}
 
         {/* WhatsApp Button */}
         {cleanWhatsapp && (
           <a
-            href={`https://wa.me/${cleanWhatsapp}?text=${encodeURIComponent(carBuying ? "Dzień dobry, chcę wycenić/sprzedać samochód." : "Dzień dobry, pytam o samochód z Państwa oferty.")}`}
+            href={`https://wa.me/${cleanWhatsapp}?text=${encodeURIComponent(
+              carBuying
+                ? "Dzień dobry, chcę wycenić/sprzedać samochód."
+                : "Dzień dobry, pytam o samochód z Państwa oferty."
+            )}`}
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "6px",
-              height: "48px",
-              borderRadius: "10px",
-              background: "rgba(37, 211, 102, 0.15)",
-              border: "1px solid rgba(37, 211, 102, 0.35)",
-              color: "#25D366",
-              fontSize: "13px",
-              fontWeight: 700,
-              textDecoration: "none",
-            }}
+            className="flex items-center justify-center gap-1.5 h-11 px-3 rounded-md bg-emerald-950/70 border border-emerald-600/40 text-emerald-400 text-xs font-semibold hover:bg-emerald-900/50 transition-colors"
+            style={{ color: "#34d399" }}
           >
-            <MessageCircle size={16} />
-            WhatsApp
+            <MessageCircle className="w-4 h-4" strokeWidth={1.75} />
+            <span style={{ color: "#34d399" }}>WhatsApp</span>
           </a>
         )}
 
-        {/* Sell Car Button */}
+        {/* Action Button: Wycena lub Oferta */}
         <a
           href={carBuying ? getTenantUrl(tenant.slug, "/skup-aut", tenant.customDomain, isCustomDomain) : vehiclesHref}
           onClick={handleSellClick}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "6px",
-            height: "48px",
-            borderRadius: "10px",
-            background: primaryColor,
-            color: "#ffffff",
-            fontSize: "13px",
-            fontWeight: 700,
-            textDecoration: "none",
-            boxShadow: `0 4px 14px ${primaryColor}55`,
-          }}
+          className="flex items-center justify-center gap-1.5 h-11 px-3 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-sm transition-all"
+          style={{ color: "#ffffff" }}
         >
-          <Car size={16} />
-          {carBuying ? "Wycena" : "Oferta"}
+          <Car className="w-4 h-4 text-white" strokeWidth={1.75} style={{ color: "#ffffff" }} />
+          <span style={{ color: "#ffffff" }}>{carBuying ? "Wycena" : "Oferta"}</span>
         </a>
       </div>
     </div>

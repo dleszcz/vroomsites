@@ -78,6 +78,8 @@ export async function generateViewport({ params }: Props): Promise<import("next"
   };
 }
 
+import { getCars } from "@/lib/data";
+
 export default async function DealerPage({ params }: Props) {
   const { dealerSlug } = await params;
   const tenant = await resolveTenant({ slug: dealerSlug });
@@ -98,6 +100,8 @@ export default async function DealerPage({ params }: Props) {
     ? `https://${tenant.customDomain}`
     : `https://vroomdealer.pl/${tenant.slug}`;
 
+  const cars = (await getCars(tenant.id)).filter((c) => !c.is_sold);
+
   return (
     <>
       <DealerSchema
@@ -109,7 +113,7 @@ export default async function DealerPage({ params }: Props) {
         url={baseUrl}
       />
 
-      <SectionRenderer tenant={tenant} isCustomDomain={isCustomDomain} />
+      <SectionRenderer tenant={tenant} cars={cars} isCustomDomain={isCustomDomain} />
     </>
   );
 }
