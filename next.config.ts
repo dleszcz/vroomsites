@@ -31,6 +31,16 @@ const nextConfig: NextConfig = {
         hostname: "upload.wikimedia.org",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "autoplac.pl",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "**.autoplac.pl",
+        pathname: "/**",
+      },
     ],
   },
 };
