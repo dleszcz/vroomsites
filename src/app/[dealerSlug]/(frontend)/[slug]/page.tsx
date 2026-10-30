@@ -15,6 +15,7 @@ import { SectionRenderer } from "@/components/sections/section-renderer";
 import { SingleCarPage } from "@/components/single-car-page";
 import { InventoryPage } from "@/components/inventory-page";
 import { LegalPage } from "@/components/legal-page";
+import { getSimilarCars } from "@/lib/similar-cars";
 
 type Props = {
   params: Promise<{ dealerSlug: string; slug: string }>;
@@ -265,9 +266,7 @@ export default async function DynamicSlugPage({ params }: Props) {
   }
 
   const pageUrl = `${baseUrl}/${slug}`;
-  const relatedCars = allCars.filter(
-    (c) => String(c.id) !== String(car.id) && c.slug !== car.slug && !c.is_sold
-  );
+  const relatedCars = getSimilarCars(car, allCars, 3);
 
   return (
     <>
