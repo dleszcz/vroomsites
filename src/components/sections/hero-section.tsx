@@ -30,7 +30,7 @@ export function HeroSection({ tenant, config, cars = [], isCustomDomain }: HeroS
 
   const vehiclesHref = getTenantUrl(tenant.slug, "/samochody", tenant.customDomain, isCustomDomain);
   const vehiclesAnchorHref = "#vehicles";
-  const contactHref = getTenantUrl(tenant.slug, "/#footer", tenant.customDomain, isCustomDomain);
+  const contactHref = getTenantUrl(tenant.slug, "/kontakt", tenant.customDomain, isCustomDomain);
 
   // Hero is standard sales-first for every dealer; skup is highlighted if configured
   const cityName = tenant.location?.city;
@@ -62,9 +62,20 @@ export function HeroSection({ tenant, config, cars = [], isCustomDomain }: HeroS
     data.primaryCta?.label ||
     (cars.length > 0 ? `Zobacz ofertę (${cars.length})` : "Zobacz samochody na sprzedaż");
 
+  const rawSecondaryHref = data.secondaryCta?.href;
+  const isFooterLink =
+    rawSecondaryHref === "#footer" ||
+    rawSecondaryHref === "/#footer" ||
+    rawSecondaryHref === "#contact" ||
+    rawSecondaryHref?.endsWith("/#footer");
+  const isContactLabel = data.secondaryCta?.label?.toLowerCase().includes("kontakt");
+
   const secondaryHref =
-    data.secondaryCta?.href ||
-    (carBuying ? getTenantUrl(tenant.slug, "/skup-aut", tenant.customDomain, isCustomDomain) : contactHref);
+    isContactLabel
+      ? contactHref
+      : (rawSecondaryHref && !isFooterLink)
+        ? rawSecondaryHref
+        : (carBuying ? getTenantUrl(tenant.slug, "/skup-aut", tenant.customDomain, isCustomDomain) : contactHref);
   const secondaryLabel =
     data.secondaryCta?.label || (carBuying ? "Sprzedaj lub zamień auto" : "Skontaktuj się z nami");
 

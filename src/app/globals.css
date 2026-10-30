@@ -340,6 +340,7 @@ a.bg-emerald-700 *, button.bg-emerald-700 * {
 @media (max-width: 820px) {
   .dealer-header__mobile-menu { display: grid; gap: 2px; padding: 10px var(--page-pad) 18px; border-top: 1px solid var(--color-header-border, rgba(255,255,255,.08)); background: var(--color-header-bg, #09090b); }
   .dealer-header__mobile-menu a:not(.vd-button) { padding: 12px 0; color: var(--color-header-fg, #fff); font-size: 13px; font-weight: 600; }
+  .dealer-footer { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important; }
 }
 .dealer-footer__contact { display: flex; align-items: center; gap: 7px; }
 .dealer-footer__contact svg { flex: 0 0 auto; }

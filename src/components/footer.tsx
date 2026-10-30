@@ -70,7 +70,7 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
 
 
   return (
-    <footer id="footer" className="dealer-footer" style={{ background: footerBg }}>
+    <footer id="footer" className="dealer-footer pb-[calc(100px+env(safe-area-inset-bottom,0px))] md:pb-8" style={{ background: footerBg }}>
       <div className="vd-container">
         <div className="dealer-footer__grid">
           <div>
@@ -128,7 +128,7 @@ export function Footer({ tenant, isCustomDomain }: FooterProps) {
               <a href={getUrl("/samochody")}>Samochody</a>
               <a href={getUrl("/#services")}>Usługi</a>
               <a href={getUrl("/#about")}>O nas</a>
-              <a href={getUrl("/#footer")}>Kontakt</a>
+              <a href={getUrl("/kontakt")}>Kontakt</a>
               <a href={getUrl("/polityka-prywatnosci")}>Polityka prywatności</a>
               <a href={getUrl("/regulamin")}>Regulamin</a>
             </div>
