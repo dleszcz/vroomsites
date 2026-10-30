@@ -9,7 +9,7 @@ export const getCachedCurrentTenant = cache(async () => {
   if (!user || userError) {
     // In dev mode, fallback to dev seed tenant to facilitate local testing of admin UI
     if (process.env.NODE_ENV === "development") {
-      const devTenant = getDevSeedTenant("wadera") || getDevSeedTenant("d-car");
+      const devTenant = getDevSeedTenant("demo");
       if (devTenant) {
         return {
           ...devTenant,
