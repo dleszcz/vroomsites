@@ -36,9 +36,10 @@ export function QuickVehicleSearch({ tenant, cars, isCustomDomain }: QuickVehicl
   }, [cars]);
 
   const models = useMemo(() => {
+    if (selectedMake === "all") return [];
     const set = new Set<string>();
     cars.forEach((car) => {
-      if (selectedMake === "all" || car.make?.toLowerCase() === selectedMake.toLowerCase()) {
+      if (car.make?.toLowerCase() === selectedMake.toLowerCase()) {
         if (car.model) {
           const baseModel = car.model.trim().split(" ")[0];
           set.add(baseModel);
@@ -174,10 +175,12 @@ export function QuickVehicleSearch({ tenant, cars, isCustomDomain }: QuickVehicl
             <select
               value={selectedModel}
               onChange={(e) => setSelectedModel(e.target.value)}
-              disabled={models.length === 0}
-              className="w-full h-10 appearance-none bg-zinc-50 border border-zinc-200 rounded-md pl-3 pr-8 text-xs font-medium text-zinc-900 focus:bg-white focus:border-zinc-400 focus:outline-none disabled:opacity-60 transition-colors cursor-pointer"
+              disabled={selectedMake === "all" || models.length === 0}
+              className="w-full h-10 appearance-none bg-zinc-50 border border-zinc-200 rounded-md pl-3 pr-8 text-xs font-medium text-zinc-900 focus:bg-white focus:border-zinc-400 focus:outline-none disabled:opacity-50 disabled:bg-zinc-100 disabled:text-zinc-400 disabled:cursor-not-allowed transition-colors cursor-pointer"
             >
-              <option value="all">Wszystkie modele</option>
+              <option value="all">
+                {selectedMake === "all" ? "Najpierw wybierz markę" : `Wszystkie modele (${models.length})`}
+              </option>
               {models.map((model) => (
                 <option key={model} value={model}>
                   {model}

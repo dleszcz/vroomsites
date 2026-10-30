@@ -101,3 +101,66 @@ export async function uploadCarPhoto(file: File, tenantSlug: string): Promise<st
 
   return data.publicUrl;
 }
+
+/**
+ * Uploads a branding asset (Logo or Hero banner) directly to Supabase Storage
+ * and returns the public CDN URL.
+ */
+export async function uploadBrandingImage(
+  file: File,
+  tenantSlug: string,
+  category: "logo" | "hero" = "logo"
+): Promise<string> {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co";
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-key";
+  const supabase = createAnonClient(supabaseUrl, supabaseKey);
+
+  const timestamp = Date.now();
+  const randomSuffix = Math.random().toString(36).substring(2, 8);
+  const cleanName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_").replace(/\.[^/.]+$/, "");
+
+  let uploadBody: Blob | File = file;
+  let contentType = file.type || "application/octet-stream";
+  let extension = file.name.split(".").pop()?.toLowerCase() || "png";
+
+  if (file.type === "image/svg+xml") {
+    contentType = "image/svg+xml";
+    extension = "svg";
+  } else if (file.type === "image/png") {
+    contentType = "image/png";
+    extension = "png";
+  } else if (file.type === "image/webp") {
+    contentType = "image/webp";
+    extension = "webp";
+  } else if (file.type.startsWith("image/")) {
+    if (category === "hero") {
+      uploadBody = await compressImage(file, 1920, 1080, 0.85);
+      contentType = "image/jpeg";
+      extension = "jpg";
+    } else {
+      uploadBody = await compressImage(file, 800, 800, 0.90);
+      contentType = "image/jpeg";
+      extension = "jpg";
+    }
+  }
+
+  const filePath = `branding/${tenantSlug}/${category}-${timestamp}-${cleanName}-${randomSuffix}.${extension}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("scout-photos")
+    .upload(filePath, uploadBody, {
+      contentType,
+      upsert: true,
+    });
+
+  if (uploadError) {
+    throw new Error(`Błąd wgrywania pliku: ${uploadError.message}`);
+  }
+
+  const { data } = supabase.storage.from("scout-photos").getPublicUrl(filePath);
+  if (!data?.publicUrl) {
+    throw new Error("Nie udało się uzyskać publicznego adresu pliku");
+  }
+
+  return data.publicUrl;
+}

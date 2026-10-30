@@ -154,10 +154,12 @@ export function InventoryFilterBar({
             <select
               value={selectedModel}
               onChange={(e) => onModelChange(e.target.value)}
-              disabled={models.length === 0}
-              className="w-full appearance-none bg-zinc-50 border border-zinc-200 rounded-md pl-3 pr-8 py-2 text-xs text-zinc-900 focus:bg-white focus:border-zinc-400 focus:outline-none disabled:opacity-60 transition-colors cursor-pointer"
+              disabled={selectedMake === "all" || models.length === 0}
+              className="w-full appearance-none bg-zinc-50 border border-zinc-200 rounded-md pl-3 pr-8 py-2 text-xs text-zinc-900 focus:bg-white focus:border-zinc-400 focus:outline-none disabled:opacity-50 disabled:bg-zinc-100 disabled:text-zinc-400 disabled:cursor-not-allowed transition-colors cursor-pointer"
             >
-              <option value="all">Wszystkie modele</option>
+              <option value="all">
+                {selectedMake === "all" ? "Najpierw wybierz markę" : `Wszystkie modele (${models.length})`}
+              </option>
               {models.map((model) => (
                 <option key={model} value={model}>
                   {model}

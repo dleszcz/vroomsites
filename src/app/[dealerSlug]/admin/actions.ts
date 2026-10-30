@@ -248,6 +248,7 @@ export async function updateTenant(formData: FormData) {
   const primaryColor = formData.get("branding_primary_color");
   const accentColor = formData.get("branding_accent_color");
   const logoUrl = formData.get("branding_logo_url");
+  if (logoUrl !== null) updates.logo_url = (logoUrl as string) || null;
   const heroImageUrl = formData.get("branding_hero_image_url") as string | null;
   const heroTitle = formData.get("branding_hero_title");
   const heroSubtitle = formData.get("branding_hero_subtitle");

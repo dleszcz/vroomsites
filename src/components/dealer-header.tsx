@@ -76,25 +76,18 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
         </nav>
 
         <div className="dealer-header__actions">
-          <a
-            style={{ color: "#ffffff" }}
-            className="h-9 px-4 rounded-md bg-[var(--color-primary,#1686E0)] hover:brightness-105 font-heading font-bold text-xs uppercase tracking-wider inline-flex items-center justify-center transition-all shadow-xs"
-            href={ctaHref}
-          >
-            {ctaLabel}
-          </a>
           {phone && (
-            <a className="dealer-header__phone" href={`tel:${phone.replace(/\s/g, "")}`}>
+            <a className="dealer-header__phone hidden md:inline-flex" href={`tel:${phone.replace(/\s/g, "")}`}>
               <Phone size={15} strokeWidth={2.1} />
               <span>{phone}</span>
             </a>
           )}
           <button
-            className="dealer-header__toggle"
+            className="dealer-header__toggle inline-flex md:hidden items-center justify-center min-w-[44px] min-h-[44px] rounded-md transition-colors"
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Zamknij menu" : "Otwórz menu"}
           >
-            {open ? <X size={22} /> : <Menu size={22} />}
+            {open ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
@@ -106,9 +99,20 @@ export function DealerHeader({ tenant, isCustomDomain }: DealerHeaderProps) {
               {label}
             </Link>
           ))}
+          {phone && (
+            <a
+              className="flex items-center gap-2 py-3 text-sm font-bold font-heading border-t border-[var(--color-header-border,rgba(255,255,255,.08))]"
+              style={{ color: "var(--color-header-fg, #ffffff)" }}
+              href={`tel:${phone.replace(/\s/g, "")}`}
+              onClick={() => setOpen(false)}
+            >
+              <Phone size={16} strokeWidth={2.1} />
+              <span>Zadzwoń: {phone}</span>
+            </a>
+          )}
           <a
             style={{ color: "#ffffff" }}
-            className="h-10 px-4 rounded-md bg-[var(--color-primary,#1686E0)] hover:brightness-105 font-heading font-bold text-xs uppercase tracking-wider flex items-center justify-center transition-all"
+            className="h-10 px-4 rounded-md bg-[var(--color-primary,#1686E0)] hover:brightness-105 font-heading font-bold text-xs uppercase tracking-wider flex items-center justify-center transition-all mt-2"
             href={ctaHref}
             onClick={() => setOpen(false)}
           >

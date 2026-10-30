@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { VroomDealerLogo } from "@/components/admin/vroom-dealer-logo";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
@@ -53,9 +54,10 @@ export default function AdminLoginPage() {
       <div style={styles.card}>
         {/* Logo / Branding */}
         <div style={styles.logoSection}>
-          <div style={styles.logoIcon}>🚗</div>
-          <h1 style={styles.title}>VroomDealer</h1>
-          <p style={styles.subtitle}>Panel Administracyjny</p>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: "12px" }}>
+            <VroomDealerLogo size="lg" inverted={true} />
+          </div>
+          <p style={styles.subtitle}>Panel Administracyjny Salonu</p>
         </div>
 
         {/* Login Form */}

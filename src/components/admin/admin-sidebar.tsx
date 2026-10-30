@@ -3,6 +3,7 @@
 import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signOut } from "@/app/[dealerSlug]/admin/actions";
+import { VroomDealerLogo } from "@/components/admin/vroom-dealer-logo";
 
 interface TenantItem {
   slug: string;
@@ -34,6 +35,12 @@ export function AdminSidebar({
 
   return (
     <aside style={styles.sidebar}>
+      {/* VroomDealer Brand Header */}
+      <div style={styles.platformHeader}>
+        <VroomDealerLogo size="sm" inverted={true} />
+        <span style={styles.platformBadge}>ADMIN</span>
+      </div>
+
       {/* User Info Header */}
       <div style={styles.userSection}>
         <div style={styles.userAvatar}>
@@ -155,6 +162,24 @@ const styles: Record<string, React.CSSProperties> = {
     flexDirection: "column",
     padding: "24px 16px",
     flexShrink: 0,
+  },
+  platformHeader: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "0 8px 16px 8px",
+    marginBottom: "12px",
+    borderBottom: "1px solid rgba(148, 163, 184, 0.12)",
+  },
+  platformBadge: {
+    fontSize: "9px",
+    fontWeight: "800",
+    letterSpacing: "0.08em",
+    color: "#60a5fa",
+    background: "rgba(59, 130, 246, 0.12)",
+    padding: "2px 6px",
+    borderRadius: "4px",
+    textTransform: "uppercase",
   },
   userSection: {
     display: "flex",

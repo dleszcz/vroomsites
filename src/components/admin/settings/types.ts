@@ -14,6 +14,7 @@ export interface SettingsTenantData {
   pixel_id: string | null;
   autoplac_enabled?: boolean | null;
   slug?: string | null;
+  logo_url?: string | null;
   branding: Record<string, unknown> | null;
   analytics: Record<string, unknown> | null;
   opening_hours: Record<string, unknown> | null;

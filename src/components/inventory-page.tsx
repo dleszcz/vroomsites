@@ -49,9 +49,10 @@ function InventoryPageContent({ tenant, cars, isCustomDomain }: InventoryPagePro
   }, [cars]);
 
   const models = useMemo(() => {
+    if (selectedMake === "all") return [];
     const set = new Set<string>();
     cars.forEach((car) => {
-      if (selectedMake === "all" || car.make?.toLowerCase() === selectedMake.toLowerCase()) {
+      if (car.make?.toLowerCase() === selectedMake.toLowerCase()) {
         if (car.model) {
           const baseModel = car.model.trim().split(" ")[0];
           set.add(baseModel);
